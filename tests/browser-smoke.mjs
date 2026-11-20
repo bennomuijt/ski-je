@@ -60,7 +60,7 @@ await add('lunch can be selected to any minute and the slider stays synchronised
  const output=await page.locator('#plan-output').innerText();
  assert.match(output,/12:07/);
  assert.ok(await page.locator('.ski-route-step.lunch').isVisible());
- await page.locator('#lunch-time-slider').fill('755');
+ await page.locator('#lunch-time-slider').evaluate(el=>{el.value='755';el.dispatchEvent(new Event('input',{bubbles:true}));});
  assert.equal(await page.locator('#lunch-time').inputValue(),'12:35');
 });
 await add('longer day 08:00-17:00 with pauses and earlier lunch',async()=>{

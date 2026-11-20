@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07538c">
+<meta name="description" content="Installeer SKI-je op Android of iPhone vanuit één veilige link.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192-v43.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="icons/icon-192-v43.png">
+<title>Installeer SKI-je | Android en iPhone</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#10344e;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(155deg,#d6efff 0%,#f5fbff 55%,#e6f3fb 100%)}
+main{max-width:700px;margin:0 auto;padding:20px 17px 40px}
+.hero{padding:24px 20px 25px;border-radius:25px;background:radial-gradient(circle at 85% 13%,#eaf9ff4d 0 32px,transparent 33px),linear-gradient(120deg,#06416e,#047db6);color:white;box-shadow:0 12px 30px #0a4b7428}
+.logo{width:min(260px,78%);aspect-ratio:320/213;object-fit:contain;display:block;margin:0 auto 4px;filter:drop-shadow(0 7px 8px #04345355)}
+h1{margin:4px 0 8px;font-size:clamp(26px,6vw,34px);text-align:center;line-height:1.12}
+.hero p{margin:0;text-align:center;line-height:1.5;font-size:14px;color:#e5f7ff}
+.actions{display:grid;gap:10px;margin:18px 0 20px}
+.btn{border:0;border-radius:15px;min-height:55px;padding:13px 18px;display:flex;align-items:center;justify-content:center;text-align:center;font:800 16px/1.25 system-ui,sans-serif;text-decoration:none;cursor:pointer}
+.btn.primary{background:#fa841a;color:#fff;box-shadow:0 4px 12px #a75d1029}
+.btn.secondary{background:white;border:1px solid #bddef0;color:#075b8f}
+.btn:focus-visible,a:focus-visible{outline:3px solid #ff9f35;outline-offset:2px}
+button[hidden]{display:none}
+.card{background:#fff;border:1px solid #d3e7f3;border-radius:19px;padding:17px;margin:13px 0;box-shadow:0 3px 16px #17496c12}
+h2{margin:0 0 10px;font-size:19px;color:#0d527f;display:flex;align-items:center;gap:9px}
+ol{margin:9px 0 0;padding-left:24px;line-height:1.7;font-size:15px}
+li{margin:7px 0}.muted{font-size:13px;line-height:1.5;color:#5a7180}
+.link{font-size:13px;overflow-wrap:anywhere;color:#075b8f}
+.share{display:grid;gap:9px;grid-template-columns:1fr 1fr}
+.notice{margin-top:16px;font-size:12px;line-height:1.6;color:#526779}
+#status{min-height:20px;font-size:13px;color:#115c3d;font-weight:700}
+footer{text-align:center;font-size:12px;color:#527186;margin:20px auto}
+@media(max-width:400px){main{padding-inline:10px}.card{padding:15px}.share{grid-template-columns:1fr}.btn{font-size:15px}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero" aria-label="SKI-je installeren">
+<img class="logo" src="brand-skije.svg" width="320" height="213" alt="Het originele SKI-je logo">
+<h1>SKI-je op je telefoon</h1>
+<p>De SkiWelt ski-app, direct op je beginscherm. Gratis te installeren op Android en iPhone.</p>
+</section>
+<div class="actions">
+<button id="native-install" type="button" class="btn primary" hidden>📲 Installeer SKI-je op dit toestel</button>
+<a class="btn primary" href="./index.html" id="open-app">⛷️ Open SKI-je</a>
+</div>
+<section class="card" aria-labelledby="title-android">
+<h2 id="title-android">🤖 Android</h2>
+<ol>
+<li>Open deze link in <strong>Google Chrome</strong> op je telefoon.</li>
+<li>Tik hierboven op <strong>Installeer SKI-je</strong> als die knop zichtbaar wordt.</li>
+<li>Zo niet: tik in Chrome op <strong>⋮</strong> en kies <strong>App installeren</strong> of <strong>Toevoegen aan startscherm</strong>.</li>
+<li>Het SKI-je-logo verschijnt tussen je apps.</li>
+</ol>
+</section>
+<section class="card" aria-labelledby="title-iphone">
+<h2 id="title-iphone">🍎 iPhone</h2>
+<ol>
+<li>Open deze link in <strong>Safari</strong> op je iPhone, niet in de ingebouwde WhatsApp-browser.</li>
+<li>Tik op <strong>Open SKI-je</strong> hierboven.</li>
+<li>Tik in Safari op <strong>Deel</strong> en vervolgens op <strong>Zet op beginscherm</strong>.</li>
+<li>Kies zo nodig <strong>Open als webapp</strong> en tik op <strong>Voeg toe</strong>.</li>
+</ol>
+<p class="muted">Op de iPhone verschijnt geen automatische installatieknop; dit is de normale Apple-installatiemethode.</p>
+</section>
+<section class="card" aria-labelledby="title-share">
+<h2 id="title-share">🔗 Deel de installatielink</h2>
+<p class="muted">Verstuur dezelfde link via WhatsApp, sms of e-mail naar andere skiërs.</p>
+<p class="link" id="link-text">https://ski-je.bennomuijt.workers.dev/install.html</p>
+<div class="share">
+<button class="btn secondary" type="button" id="share">Deel via telefoon</button>
+<button class="btn secondary" type="button" id="copy">Kopieer link</button>
+</div>
+<p id="status" role="status" aria-live="polite"></p>
+</section>
+<p class="notice"><strong>Veiligheid:</strong> SKI-je is uitsluitend een hulpmiddel. Officiële informatie, pisteborden, aanwijzingen van het skigebied en hulpdiensten zijn altijd leidend. GPS-deling werkt alleen wanneer je daarvoor toestemming geeft; achtergrondlocatie kan bij een vergrendeld telefoonscherm worden beperkt.</p>
+<footer>SKI-je · By BenMu Development</footer>
+</main>
+<script>
+(()=>{'use strict';
+const url='https://ski-je.bennomuijt.workers.dev/install.html';
+const share=document.getElementById('share');
+const copy=document.getElementById('copy');
+const native=document.getElementById('native-install');
+const status=document.getElementById('status');
+const say=(message)=>{status.textContent=message;};
+let installPrompt=null;
+if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true) say('SKI-je is al als app geopend op dit apparaat.');
+window.addEventListener('beforeinstallprompt',event=>{
+ event.preventDefault();
+ installPrompt=event;
+ native.hidden=false;
+});
+native.addEventListener('click',async()=>{
+ if(!installPrompt)return;
+ const prompt=installPrompt;installPrompt=null;native.hidden=true;
+ try{await prompt.prompt();const choice=await prompt.userChoice;say(choice?.outcome==='accepted'?'De installatie is gestart.':'Je kunt SKI-je ook via het Chrome-menu installeren.');}
+ catch{say('Gebruik het Chrome-menu om SKI-je te installeren.');}
+});
+window.addEventListener('appinstalled',()=>{native.hidden=true;say('SKI-je is geïnstalleerd!');});
+async function copyLink(){
+ try{await navigator.clipboard.writeText(url);say('Installatielink gekopieerd.');return;}
+ catch{}
+ const field=document.createElement('input');
+ field.value=url;document.body.appendChild(field);field.select();
+ try{const ok=document.execCommand('copy');say(ok?'Installatielink gekopieerd.':'Selecteer en kopieer de link hierboven.');}
+ catch{say('Selecteer en kopieer de link hierboven.');}
+ field.remove();
+}
+copy.addEventListener('click',copyLink);
+share.addEventListener('click',async()=>{
+ if(typeof navigator.share==='function'){
+  try{await navigator.share({title:'SKI-je installeren',text:'Installeer SKI-je op Android of iPhone:',url});return;}
+  catch(error){if(error?.name==='AbortError')return;}
+ }
+ await copyLink();
+});
+})();
+</script>
+</body></html>

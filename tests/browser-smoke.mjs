@@ -36,6 +36,10 @@ await add('default 09:00-16:00 full day schedule and lunch',async()=>{
  assert.match(text,/09:00/);assert.match(text,/16:00/);assert.match(text,/15:30/);
  assert.match(text,/12:30/);assert.match(text,/Lunch/);
  assert.ok((await page.locator('.day-timeline-row').count())>=4);
+ assert.ok((await page.locator('.ski-route-step.lift').count())>=1,'lift time checkpoints missing');
+ assert.ok((await page.locator('.ski-route-step.piste').count())>=1,'piste time checkpoints missing');
+ assert.ok((await page.locator('.ski-route-clock').count())>=7,'time checkpoints missing');
+ assert.ok((await page.locator('.ski-wc-point').count())>=1,'documented toilet options missing');
  await page.screenshot({path:screenshotDir+'/01-route-mobile.png',fullPage:true});
 });
 await add('selected lunch restaurant appears in timetable',async()=>{
@@ -48,10 +52,21 @@ await add('selected lunch restaurant appears in timetable',async()=>{
  assert.match(title,/Lunch/i);
  if(!title.includes(choice.label))throw Error('Selected lunch restaurant is missing in planned itinerary: '+JSON.stringify({choice,title}));
 });
+await add('lunch can be selected to any minute and the slider stays synchronised',async()=>{
+ await page.locator('#lunch-time').fill('12:07');
+ assert.equal(await page.locator('#lunch-time-slider').inputValue(),'727');
+ await page.locator('#lunch-duration').evaluate(el=>{el.value='55';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));});
+ await page.locator('#create').click();
+ const output=await page.locator('#plan-output').innerText();
+ assert.match(output,/12:07/);
+ assert.ok(await page.locator('.ski-route-step.lunch').isVisible());
+ await page.locator('#lunch-time-slider').fill('755');
+ assert.equal(await page.locator('#lunch-time').inputValue(),'12:35');
+});
 await add('longer day 08:00-17:00 with pauses and earlier lunch',async()=>{
  await page.locator('#departure').fill('08:00');
  await page.locator('#return-time').fill('17:00');
- await page.locator('#lunch-time').selectOption('11:45');
+ await page.locator('#lunch-time').fill('11:45');
  await page.locator('#early-break').check();
  await page.locator('#late-break').check();
  await page.locator('#lunch-duration').evaluate(el=>{el.value='60';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));});
@@ -69,8 +84,10 @@ await add('full day exported to actual downloadable multipage PDF',async()=>{
  const bytes=await fs.readFile(dest);
  assert.ok(bytes.length>30000,'PDF is unexpectedly small: '+bytes.length);
  assert.equal(bytes.subarray(0,8).toString('utf8'),'%PDF-1.4');
- assert.match(bytes.toString('latin1'),/\/Count 2\b/);
- console.log('PDF FILE',suggested,bytes.length,'bytes, 2 pages');
+ const match=bytes.toString('latin1').match(/\/Count (\d+)\b/);
+ assert.ok(match&&Number(match[1])>=4,'full report must have multiple pages');
+ assert.match(suggested,/^SKI-je_\d{4}-\d\d-\d\d_08-00_tot_17-00\.pdf$/);
+ console.log('PDF FILE',suggested,bytes.length,'bytes, '+match[1]+' pages');
 });
 await add('different starting and finishing villages: Ellmau to Söll',async()=>{
  await page.locator('#same-end').uncheck();
@@ -127,6 +144,17 @@ await add('full SkiWelt 2026-27 panorama is an image and village zoom works',asy
  console.log('FULL MAP',props);
  await page.screenshot({path:screenshotDir+'/02-map-mobile.png'});
  await page.locator('[data-close="pano-modal"]').click();
+});
+await add('fastest provisional GPS return recognises area and offers manual override',async()=>{
+ await page.locator('#return-home-map').click();
+ await page.locator('#return-home-modal').waitFor({state:'visible'});
+ await page.waitForFunction(()=>document.getElementById('return-home-status').textContent.includes('vertrekgebied:'),{timeout:12000});
+ assert.ok(await page.locator('#return-home-output .region-leg').count()>=1);
+ await page.locator('#return-area-override').selectOption('Ellmau');
+ await page.locator('#return-home-manual').click();
+ assert.match(await page.locator('#return-home-output').innerText(),/Ellmau/);
+ await page.locator('#return-home-close').click();
+ assert.ok(await page.locator('#return-home-modal').isHidden());
 });
 await add('radar location control and expanded wind areas appear',async()=>{
  await page.locator('.bottom button[data-page="weather"]').click();

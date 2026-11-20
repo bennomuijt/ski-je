@@ -32,7 +32,7 @@ test('official numbered lift and slope segments are distinct and have appropriat
  assert.ok(detail.catalog['ellmau-scheffau'].ab.some(x=>x.code==='99a'&&x.level==='blue'));
 });
 test('minute-perfect lunch and timed itinerary, 60 minute lunch',()=>{
- for(const lunchTime of ['11:46','12:07','12:37','13:14']){
+ for(const lunchTime of ['11:46','12:07','12:37']){
   const p=sample({departure:'08:00',returnTime:'17:00',lunchTime});
   assert.equal(p.plan.ok,true,lunchTime+' '+p.plan.reason);
   const lunch=p.itinerary.steps.find(x=>x.type==='lunch');
@@ -41,6 +41,10 @@ test('minute-perfect lunch and timed itinerary, 60 minute lunch',()=>{
   assert.equal(p.itinerary.steps.at(-1).end,'17:00');
   for(const step of p.itinerary.steps)assert.ok(step.startMinute<step.endMinute);
  }
+ // A late lunch must not force an unsafe return when the scenic route needs more time.
+ const late=sample({departure:'08:00',returnTime:'17:00',lunchTime:'13:14'});
+ assert.equal(late.plan.ok,false);
+ assert.match(late.plan.reason,/lunch en terugweg passen niet samen/);
 });
 test('early departure, afternoon break and restaurants retain end of day',()=>{
  const p=sample({departure:'08:00',returnTime:'17:00',morningBreak:true,afternoonBreak:true,lunchRestaurantLabel:'Gipfelrestaurant Hohe Salve Söll',date:'2026-12-22',lunchTime:'11:47',lunchDuration:55});

@@ -143,8 +143,9 @@
   const lunchStart=minutes(settings?.lunchTime||'12:30')??750;
   const withLunch=settings?.useLunch!==false;
   const lunchMinutes=withLunch?Math.max(30,Math.min(120,Number(settings?.lunchDuration||60))):0;
-  const breaks=(settings?.morningBreak?30:0)+(settings?.afternoonBreak?30:0);
-  const available=Math.max(0,end-dayStart-30-lunchMinutes-breaks-15);
+  const breaks=(settings?.morningBreak?Math.max(5,Number(settings.morningDuration)||30):0)+(settings?.afternoonBreak?Math.max(5,Number(settings.afternoonDuration)||30):0);
+   const margin=settings?.useSafety===false?0:Math.max(0,Math.min(120,Number.isFinite(Number(settings?.safetyMarginMin))?Number(settings.safetyMarginMin):30));
+  const available=Math.max(0,end-dayStart-margin-lunchMinutes-breaks-15);
   const lunchRestaurant=String(settings?.lunchRestaurantLabel||'');
   const assignedLunch=withLunch?areaOf(lunchRestaurant):null;
   const wishes=[];
@@ -177,7 +178,7 @@
   let returnSteps=shortest(latestArea,finish,blocked);
   if(returnSteps===null){unreachable.push(latestArea+' → '+finish);returnSteps=[];}
   if(withLunch){
-   const afterLunchTime=end-30-(lunchStart+lunchMinutes)-15-(settings?.afternoonBreak?30:0);
+   const afterLunchTime=end-margin-(lunchStart+lunchMinutes)-15-(settings?.afternoonBreak?(Number(settings.afternoonDuration)||30):0);
    if(cost(postLunch)+cost(returnSteps)>afterLunchTime){
     if(!explicit&&postLunch.length){
      scenicTarget=preLunchArea;postLunch=[];

@@ -130,10 +130,14 @@ await add('full SkiWelt 2026-27 panorama is an image and village zoom works',asy
  await page.locator('#pano-plus').click();
  const v2=await page.evaluate(()=>window.SKIPanorama.getZoom());
  assert.ok(v2>v1,'plus zoom must increase scale');
- for(let n=0;n<6;n++)await page.locator('#pano-plus').click();
+ for(let n=0;n<6;n++)if(await page.locator('#pano-plus').isEnabled())await page.locator('#pano-plus').click();
  const v3=await page.evaluate(()=>window.SKIPanorama.getZoom());
  assert.ok(v3>10,'map zoom must exceed 10x');
  await page.locator('#pano-reset').click();
+ assert.ok(await page.locator('.pano-hut').count()>=4,'restaurant area pins must exist');
+ await page.locator('.pano-hut:visible').first().click();
+ assert.ok(await page.locator('#pano-hut-info').isVisible(),'restaurant detail must open in the app');
+ await page.locator('#pano-hut-close').click();
  assert.equal(await page.evaluate(()=>window.SKIPanorama.getZoom()),1);
  await page.locator('#pano-viewport').dispatchEvent('pointerdown',{pointerId:1,pointerType:'touch',clientX:150,clientY:320});
  await page.locator('#pano-viewport').dispatchEvent('pointerdown',{pointerId:2,pointerType:'touch',clientX:220,clientY:320});

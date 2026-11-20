@@ -11,9 +11,10 @@ test('visible header version, manual update button and safe version-check route'
 });
 test('original image on intro, header and fresh app icons',()=>{
   assert.ok(existsSync(new URL('../public/brand-skije.svg',import.meta.url)));
-  for(const name of ['icon-192-v454.png','icon-512-v454.png'])assert.ok(existsSync(new URL('../public/icons/'+name,import.meta.url)));
-  assert.match(sw,/brand-skije\.svg/);assert.match(sw,/app-update\.js/);
-  assert.match(manifest,/icon-192-v454\.png/);
+  for(const name of ['skije-logo-v454.svg','icon-192-v43.png','icon-512-v43.png'])assert.ok(existsSync(new URL('../public/icons/'+name,import.meta.url)));
+  assert.match(sw,/skije-logo-v454\.svg/);assert.match(sw,/brand-skije\.svg/);assert.match(sw,/app-update\.js/);
+  assert.match(manifest,/skije-logo-v454\.svg/);
+  assert.match(manifest,/icon-192-v43\.png/);
 });
 
 test('4.5.4 PWA update and PDF watermark are in sync',()=>{

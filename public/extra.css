@@ -86,7 +86,6 @@ body.utility-open{overflow:hidden}
   #tracking-stop{grid-column:1/-1}
 }
 @media(max-width:365px){.bottom button span{font-size:18px}.bottom button{font-size:8px}}
-@media(max-width:760px){html.netlify-host .utility-panel{max-height:calc(100dvh - var(--host-toolbar-clearance,94px))}}
 @media(prefers-reduced-motion:reduce){.hero-scene img,.ski-intro-photo{animation:none!important}}
 @media print{
  .bottom,.hero-actions,.ski-intro,.webcam-modal,.utility-modal,.toolbar,.plan-shortcuts,#page-plan,#page-map,#page-weather,#page-webcams,#page-more{display:none!important}

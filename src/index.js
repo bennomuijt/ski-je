@@ -9,6 +9,7 @@ const MEMBER_RE=/^[a-f0-9-]{36}$/;
 const GROUP_LIMIT=50;
 const GPS_TTL_MS=120000;
 const GROUP_LIFETIME_MS=90*86400000;
+export {SkiPhotoBoard} from './photos.js';
 
 function result(data,status=200,extra={}) {return new Response(JSON.stringify(data),{status,headers:{...JSON_HEADERS,...extra}});}
 function fail(message,status=400){return result({ok:false,error:message},status);}
@@ -25,7 +26,7 @@ function adminReady(env){return typeof env.GROUP_CREATE_SECRET==='string'&&env.G
 export default {
  async fetch(request,env){
   const url=new URL(request.url);const p=url.pathname;
-  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.4-cf',groups:!!env.GROUPS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.5-cf',groups:!!env.GROUPS,photos:!!env.PHOTOS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
   if(p==='/api/skimap.pdf'){
    if(request.method!=='GET')return fail('Alleen GET toegestaan.',405);
    // Fixed, official source; no GPS or user-supplied URLs are transmitted.
@@ -46,6 +47,33 @@ export default {
     const headers=new Headers({'content-type':'image/jpeg','cache-control':'public, max-age=21600','x-content-type-options':'nosniff','referrer-policy':'no-referrer'});
     return new Response(upstream.body,{status:200,headers});
    }catch{return new Response('Officiële kaart tijdelijk niet bereikbaar',{status:503,headers:JSON_HEADERS});}
+  }
+  if(p.startsWith('/api/photos/')){
+   if(!env.PHOTOS)return fail('Fotofunctie is nog niet geactiveerd op de Cloudflare Worker.',503);
+   if(!sameOrigin(request))return fail('Verzoek van ander domein geweigerd.',403);
+   const op=p.slice('/api/photos'.length);
+   if(!['/list','/submit','/admin-list','/review'].includes(op)&&!/^\\/image\\/[a-f0-9-]{36}$/.test(op))return fail('Onbekende foto-opdracht.',404);
+   if(request.method==='GET'&&!['/list'].includes(op)&&!op.startsWith('/image/'))return fail('Ongeldige methode.',405);
+   if(request.method!=='GET'&&request.method!=='POST')return fail('Ongeldige methode.',405);
+   const board=env.PHOTOS.get(env.PHOTOS.idFromName('skije-community-photos-v1'));
+   const headers=new Headers({'content-type':'application/json'});
+   if(request.method==='POST'){
+    if(Number(request.headers.get('content-length')||0)>120000)return fail('Fotoverzoek is te groot.',413);
+    let data;try{const body=await request.text();if(body.length>120000)throw Error('groot');data=JSON.parse(body);}
+    catch{return fail('Ongeldig of te groot fotoverzoek.',413);}
+    if(!data||typeof data!=='object'||Array.isArray(data))return fail('Onjuist fotoverzoek.',400);
+    if(op==='/admin-list'||op==='/review'){
+     if(!adminReady(env)||!(await equalSecret(data.adminCode,env.GROUP_CREATE_SECRET)))return fail('Beheerderscode onjuist.',403);
+     delete data.adminCode;
+     headers.set('x-skije-photo-admin','yes');
+    }else if(op==='/submit'){
+     // Pseudonymize connection identity before rate limiting; never store plaintext IP.
+     const ip=request.headers.get('cf-connecting-ip')||'unknown';
+     headers.set('x-skije-visitor',(await digest(ip+'|'+(env.GROUP_CREATE_SECRET||'')+'|'+new Date().toISOString().slice(0,10))).slice(0,40));
+    }
+    return board.fetch(new Request('https://photos.internal'+op,{method:'POST',headers,body:JSON.stringify(data)}));
+   }
+   return board.fetch(new Request('https://photos.internal'+op,{method:'GET'}));
   }
   if(p.startsWith('/api/')){
    if(!sameOrigin(request))return fail('Verzoek van ander domein geweigerd.',403);

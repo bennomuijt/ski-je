@@ -108,7 +108,7 @@
  }
  $('pano-open').addEventListener('click',()=>{
   if(!$('pano-img').hasAttribute('src'))$('pano-img').src=$('pano-img').dataset.src;
-  zoom=1;panX=panY=0;updatePano();ownModal('pano-modal');
+  ownModal('pano-modal');zoom=1;panX=panY=0;updatePano();
  });
  $('pano-plus').addEventListener('click',()=>zoomButton(1.5));
  $('pano-minus').addEventListener('click',()=>zoomButton(1/1.5));
@@ -118,14 +118,27 @@
   const center=panoCenters[$('pano-focus').value];
   if(!center){zoom=1;panX=panY=0;updatePano();return;}
   zoom=3.8;
-  const box=panoView.getBoundingClientRect();
-  panX=(.5-center[0])*box.width*zoom;panY=(.5-center[1])*box.height*zoom;updatePano();
+  const box=panoView.getBoundingClientRect(),image=$('pano-img');
+  // Account for object-fit:contain: phone screens letterbox the panorama.
+  const naturalW=image.naturalWidth||box.width,naturalH=image.naturalHeight||box.height;
+  const scale=Math.min(box.width/naturalW,box.height/naturalH);
+  panX=(.5-center[0])*naturalW*scale*zoom;
+  panY=(.5-center[1])*naturalH*scale*zoom;
+  updatePano();
  });
  $('pano-focus-open').addEventListener('click',()=>{
   $('pano-open').click();$('pano-focus').value=$('pano-quick-area').value;
   $('pano-focus').dispatchEvent(new Event('change',{bubbles:true}));
  });
  const panoImg=$('pano-img');
+ panoImg.addEventListener('load',()=>{
+  const fallback=/Kaart(?:%20| )2026-2027\.png$/i.test(panoImg.currentSrc||panoImg.src);
+  $('pano-map-status').textContent=fallback
+   ? '⚠️ Kleine lokale afbeelding. Piste- en liftnummers kunnen onscherp zijn. Open met internet voor de volledige kaart.'
+   : 'SkiWelt panoramakaart 2026/27 • referentie, niet geografisch gekalibreerd. GPS staat op de kaart erboven.';
+  if(!$('pano-modal').hidden && $('pano-focus').value!=='overview')
+   $('pano-focus').dispatchEvent(new Event('change'));
+ });
  panoImg.addEventListener('error',()=>{
   if(!panoImg.src.endsWith('Kaart%202026-2027.png')){
    panoImg.src='Kaart%202026-2027.png';

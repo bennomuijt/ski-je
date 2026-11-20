@@ -51,13 +51,28 @@
   const content=wrap(ctx,text,width,size,limit);
   content.forEach((v,i)=>label(ctx,v,x,y+i*(size+5),size,color));return content.length;
  }
+ async function loadWatermark(date){
+  if(typeof Image==='undefined')return null;
+  const sources=['ski-intro-woman-skis.webp','ski-intro-man-skis.webp','ski-intro-woman-snowboard.webp','ski-intro-man-snowboard.webp'];
+  const key=String(date||'').replace(/\D/g,'').split('').reduce((n,c)=>n+Number(c),0);
+  const photo=new Image();photo.src=sources[key%sources.length];
+  try{await photo.decode();return photo;}catch{return null;}
+ }
  async function loadLogo(){
   if(typeof Image==='undefined')return null;
   const image=new Image();image.src='icons/icon-512-v43.png'; // Original brand-skije.svg artwork rendered to a reliable PNG icon.
   try{await image.decode();return image;}catch{return null;}
  }
- function pageStart(ctx,logo,page,total){
+ function pageStart(ctx,logo,page,total,watermark){
   ctx.fillStyle='#f6fbfe';ctx.fillRect(0,0,W,H);
+  if(watermark){
+   ctx.save();ctx.globalAlpha=0.055;
+   const w=930,h=1430;
+   const scale=Math.min(w/watermark.naturalWidth,h/watermark.naturalHeight);
+   const width=watermark.naturalWidth*scale,height=watermark.naturalHeight*scale;
+   ctx.drawImage(watermark,W-75-width,(H-height)/2,width,height);
+   ctx.restore();
+  }
   const gradient=ctx.createLinearGradient(0,0,1240,230);
   gradient.addColorStop(0,'#073454');gradient.addColorStop(1,'#087ab1');
   ctx.fillStyle=gradient;ctx.fillRect(0,0,W,225);
@@ -74,6 +89,8 @@
  function box(ctx,x,y,w,h,bg){ctx.fillStyle=bg;ctx.fillRect(x,y,w,h);}
  function schedule(ctx,plan){
   label(ctx,'VOLLEDIGE DAGPLANNING',62,289,35,COL.navy,true);
+  const localDate=plan.date||new Date().toLocaleDateString('nl-NL');
+  label(ctx,'DATUM '+localDate,798,289,22,COL.blue,true);
   lines(ctx,plan.startPoint+'  →  '+plan.endPoint,62,328,1115,25,2,COL.blue);
   box(ctx,58,375,1120,102,'#e7f3fa');
   label(ctx,'VERTREK',81,412,17,COL.gray,true);label(ctx,plan.departure,81,459,31,COL.navy,true);
@@ -140,19 +157,112 @@
    }
   }
  }
- async function generate({plan,route}){
+ const typeColors={lift:'#6348ae',piste:'#187cc0',transfer:'#6d8492',lunch:'#ef8b2c',free:'#7aaac3',
+  return:'#b7584d',buffer:'#118569',break:'#899ca9'};
+ function decorate(ctx,type,level){return type==='piste'&&['red','blue','black'].includes(level)?
+   {red:'#c63638',blue:'#147bc3',black:'#27282c'}[level]:typeColors[type]||COL.blue;}
+ function drawLegend(ctx,y){
+  const labels=[['lift','LIFT'],['piste','PISTE'],['transfer','OVERSTAP'],['lunch','LUNCH'],['return','TERUG'],['buffer','MARGE']];
+  let x=68;for(const [kind,name] of labels){
+   box(ctx,x,y,18,18,decorate(ctx,kind));label(ctx,name,x+26,y+17,18,COL.navy,true);
+   x+=name==='OVERSTAP'?196:158;
+  }
+ }
+ function detailPage(ctx,items,which,total){
+  label(ctx,'PISTE-, LIFT- EN TIJDSCHEMA',62,290,35,COL.navy,true);
+  label(ctx,'Blad '+which+'/'+total+' · Controleer tijdens het skiën je verwachte doorkomsttijd.',62,329,20,COL.gray);
+  drawLegend(ctx,354);
+  let y=394;
+  for(const s of items){
+   const h=118;
+   box(ctx,58,y,1120,h,'#ffffff');
+   box(ctx,58,y,10,h,decorate(ctx,s.type,s.level));
+   label(ctx,s.start+' – '+s.end,85,y+42,25,COL.navy,true);
+   label(ctx,s.minutes+' min  ·  '+(s.phase||'planning'),85,y+74,15,COL.gray);
+   let title=String(s.label||'');
+   let font=23;do{ctx.font='700 '+font+'px system-ui,sans-serif';if(ctx.measureText(title).width<730||font===17)break;font--;}while(true);
+   label(ctx,title,403,y+40,font,COL.ink,true);
+   lines(ctx,s.detail||'',403,y+70,722,16,2,COL.gray);
+   y+=129;
+  }
+ }
+ function wcPage(ctx,items,route,data){
+  label(ctx,'WC-LOCATIES & AANDACHTSPUNTEN',62,291,34,COL.navy,true);
+  label(ctx,'Alle toiletten optioneel; controleer toegankelijkheid en omweg.',62,335,20,COL.gray);
+  let y=366;
+  for(const p of items){
+   box(ctx,58,y,1120,185,'#ebf7f8');box(ctx,58,y,10,185,COL.green);
+   label(ctx,'WC · '+p.title,85,y+39,24,COL.navy,true);
+   lines(ctx,p.location,85,y+73,1050,19,2,COL.ink);
+   lines(ctx,'Status: '+p.status+'  ·  +'+p.extraTimeMinutes+' min (niet ingepland)',85,y+122,1050,17,2,COL.gray);
+   lines(ctx,'Bron: '+p.source,85,y+157,1060,14,2,COL.gray);
+   y+=202;
+  }
+  if(!items.length)lines(ctx,'Geen officieel onderbouwde WC-plek langs deze gebiedsroute gevonden. Vraag bij liftstations of restaurants.',68,y+50,1070,21,3,COL.ink);
+ }
+ function summaryPage(ctx,data){
+  const {plan,route,itinerary}=data;
+  label(ctx,'ROUTEVERSLAG & CONTROLE',62,293,36,COL.navy,true);
+  label(ctx,'Vertrek: '+plan.startPoint,62,340,23,COL.ink,true);
+  label(ctx,'Eindpunt: '+plan.endPoint,62,374,23,COL.ink,true);
+  label(ctx,'Datum: '+(plan.date||'-')+'    '+plan.departure+' - '+plan.returnTime,62,408,22,COL.blue,true);
+  const cards=[
+   ['VOORGESTELDE REISTIJD',(itinerary?.routeMinutes||0)+' minuten'],
+   ['IN LIFTEN (GESCHAT)',(itinerary?.liftMinutes||0)+' minuten'],
+   ['OP PISTES (GESCHAT)',(itinerary?.pisteMinutes||0)+' minuten'],
+   ['LUNCH',plan.useLunch?plan.lunchMinutes+' minuten':'Niet ingepland'],
+   ['STREEFAANKOMST',plan.safeArrival],
+   ['LUNCHLOCATIE',plan.lunchRestaurant||'Eigen keuze']
+  ];
+  let y=455;
+  for(const [name,value] of cards){
+   box(ctx,64,y,1110,70,'#e9f5fc');
+   label(ctx,name,82,y+28,18,COL.gray,true);
+   label(ctx,String(value).slice(0,62),447,y+44,22,COL.navy,true);
+   y+=80;
+  }
+  y+=22;
+  label(ctx,'WERKELIJKE SITUATIE CONTROLEREN',62,y,27,COL.navy,true);y+=37;
+  const tips=[
+   'Liftwachttijden, actuele afsluitingen, weer en pistecondities kunnen afwijken.',
+   'Terugweg eerst op tijd starten. GPS is op de panoramakaart niet exact.',
+   'Kleurcode: liften paars; pistes blauw (tenzij moeilijkheid bekend is).',
+   'Ski-je berekent voorlopig gebiedsverbindingen, geen gegarandeerde GPS-afslagroute.',
+   '© SkiWelt voor officiële verbindingsinformatie; gebruik op eigen risico.'
+  ];
+  for(const item of tips){lines(ctx,'• '+item,66,y,1080,18,2,COL.ink);y+=70;}
+ }
+ function reportPages(data){
+  const events=data.itinerary?.steps||[],wc=data.itinerary?.pois||[];
+  const pages=[{kind:'schedule'}];
+  for(let i=0;i<events.length;i+=9)pages.push({kind:'detail',rows:events.slice(i,i+9)});
+  // Keep area source and closure notes. Existing pagination handles longer notices.
+  const regions=layoutPages(data.route?.steps||[],[...(data.route?.notes||[]),...(data.plan?.notes||[]),...(data.itinerary?.warnings||[])]);
+  pages.push(...regions.slice(1));
+  for(let i=0;i<wc.length;i+=5)pages.push({kind:'wc',rows:wc.slice(i,i+5)});
+  pages.push({kind:'summary'});
+  return pages;
+ }
+ async function generate(data){
+  const {plan,route}=data||{};
   if(!plan?.ok)throw Error('Maak eerst een geldige dagplanning');
   if(typeof document==='undefined')throw Error('PDF vereist een browser');
-  const logo=await loadLogo(),legs=route?.steps||[],notes=[...(route?.notes||[]),...(plan.notes||[])];
-  const pages=layoutPages(legs,notes),jpegs=[];
-  for(let i=0;i<pages.length;i++){
+  const [logo,watermark]=await Promise.all([loadLogo(),loadWatermark(plan.date)]);
+  const pages=reportPages(data),jpegs=[];
+  const detailTotal=pages.filter(p=>p.kind==='detail').length;
+  let detailIndex=0;
+  for(let page=0;page<pages.length;page++){
    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
    const ctx=canvas.getContext('2d');if(!ctx)throw Error('Geen canvas');
-   pageStart(ctx,logo,i+1,pages.length);
-   const p=pages[i];
-   if(p.kind==='schedule')schedule(ctx,plan);
-   else regionPage(ctx,p.legs,p.notes,p.kind==='notes');
-   jpegs.push(jpegBytes(canvas.toDataURL('image/jpeg',0.9)));
+   pageStart(ctx,logo,page+1,pages.length,watermark);
+   const section=pages[page];
+   if(section.kind==='schedule')schedule(ctx,plan);
+   else if(section.kind==='detail')detailPage(ctx,section.rows,++detailIndex,detailTotal);
+   else if(section.kind==='regions')regionPage(ctx,section.legs,section.notes,false);
+   else if(section.kind==='notes')regionPage(ctx,[],section.notes,true);
+   else if(section.kind==='wc')wcPage(ctx,section.rows,route,data);
+   else if(section.kind==='summary')summaryPage(ctx,data);
+   jpegs.push(jpegBytes(canvas.toDataURL('image/jpeg',0.88)));
    canvas.width=1;canvas.height=1;
   }
   return new Blob([encodePdf(jpegs)],{type:'application/pdf'});
@@ -162,5 +272,5 @@
   a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),45000);
  }
- return {generate,save,encodePdf,layoutPages};
+ return {generate,save,encodePdf,layoutPages,reportPages};
 });

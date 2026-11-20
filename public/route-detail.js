@@ -92,20 +92,28 @@
    extraTimeMinutes:10}));
  }
  function estimate(legs){return (legs||[]).reduce((sum,leg)=>sum+Number(leg.minutes||0),0);}
- function routeDistances(itinerary){
+ function routeDistances(itinerary,options={}){
    const steps=Array.isArray(itinerary?.steps)?itinerary.steps:[];
-   const totals={pisteKm:0,liftKm:0,pisteComplete:true,liftComplete:true};
-   let pisteCount=0,liftCount=0;
+   const skiKmh={blue:12,red:20,pro:28}[options.skill]||20;
+   const totals={pisteKm:0,liftKm:0,pisteComplete:true,liftComplete:true,
+      pisteEstimated:false,liftEstimated:false,pisteCount:0,liftCount:0,
+      note:'Indicatieve kilometers alleen voor benoemde routeonderdelen; vrij skiën en onbekende aansluitingen zijn niet meegeteld.'};
    for(const step of steps){
      if(step.type!=='piste'&&step.type!=='lift')continue;
-     const piste=step.type==='piste',key=piste?'pisteKm':'liftKm',flag=piste?'pisteComplete':'liftComplete',count=piste?'pisteCount':'liftCount';
-     if(piste)pisteCount++;else liftCount++;
-     const km=Number(step.lengthKm);
-     if(!Number.isFinite(km)||km<=0)totals[flag]=false;
-     else totals[key]+=km;
+     const piste=step.type==='piste',key=piste?'pisteKm':'liftKm',flag=piste?'pisteComplete':'liftComplete';
+     if(piste)totals.pisteCount++;else totals.liftCount++;
+     const km=Number(step.lengthKm), known=Number.isFinite(km)&&km>0;
+     if(!known){
+       // Clearly labelled MODEL ESTIMATE. Segment times are themselves approximate.
+       // Never treat this as GPS distance or published piste length.
+       const minutes=Math.max(0,Number(step.minutes)||0);
+       const estimate=Math.max(0,(minutes-(piste?2:5)))*(piste?skiKmh:12)/60;
+       totals[key]+=estimate;
+       totals[flag]=false;totals[piste?'pisteEstimated':'liftEstimated']=true;
+     } else totals[key]+=km;
    }
-   if(!pisteCount)totals.pisteComplete=false;
-   if(!liftCount)totals.liftComplete=false;
+   if(!totals.pisteCount)totals.pisteComplete=false;
+   if(!totals.liftCount)totals.liftComplete=false;
    return totals;
  }
  function buildTimeline(plan,route,options={}){

@@ -6,7 +6,10 @@
  const TTL=120000;
  const peers=new Map(),pins=new Map();
  let group=null,ws=null,sharing=false,fixTimer=null,reconnectTimer=null,ageTimer=null,reconnectCount=0,lastFix=null,lastSent=null,map=null,leaving=false,shareBusy=false;
- const status=(message,bad=false)=>{const el=$('cf-group-status');el.textContent=message;el.classList.toggle('cf-bad',bad);};
+ const status=(message,bad=false,mode='')=>{
+  const el=$('cf-group-status');el.textContent=message;el.classList.toggle('cf-bad',bad);
+  if(mode){const local=$(mode==='join'?'cf-join-status':'cf-create-status');if(local){local.textContent=message;local.classList.toggle('cf-bad',bad);}}
+ };
  const online=()=>navigator.onLine&&document.visibilityState==='visible';
  const labelTime=t=>t?new Date(t).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}):'–';
  const cleanName=s=>String(s||'').replace(/[<>\u0000-\u001f]/g,'').trim().slice(0,24);
@@ -141,23 +144,36 @@
  $('group-quick').addEventListener('click',openGroup);
  $('cf-group-map').addEventListener('click',openGroup);
  $('cf-group-diagnose')?.addEventListener('click',async()=>{
-  const button=$('cf-group-diagnose');button.disabled=true;status('Groepsserver controleren…');
-  try{const info=await checkBackend();status('✓ Groepsserver '+info.version+' bereikbaar. GROUPS actief, beheerderscode ingesteld. Je kunt een groep proberen te maken.');}
-  catch(error){status(error.message,true);}finally{button.disabled=false;}
+  const button=$('cf-group-diagnose');button.disabled=true;status('Cloudflare-groepsserver en opslag controleren…',false,'create');
+  try{
+   const info=await checkBackend();
+   const res=await fetch('/api/group/diagnose',{cache:'no-store',headers:{accept:'application/json'}});
+   const check=await res.json();
+   if(!res.ok||!check?.ok)throw Error(check?.error||'Cloudflare-groepsopslag reageert niet (HTTP '+res.status+').');
+   status('✓ Server '+info.version+' en groepsopslag werken. De beheerderscode is ingesteld; of de ingevoerde code klopt wordt pas bij aanmaken gecontroleerd.',false,'create');
+  }catch(error){status(error.message,true,'create');}finally{button.disabled=false;}
  });
  $('cf-group-create').addEventListener('click',async()=>{
   const adminCode=$('cf-admin-code').value,memberName=cleanName($('cf-display-name').value),name=$('cf-new-name').value.trim().slice(0,60);
-  if(!adminCode||!memberName){status('Vul jouw naam én de Cloudflare-beheerderscode in.',true);return;}
-  const button=$('cf-group-create');button.disabled=true;
-  try{await checkBackend();const data=await api('create',{adminCode,memberName,name});$('cf-admin-code').value='';startSession(data,data.room,memberName);status('Nieuwe groep aangemaakt. Deel de uitnodigingslink met je skigroep.');}
-  catch(e){status(e.message,true);}finally{button.disabled=false;}
+  if(!memberName){status('Stap 1 ontbreekt: vul je eigen naam in.',true,'create');$('cf-display-name').focus();return;}
+  if(!name){status('Stap 2 ontbreekt: kies zelf een groepsnaam.',true,'create');$('cf-new-name').focus();return;}
+  if(!adminCode){status('Stap 3 ontbreekt: vul de code GROUP_CREATE_SECRET uit Cloudflare in.',true,'create');$('cf-admin-code').focus();return;}
+  const button=$('cf-group-create');button.disabled=true;status('Groep “'+name+'” aanmaken op Cloudflare…',false,'create');
+  try{
+   await checkBackend();
+   const data=await api('create',{adminCode,memberName,name});
+   if(!data?.room||!data?.memberId||!data?.token)throw Error('De groepsserver gaf geen geldige groepsgegevens terug.');
+   $('cf-admin-code').value='';startSession(data,data.room,memberName);
+   status('✓ Nieuwe skigroep “'+data.groupName+'” aangemaakt. Je kunt nu de uitnodigingslink delen.',false,'create');
+  }catch(e){status(e.message,true,'create');}finally{button.disabled=false;}
  });
  $('cf-group-join').addEventListener('click',async()=>{
-  const room=roomFrom($('cf-room-invite').value),memberName=cleanName($('cf-display-name').value);
-  if(!room||!memberName){status('Vul jouw naam en een geldige uitnodigingslink in.',true);return;}
-  const button=$('cf-group-join');button.disabled=true;
-  try{const data=await api('join',{room,memberName});startSession(data,room,memberName);status('Je bent aangemeld. Zet locatie delen aan wanneer je dat wilt.');}
-  catch(e){status(e.message,true);}finally{button.disabled=false;}
+  const room=roomFrom($('cf-room-invite').value),memberName=cleanName($('cf-join-name').value);
+  if(!memberName){status('Vul eerst jouw naam in om deel te nemen.',true,'join');$('cf-join-name').focus();return;}
+  if(!room){status('Plak een geldige uitnodigingslink of groepscode.',true,'join');$('cf-room-invite').focus();return;}
+  const button=$('cf-group-join');button.disabled=true;status('Deelnemen aan de skigroep…',false,'join');
+  try{const data=await api('join',{room,memberName});startSession(data,room,memberName);status('✓ Je bent aangemeld. GPS-delen staat standaard uit.',false,'join');}
+  catch(e){status(e.message,true,'join');}finally{button.disabled=false;}
  });
  $('cf-group-invite').addEventListener('click',async()=>{
   if(!group)return;
@@ -199,7 +215,7 @@
  // Membership ages refresh only when the group screen is visible.
  setInterval(()=>{if(group&&!document.hidden&&$('group-section').open)render();},60000);
  const found=roomFrom(location.hash?location.href:'');
- if(found){$('cf-room-invite').value=found;window.setTimeout(openGroup,700);}
- group=loadGroup();if(group){$('cf-display-name').value=group.memberName;status('Vorige groep herkend. Open Mijn groep om opnieuw te verbinden.');}
+ if(found){$('cf-room-invite').value=found;$('cf-group-create-panel').open=false;$('cf-group-join-panel').open=true;window.setTimeout(openGroup,700);}
+ group=loadGroup();if(group){$('cf-display-name').value=group.memberName;$('cf-join-name').value=group.memberName;status('Vorige groep herkend. Open Mijn groep om opnieuw te verbinden.');}
  render();
 })();

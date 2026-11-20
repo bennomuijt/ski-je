@@ -104,7 +104,7 @@ export class SkiPhotoBoard {
    if(['no-gps','outside','uncertain','mismatch','unverified'].includes(match.state)&&data.manualOverride!==true)
     return bad('Deze GPS-controle is niet sluitend. Controleer de foto en vink handmatige locatiecontrole aan.',400);
    item.status='approved';item.reviewedAt=Date.now();item.visitor=null;
-   item.gpsVerified=Boolean(data.verifyLocation)&&item.gps.accuracy<=50;
+   item.gpsVerified=Boolean(data.verifyLocation)&&Boolean(item.gps)&&skiWelt(item.gps)&&item.gps.accuracy<=50&&match.state!=='mismatch';
    await this.ctx.storage.put('p:'+item.id,item);
    return response({ok:true,status:'approved',gpsVerified:item.gpsVerified});
   }

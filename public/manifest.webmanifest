@@ -10,13 +10,19 @@
   "lang": "nl",
   "icons": [
     {
-      "src": "icons/icon-192-v454.png",
+      "src": "icons/skije-logo-v454.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-192-v43.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512-v454.png",
+      "src": "icons/icon-512-v43.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

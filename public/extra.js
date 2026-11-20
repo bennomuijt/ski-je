@@ -604,5 +604,5 @@
  });
  window.addEventListener('appinstalled',()=>{$('install-app').hidden=true;$('install-help').textContent='SKI-je staat op je beginscherm.';});
  // Be transparent about what this installation does and does not do.
- window.SKIFeatures={version:'4.5.1-cf',routeAvailable:()=>store.network.some(e=>e.verified),getCounts:()=>({checkpoints:store.checkpoints.length,issues:store.issues.length,days:store.days.length,edges:store.network.length}),isTracking:()=>!!session&&!session.paused};
+ window.SKIFeatures={version:'4.5.3-cf',routeAvailable:()=>store.network.some(e=>e.verified),getCounts:()=>({checkpoints:store.checkpoints.length,issues:store.issues.length,days:store.days.length,edges:store.network.length}),isTracking:()=>!!session&&!session.paused};
 })();

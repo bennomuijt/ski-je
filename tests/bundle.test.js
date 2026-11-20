@@ -19,8 +19,8 @@ test('legal protection chapter, visible version and first-use acknowledgement ex
  assert.match(html,/Nederlands recht/);
  assert.match(html,/De gebruiker vrijwaart BenMu Development/);
  assert.match(html,/wettelijk toegestaan/);
- assert.match(html,/v4\.5\.3/);
- assert.match(sw,/v4-5-3-pdf-watermark-updater/);
+ assert.match(html,/v4\.5\.4/);
+ assert.match(sw,/v4-5-4-skill-map-icon/);
 });
 test('offline app files cached and private group API requests excluded from SW',()=>{
  assert.match(sw,/pathname\.startsWith\('\/api\/'\)/);

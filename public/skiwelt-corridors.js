@@ -143,8 +143,9 @@
   const lunchStart=minutes(settings?.lunchTime||'12:30')??750;
   const withLunch=settings?.useLunch!==false;
   const lunchMinutes=withLunch?Math.max(30,Math.min(120,Number(settings?.lunchDuration||60))):0;
-  const breaks=(settings?.morningBreak?30:0)+(settings?.afternoonBreak?30:0);
-  const available=Math.max(0,end-dayStart-30-lunchMinutes-breaks-15);
+  const breaks=(settings?.morningBreak?Math.max(5,Number(settings.morningDuration)||30):0)+(settings?.afternoonBreak?Math.max(5,Number(settings.afternoonDuration)||30):0);
+   const margin=settings?.useSafety===false?0:Math.max(0,Math.min(120,Number.isFinite(Number(settings?.safetyMarginMin))?Number(settings.safetyMarginMin):30));
+  const available=Math.max(0,end-dayStart-margin-lunchMinutes-breaks-15);
   const lunchRestaurant=String(settings?.lunchRestaurantLabel||'');
   const assignedLunch=withLunch?areaOf(lunchRestaurant):null;
   const wishes=[];
@@ -177,7 +178,7 @@
   let returnSteps=shortest(latestArea,finish,blocked);
   if(returnSteps===null){unreachable.push(latestArea+' → '+finish);returnSteps=[];}
   if(withLunch){
-   const afterLunchTime=end-30-(lunchStart+lunchMinutes)-15-(settings?.afternoonBreak?30:0);
+   const afterLunchTime=end-margin-(lunchStart+lunchMinutes)-15-(settings?.afternoonBreak?(Number(settings.afternoonDuration)||30):0);
    if(cost(postLunch)+cost(returnSteps)>afterLunchTime){
     if(!explicit&&postLunch.length){
      scenicTarget=preLunchArea;postLunch=[];
@@ -193,11 +194,16 @@
   if(assignedLunch&&assignedLunch!==scenicTarget)notes.push('Lunch in '+assignedLunch+' is als gewenste stop opgenomen. Exacte bereikbaarheid restaurant controleren.');
   if(!assignedLunch&&withLunch)notes.push('Lunchgebied: '+preLunchArea+'. Kies een bereikbaar restaurant ter plaatse.');
   notes.push('⚠️ Kaartverbindingen zijn voorlopig als geopend aangenomen. Liften, pistes, overstappen en wachttijden zijn niet live gecontroleerd.');
-  const steps=[...preLunch,...postLunch,...returnSteps];
+  // Existing times were calibrated only for an average skier. Scale them for
+   // ski level; these are planning estimates, not surveyed piste times.
+   const pace=settings?.skill==='blue'?1.45:settings?.skill==='pro'?0.86:1;
+   for(const part of [...preLunch,...postLunch,...returnSteps])part.minutes=Math.max(12,Math.ceil(part.minutes*pace));
+   if(pace!==1)notes.push('Indicatieve verbindingstijden aangepast aan '+(settings?.skill==='blue'?'Beginner':'Professional')+' (factor '+pace+'). Liftwachtrijen en condities kunnen afwijken.');
+   const steps=[...preLunch,...postLunch,...returnSteps];
   return {ok:unreachable.length===0,startArea:start,endArea:finish,steps,notes,unreachable,
    phases:{preLunch,postLunch,return:returnSteps},scenicTarget,preLunchArea,lunchArea:preLunchArea,
    source:SOURCE,provisional:true,closuresApplied:blocked.length,
-   returnEstimate:cost(returnSteps),durationEstimate:cost(steps),minimumMinutes:minCost,
+   returnEstimate:cost(returnSteps),durationEstimate:cost(steps),minimumMinutes:cost(steps),
    reason:unreachable.length?'Niet alle gebieden hebben een gedocumenteerde beschikbare verbinding.':'Voorlopig reisvoorstel via officiële gebiedsverbindingen, niet exact van liftstation tot liftstation.'};
  }
  return {SOURCE,areas,corridors,areaOf,parseClosures,closedCorridor,shortest,build};

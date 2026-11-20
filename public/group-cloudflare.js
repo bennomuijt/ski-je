@@ -120,19 +120,36 @@
   $('cf-share-info').textContent='Uit. Je GPS-positie wordt niet naar groepsleden verzonden.';render();
  }
  function endSocket(){clearTimeout(reconnectTimer);reconnectTimer=null;if(ws){const old=ws;ws=null;try{old.close(1000,'App gepauzeerd');}catch{}}peers.clear();render();}
- async function api(path,data){const response=await fetch('/api/group/'+path,{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify(data)});
-  let json;try{json=await response.json();}catch{throw Error('Geen geldig antwoord van Cloudflare.');}
+ async function checkBackend(){
+  let response;
+  try{response=await fetch('/api/health?check='+Date.now(),{cache:'no-store',headers:{accept:'application/json'}});}
+  catch{throw Error('De Cloudflare-server is niet bereikbaar. Controleer internet en het appadres.');}
+  let data;try{data=await response.json();}catch{throw Error('Dit adres reageert niet als de SKI-je Cloudflare Worker. Controleer of je de workers.dev-versie gebruikt.');}
+  if(!response.ok||data?.service!=='SKI-je Cloudflare')throw Error('SKI-je-groepsserver reageert niet correct. Controleer je Worker-publicatie.');
+  if(!data.groups)throw Error('Cloudflare mist de GROUPS Durable Objects-binding. Publiceer de Worker met wrangler.jsonc.');
+  if(!data.createConfigured)throw Error('Beheerderscode ontbreekt in de actieve Worker: stel het secret GROUP_CREATE_SECRET in bij Cloudflare → Workers & Pages → ski-je → Instellingen → Variabelen en geheimen (minimaal 16 tekens).');
+  return data;
+ }
+ async function api(path,data){
+  let response;try{response=await fetch('/api/group/'+path,{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify(data)});}
+  catch{throw Error('Geen verbinding met Cloudflare. Controleer internet en appadres.');}
+  let json;try{json=await response.json();}catch{throw Error('Geen geldig JSON-antwoord van de Worker (HTTP '+response.status+'). Controleer de Cloudflare-logs en Durable Objects.');}
   if(!response.ok||!json?.ok)throw Error(json?.error||'Cloudflare antwoordt niet.');return json;
  }
  function startSession(data,room,memberName){group={room,memberId:data.memberId,token:data.token,memberName,groupName:data.groupName,owner:!!data.owner};saveGroup();render();connect();}
  function openGroup(){window.SKIApi?.goPage('more');$('group-section').open=true;requestAnimationFrame(()=>$('group-section').scrollIntoView({behavior:'smooth',block:'start'}));if(group&&!ws&&online())connect();}
  $('group-quick').addEventListener('click',openGroup);
  $('cf-group-map').addEventListener('click',openGroup);
+ $('cf-group-diagnose')?.addEventListener('click',async()=>{
+  const button=$('cf-group-diagnose');button.disabled=true;status('Groepsserver controleren…');
+  try{const info=await checkBackend();status('✓ Groepsserver '+info.version+' bereikbaar. GROUPS actief, beheerderscode ingesteld. Je kunt een groep proberen te maken.');}
+  catch(error){status(error.message,true);}finally{button.disabled=false;}
+ });
  $('cf-group-create').addEventListener('click',async()=>{
-  const adminCode=$('cf-admin-code').value.trim(),memberName=cleanName($('cf-display-name').value),name=$('cf-new-name').value.trim().slice(0,60);
+  const adminCode=$('cf-admin-code').value,memberName=cleanName($('cf-display-name').value),name=$('cf-new-name').value.trim().slice(0,60);
   if(!adminCode||!memberName){status('Vul jouw naam én de Cloudflare-beheerderscode in.',true);return;}
   const button=$('cf-group-create');button.disabled=true;
-  try{const data=await api('create',{adminCode,memberName,name});$('cf-admin-code').value='';startSession(data,data.room,memberName);status('Nieuwe groep aangemaakt. Deel de uitnodigingslink met je skigroep.');}
+  try{await checkBackend();const data=await api('create',{adminCode,memberName,name});$('cf-admin-code').value='';startSession(data,data.room,memberName);status('Nieuwe groep aangemaakt. Deel de uitnodigingslink met je skigroep.');}
   catch(e){status(e.message,true);}finally{button.disabled=false;}
  });
  $('cf-group-join').addEventListener('click',async()=>{

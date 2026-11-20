@@ -200,7 +200,14 @@
   }
   if(!items.length)lines(ctx,'Geen officieel onderbouwde WC-plek langs deze gebiedsroute gevonden. Vraag bij liftstations of restaurants.',68,y+50,1070,21,3,COL.ink);
  }
- function summaryPage(ctx,data){
+ function distanceText(itinerary,type,options={}){
+    const data=window.SKIRouteDetail?.routeDistances?.(itinerary,options);
+    if(!data)return 'Niet bekend';
+    const piste=type==='piste',km=piste?data.pisteKm:data.liftKm,count=piste?data.pisteCount:data.liftCount;
+    const modeled=piste?data.pisteEstimated:data.liftEstimated;
+    return !count?'Niet bekend':(modeled?'ca. ':'')+km.toFixed(2)+' km'+(modeled?' (schatting)':'');
+   }
+   function summaryPage(ctx,data){
   const {plan,route,itinerary}=data;
   label(ctx,'ROUTEVERSLAG & CONTROLE',62,293,36,COL.navy,true);
   label(ctx,'Vertrek: '+plan.startPoint,62,340,23,COL.ink,true);
@@ -208,6 +215,8 @@
   label(ctx,'Datum: '+(plan.date||'-')+'    '+plan.departure+' - '+plan.returnTime,62,408,22,COL.blue,true);
   const cards=[
    ['VOORGESTELDE REISTIJD',(itinerary?.routeMinutes||0)+' minuten'],
+    ['PISTEKILOMETERS',distanceText(itinerary,'piste',data.options)],
+    ['LIFTKILOMETERS',distanceText(itinerary,'lift',data.options)],
    ['IN LIFTEN (GESCHAT)',(itinerary?.liftMinutes||0)+' minuten'],
    ['OP PISTES (GESCHAT)',(itinerary?.pisteMinutes||0)+' minuten'],
    ['LUNCH',plan.useLunch?plan.lunchMinutes+' minuten':'Niet ingepland'],
@@ -228,6 +237,7 @@
    'Terugweg eerst op tijd starten. GPS is op de panoramakaart niet exact.',
    'Kleurcode: liften paars; pistes blauw (tenzij moeilijkheid bekend is).',
    'Ski-je berekent voorlopig gebiedsverbindingen, geen gegarandeerde GPS-afslagroute.',
+    'Afstanden zijn indicaties van beschreven deeltrajecten, niet GPS-gemeten.',
    '© SkiWelt voor officiële verbindingsinformatie; gebruik op eigen risico.'
   ];
   for(const item of tips){lines(ctx,'• '+item,66,y,1080,18,2,COL.ink);y+=70;}

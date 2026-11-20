@@ -19,11 +19,11 @@
   const option=$('lunch-restaurant')?.selectedOptions?.[0];
   return {start:input('start'),finish:input('finish'),departure:input('departure'),returnTime:input('return-time'),
    date:input('day')||(()=>{const d=new Date();const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());})(),style:document.querySelector('[data-style][aria-pressed="true"]')?.dataset.style||'relaxed',
-   skill:input('skill')||'red',speed:input('speed')||'normal',
+   skill:input('skill')||'red',speed:input('speed')||'normal',allowBlack:checked('allow-black')&&input('skill')!=='blue',
    wishes:[...document.querySelectorAll('#wishes-list select')].map(x=>x.value).filter(Boolean),
    useLunch:checked('use-lunch'),lunchTime:input('lunch-time'),lunchDuration:Number(input('lunch-duration')||60),
    lunchRestaurant:input('lunch-restaurant'),lunchRestaurantLabel:input('lunch-restaurant')?(option?.textContent||''):'',
-   morningBreak:checked('early-break'),afternoonBreak:checked('late-break')};
+   morningBreak:checked('early-break'),morningDuration:Number(input('early-duration')||30),afternoonBreak:checked('late-break'),afternoonDuration:Number(input('late-duration')||30),useSafety:checked('use-safety'),safetyMarginMin:checked('use-safety')?Math.max(0,Math.min(120,Number(input('safety-duration')))):0};
  }
  function composeMessage(data){
   const p=data.plan,n=data.route,it=data.itinerary;
@@ -61,14 +61,20 @@
    output.append(el('p','hint',t('Kies haalbare tijden; de officiële veiligheid en liftstatus blijven leidend.')));
    current=null;return;
   }
-  const itinerary=detail.buildTimeline(plan,route);current={plan,route,options,itinerary};
+  const itinerary=detail.buildTimeline(plan,route,options);current={plan,route,options,itinerary};
   output.append(el('strong','plan-heading',t('Jouw volledige skidag')));
   const intro=el('div','day-intro');
   intro.append(el('span','day-pill',plan.departure+' – '+plan.returnTime));
-  intro.append(el('span','day-pill',t('Streefaankomst')+' '+plan.safeArrival));
+  intro.append(el('span','day-pill',t('Streefaankomst')+' '+plan.safeArrival+' · marge '+plan.margin+' min'));
   intro.append(el('span','day-pill',plan.lunchMinutes+' '+t('minuten lunch')));
   output.append(intro);
   output.append(el('p','plan-locations',plan.startPoint+' → '+plan.endPoint));
+  const lengths=detail.routeDistances?.(itinerary,options)||{pisteKm:0,liftKm:0,pisteCount:0,liftCount:0};
+  const kms=el('div','day-intro ski-distance-summary');
+  for(const [title,km,count,estimated] of [['⛷️ Pistekilometers',lengths.pisteKm,lengths.pisteCount,lengths.pisteEstimated],['🚡 Liftkilometers',lengths.liftKm,lengths.liftCount,lengths.liftEstimated]]){
+   kms.append(el('span','day-pill',title+': '+(count?(estimated?'ca. ':'')+km.toFixed(2)+' km'+(estimated?' (schatting)':''):'niet bekend')));
+  }
+  output.append(kms,el('p','hint',lengths.note||'Alleen getoonde onderdelen, geen volledige officiële dagafstand.'));
   const timeline=el('div','day-timeline');
   for(const s of plan.sections){
    const row=el('div','day-timeline-row '+s.type);

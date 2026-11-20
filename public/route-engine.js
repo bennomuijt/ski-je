@@ -20,7 +20,7 @@
   if(!raw||typeof raw!=='object')return null;
   const from=safeText(raw.from),to=safeText(raw.to),name=safeText(raw.name||raw.label||raw.code||'Verbinding');
   const type=['lift','piste','overstap'].includes(raw.type)?raw.type:'overstap';
-  const level=['blue','red','black'].includes(raw.level)?raw.level:'blue';
+  const level=['blue','red','black'].includes(raw.level)?raw.level:'unknown'; // an unspecified colour is NOT assumed blue
   const lengthKm=Number(raw.lengthKm??raw.km??0);
   const minutes=Number(raw.minutes||0),waitMinutes=Number(raw.waitMinutes||0);
   const closingTime=safeText(raw.closingTime||'',5);
@@ -47,16 +47,24 @@
  function segmentMinutes(edge,skill='red',speed='normal'){
   // Explicit user-checked duration takes priority; otherwise show modelled estimate.
   if(edge.minutes>0)return edge.minutes+edge.waitMinutes;
-  const speeds={easy:11,normal:16,sporty:21};const speedKmh=speeds[speed]||16;
+  // Conservative planning values; measured spot speeds of 19.9/32.4/44.5 km/h are not whole-day averages.
+   const speeds={easy:12,normal:20,sporty:28};const speedKmh=speeds[speed]||20;
   if(edge.type==='lift')return clamp(Math.ceil(edge.lengthKm/12*60)+6,4,35)+edge.waitMinutes;
   if(edge.type==='overstap')return clamp(Math.ceil(edge.lengthKm/4*60)+2,2,30);
-  const difficultyFactor=edge.level==='black'?0.82:edge.level==='red'?0.95:1;
+  const difficultyFactor=edge.level==='black'?0.72:edge.level==='red'?0.90:1;
   return clamp(Math.ceil(edge.lengthKm/(speedKmh*difficultyFactor)*60)+2,3,60);
  }
- function shortest(edges,origin,target,atMinute,opts={}){
+ function canUsePiste(edge,opts={}){
+   if(edge.type!=='piste')return true;
+   const level=opts.skill==='pro'?'red':opts.skill||'red';
+   if(edge.level==='unknown')return false; // No silent black or unclassified runs.
+   if(edge.level==='black')return opts.allowBlack===true&&level!=='blue';
+   return LEVELS[edge.level]<=LEVELS[level];
+  }
+  function shortest(edges,origin,target,atMinute,opts={}){
   if(origin===target)return {steps:[],finishAt:atMinute,weight:0};
   const usable=edges.filter(e=>(e.verified||e.mapListed)&&e.status!=='closed'&&
-    (e.type!=='piste'||LEVELS[e.level]<=LEVELS[opts.skill||'red']));
+    canUsePiste(e,opts));
   const map=new Map();for(const e of usable){if(!map.has(e.from))map.set(e.from,[]);map.get(e.from).push(e);}
   const best=new Map([[origin,{weight:0,at:atMinute,prev:null,edge:null}]]);const waiting=new Set([origin]);
   let iter=0;
@@ -100,7 +108,7 @@
   }
   return {result,missing};
  }
- function calculate({edges=[],start='',finish='',departure='09:00',returnTime='16:00',style='relaxed',skill='red',speed='normal',wishes=[],useLunch=true,lunchDuration=60,lunchTime='12:30',lunchRestaurant='',morningBreak=false,afternoonBreak=false}={}){
+ function calculate({edges=[],start='',finish='',departure='09:00',returnTime='16:00',style='relaxed',skill='red',speed='normal',allowBlack=false,wishes=[],useLunch=true,lunchDuration=60,lunchTime='12:30',lunchRestaurant='',morningBreak=false,morningDuration=30,afternoonBreak=false,afternoonDuration=30,useSafety=true,safetyMarginMin=30}={}){
   const begin=clock(departure),end=clock(returnTime),lunchtime=clock(lunchTime);
   if(begin===null||end===null||end<=begin+90)return {ok:false,reason:'Controleer vertrek- en terugkeertijd.'};
   if(useLunch&&(!Number.isFinite(Number(lunchDuration))||Number(lunchDuration)<30||Number(lunchDuration)>120||lunchtime===null||lunchtime<clock('11:45')||lunchtime>clock('13:15')))
@@ -120,7 +128,7 @@
     via.result.push({type:'node',name:node,original:'lunch'});
   }
   const steps=[];let at=begin,current=start;const notes=[];
-  const opts={style,skill,speed};
+  const opts={style,skill,speed,allowBlack:allowBlack===true};
   function addPath(target){
     const p=shortest(checked,current,target,at,opts);if(!p)return false;
     for(const edge of p.steps){const duration=segmentMinutes(edge,skill,speed);
@@ -136,7 +144,7 @@
       if(!addPath(point.edge.from))return {ok:false,reason:'Geen gecontroleerde route naar de gewenste piste/lift: '+point.edge.name};
       const e=point.edge;
       if(e.status==='closed')return {ok:false,reason:'Gewenste verbinding is gesloten: '+e.name};
-      if(e.type==='piste'&&LEVELS[e.level]>LEVELS[skill])return {ok:false,reason:'Gewenste piste is moeilijker dan je ingestelde niveau: '+e.name};
+      if(!canUsePiste(e,opts))return {ok:false,reason:'Gewenste piste is niet toegestaan (kleur onbekend, te moeilijk of zwart zonder expliciete toestemming): '+e.name};
       const c=clock(e.closingTime);
       if(e.type==='lift'&&c!==null&&at>=c)return {ok:false,reason:'De gewenste lift sluit voor je die bereikt: '+e.name};
       const dur=segmentMinutes(e,skill,speed);steps.push({edge:e,startAt:at,endAt:at+dur,duration:dur});at+=dur;current=e.to;
@@ -144,10 +152,13 @@
   }
   if(!addPath(finish))return {ok:false,reason:'Er bestaat geen gecontroleerde verbinding tussen start, wensen en eindpunt.'};
   if(!steps.length)return {ok:false,reason:'Nog geen skiroute: het start- en eindpunt zijn gelijk en er zijn geen gecontroleerde pistes of rondjes gekozen.'};
-  const breakMinutes=(morningBreak?30:0)+(afternoonBreak?30:0);
+  const early=morningBreak?Math.max(5,Math.min(120,Number(morningDuration)||30)):0;
+   const late=afternoonBreak?Math.max(5,Math.min(120,Number(afternoonDuration)||30)):0;
+   const breakMinutes=early+late;
   const lunchMinutes=useLunch?Number(lunchDuration):0;
   const travelMinutes=steps.reduce((sum,s)=>sum+s.duration,0);
-  const latestArrival=end-30;
+  const margin=useSafety===false?0:Math.max(0,Math.min(120,Number.isFinite(Number(safetyMarginMin))?Number(safetyMarginMin):30));
+   const latestArrival=end-margin;
   const warnings=[...new Set(notes)];
   // Include pauses in the ACTUAL segment clock before checking lift deadlines.
   // The model is conservative: if a late lunch cannot be scheduled, fail instead
@@ -157,8 +168,8 @@
   if(lunchNode){const idx=steps.findIndex(s=>s.edge.to===lunchNode);if(idx>=0)lunchIndex=idx;}
   let actualClock=begin,scheduledLunchAt=null;
   for(let i=0;i<steps.length;i++){
-    if(morningBreak&&i===Math.max(0,Math.floor(steps.length/4)))actualClock+=30;
-    if(afternoonBreak&&i===Math.max(0,Math.floor(steps.length*3/4)))actualClock+=30;
+    if(morningBreak&&i===Math.max(0,Math.floor(steps.length/4)))actualClock+=early;
+    if(afternoonBreak&&i===Math.max(0,Math.floor(steps.length*3/4)))actualClock+=late;
     const step=steps[i],closing=clock(step.edge.closingTime);
     if(step.edge.type==='lift'&&closing!==null&&actualClock>=closing)
       return {ok:false,reason:'Een lift zou al gesloten kunnen zijn na ingeplande pauzes: '+step.edge.name};
@@ -177,7 +188,7 @@
   // If the path includes any unknown status, never claim guaranteed access.
   if(realArrival>latestArrival)warnings.push('De geplande reistijd past niet binnen de veiligheidsmarge.');
   return {ok:realArrival<=latestArrival,reason:realArrival<=latestArrival?'Route berekend op door de gebruiker gecontroleerde verbindingen.':'De route is te lang voor de ingestelde terugkeertijd.',
-    steps,travelMinutes,lunchMinutes,breakMinutes,startTime:departure,arrival:hhmm(realArrival),arrivalMinute:realArrival,scheduledLunch:scheduledLunchAt===null?null:hhmm(scheduledLunchAt),
+    steps,pisteKm:steps.filter(s=>s.edge.type==='piste').reduce((n,s)=>n+s.edge.lengthKm,0),liftKm:steps.filter(s=>s.edge.type==='lift').reduce((n,s)=>n+s.edge.lengthKm,0),distanceSource:'Lengtes uit gecontroleerde netwerkgegevens',travelMinutes,lunchMinutes,breakMinutes,startTime:departure,arrival:hhmm(realArrival),arrivalMinute:realArrival,scheduledLunch:scheduledLunchAt===null?null:hhmm(scheduledLunchAt),
     latestArrival:hhmm(latestArrival),marginMinutes:latestArrival-realArrival,warnings,edgeCount:steps.length,
     statusVerified:steps.every(s=>s.edge.status==='open'),
     estimatesUsed:steps.some(s=>s.edge.minutes===0),model:steps.every(s=>s.edge.verified)?'User-verified, no official guarantee':'Map-listed provisional, not live verified'};

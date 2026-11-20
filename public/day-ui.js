@@ -23,7 +23,7 @@
    wishes:[...document.querySelectorAll('#wishes-list select')].map(x=>x.value).filter(Boolean),
    useLunch:checked('use-lunch'),lunchTime:input('lunch-time'),lunchDuration:Number(input('lunch-duration')||60),
    lunchRestaurant:input('lunch-restaurant'),lunchRestaurantLabel:input('lunch-restaurant')?(option?.textContent||''):'',
-   morningBreak:checked('early-break'),afternoonBreak:checked('late-break')};
+   morningBreak:checked('early-break'),morningDuration:Number(input('early-duration')||30),afternoonBreak:checked('late-break'),afternoonDuration:Number(input('late-duration')||30),useSafety:checked('use-safety'),safetyMarginMin:checked('use-safety')?Math.max(0,Math.min(120,Number(input('safety-duration')))):0};
  }
  function composeMessage(data){
   const p=data.plan,n=data.route,it=data.itinerary;
@@ -65,7 +65,7 @@
   output.append(el('strong','plan-heading',t('Jouw volledige skidag')));
   const intro=el('div','day-intro');
   intro.append(el('span','day-pill',plan.departure+' – '+plan.returnTime));
-  intro.append(el('span','day-pill',t('Streefaankomst')+' '+plan.safeArrival));
+  intro.append(el('span','day-pill',t('Streefaankomst')+' '+plan.safeArrival+' · marge '+plan.margin+' min'));
   intro.append(el('span','day-pill',plan.lunchMinutes+' '+t('minuten lunch')));
   output.append(intro);
   output.append(el('p','plan-locations',plan.startPoint+' → '+plan.endPoint));

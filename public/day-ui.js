@@ -18,7 +18,7 @@
   const input=id=>$(id)?.value||'',checked=id=>$(id)?.checked===true;
   const option=$('lunch-restaurant')?.selectedOptions?.[0];
   return {start:input('start'),finish:input('finish'),departure:input('departure'),returnTime:input('return-time'),
-   date:input('day'),style:document.querySelector('[data-style][aria-pressed="true"]')?.dataset.style||'relaxed',
+   date:input('day')||(()=>{const d=new Date();const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());})(),style:document.querySelector('[data-style][aria-pressed="true"]')?.dataset.style||'relaxed',
    skill:input('skill')||'red',speed:input('speed')||'normal',
    wishes:[...document.querySelectorAll('#wishes-list select')].map(x=>x.value).filter(Boolean),
    useLunch:checked('use-lunch'),lunchTime:input('lunch-time'),lunchDuration:Number(input('lunch-duration')||60),
@@ -106,7 +106,7 @@
   for(const poi of itinerary.pois){
    const item=el('div','ski-wc-point');
    item.append(el('strong','','🚻 '+poi.title));
-   item.append(el('p','',poi.location+' · '+poi.status+' · '+t('Eventuele omweg, niet standaard ingepland')));
+   item.append(el('p','',(poi.estimatedNearTime?'Circa '+poi.estimatedNearTime+' · ':'')+poi.location+' · '+poi.status+' · ±'+poi.extraTimeMinutes+' min extra · '+t('Eventuele omweg, niet standaard ingepland')));
    const link=el('a','legal-inline-link',t('Officiële bron controleren'));link.href=poi.source;link.target='_blank';link.rel='noopener noreferrer';item.append(link);
    toilets.append(item);
   }

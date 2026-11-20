@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07538c">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest?v=430">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192-v43.png">
 <script>
 // Netlify injects its own badge/toolbar outside the app. Reserve a touch-safe
 // area on Netlify-hosted mobile pages instead of trying to manipulate the badge.
@@ -139,6 +139,40 @@ body.brand-arriving .ski-hero .brand-lockup{visibility:hidden}
 @media(max-width:480px){.ski-hero .brand-lockup .logo{width:69px;height:53px}.ski-hero .brand-lockup strong{font-size:26px}.ski-hero .brand-lockup small{font-size:10px}.ski-intro-sign{gap:7px}.ski-intro-word{font-size:clamp(45px,11vw,64px)}}
 @media(prefers-reduced-motion:reduce){.ski-intro-word span{animation:none!important;opacity:1!important;transform:none!important}}
 
+/* SKI-je juridische informatie: altijd binnen de app leesbaar. */
+.app-version{font-size:10px;opacity:.8;font-weight:650;letter-spacing:.01em;white-space:nowrap;margin-left:6px}
+.legal-section .legal-copy{font-size:13px;line-height:1.6;color:#23485f}
+.legal-copy h3{font-size:14px;color:#07538c;margin:16px 0 5px}
+.legal-copy p{margin:7px 0}
+.legal-copy .legal-revision,.legal-revision{font-size:11px;color:#5b7890;font-weight:700}
+.legal-copy .notice{font-size:12px}
+.legal-gate[hidden]{display:none!important}
+.legal-gate{position:fixed;inset:0;z-index:25000;background:rgba(4,29,53,.83);display:flex;justify-content:center;align-items:center;padding:12px}
+.legal-gate-panel{width:min(100%,650px);max-height:94vh;max-height:94dvh;overflow-y:auto;overscroll-behavior:contain;background:#fff;color:var(--ink);border-radius:20px;padding:19px;box-shadow:0 12px 60px #00162766}
+.legal-gate-panel h2{margin:7px 0 9px;font-size:23px}
+.legal-gate-panel p{line-height:1.52;font-size:13px}
+.legal-gate-full{margin:14px 0;border-color:#a9cce0}
+.legal-gate-terms{max-height:min(42vh,360px);overflow:auto;border-top:1px solid #d5e6ee;padding:7px 3px 2px;font-size:12px;line-height:1.5}
+.legal-gate-terms h3{font-size:13px;margin:12px 0 4px}
+.legal-gate-accept{display:flex;align-items:flex-start;gap:11px;line-height:1.5;font-weight:650;font-size:13px;padding:10px;background:#edf7ff;border:1px solid #b7dbed;border-radius:13px;margin:12px 0}
+.legal-gate-accept input{flex:none;width:24px;height:24px;margin:0;accent-color:#0c78b5}
+.legal-gate-panel .btn:disabled{opacity:.5}
+body.legal-open{overflow:hidden}
+
+/* SKI-je v4.3: oorspronkelijk, door de gebruiker aangeleverd logo overal gelijk. */
+.ski-hero .brand{justify-content:space-between;min-width:0;gap:10px}
+.ski-hero .brand-lockup{flex:1 1 auto;gap:8px;min-width:0;max-width:100%}
+.ski-hero .brand-lockup .ski-original-logo{width:clamp(112px,25vw,158px);height:auto;aspect-ratio:320/213;display:block;flex:none;object-fit:contain;filter:drop-shadow(0 2px 5px #031b2f55)}
+.ski-hero .brand-meta{display:flex;flex-direction:column;gap:5px;justify-content:center;min-width:0}
+.ski-hero .brand-meta small{font-size:10px;font-weight:700;letter-spacing:0;line-height:1.2}
+.ski-hero .brand-meta .app-version{font-size:10px;margin-left:0;font-weight:600;opacity:.85}
+.ski-hero .brand-update-btn{flex:none;min-width:68px;max-width:80px;min-height:45px;padding:6px 8px;white-space:normal;font-size:12px;line-height:1.15;border:1px solid #f6fdff8c;background:#ffffff2b;color:#fff}
+.ski-intro-sign{display:block;width:min(81vw,460px);max-width:100%;white-space:normal}
+.ski-intro-sign .ski-original-logo{display:block;width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 7px 20px #001b36b8);animation:skije-original-logo-in .75s ease-out both}
+@keyframes skije-original-logo-in{from{opacity:0;transform:translate3d(0,14px,0) scale(.95)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+@media(max-width:420px){.ski-hero .brand-lockup .ski-original-logo{width:104px}.ski-hero .brand-meta small{font-size:9px}.ski-hero .brand-update-btn{min-width:64px;font-size:11px;padding:6px}}
+@media(prefers-reduced-motion:reduce){.ski-intro-sign .ski-original-logo{animation:none!important}}
+
 </style>
 <link rel="stylesheet" href="extra.css">
 <link rel="stylesheet" href="group-cloudflare.css">
@@ -148,7 +182,7 @@ body.brand-arriving .ski-hero .brand-lockup{visibility:hidden}
   <img class="ski-intro-photo" data-src="ski-sfeer.webp" alt="" width="1536" height="864">
   <div class="ski-intro-content">
     <div class="ski-intro-kicker">Wintersport in de bergen</div>
-    <div class="ski-intro-sign" id="skije-intro-sign"><div class="logo"><svg class="skije-mark" viewBox="0 0 100 70" role="img" aria-label="Origineel SKI-je-logo met ski, skibril en zon"><path d="M9 56 Q43 64 89 42" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M9 56 Q43 64 89 42" fill="none" stroke="#ff8a13" stroke-width="4" stroke-linecap="round"/><path d="M11 39 L33 14 L46 28 L62 6 L89 34" fill="none" stroke="white" stroke-width="6" stroke-linejoin="round"/><rect x="29" y="24" width="47" height="24" rx="11" fill="#ff8a13" stroke="white" stroke-width="4"/><path d="M35 30 Q51 23 69 30 L65 40 Q51 44 38 39Z" fill="#07538c"/><path d="M39 33 Q49 28 57 30" fill="none" stroke="#b8edff" stroke-width="3"/><circle cx="79" cy="10" r="8" fill="#ffcb33"/></svg></div><div class="ski-intro-word" aria-label="SKI-je"><span style="--i:0">S</span><span style="--i:1">K</span><span style="--i:2">I</span><span style="--i:3">-</span><span style="--i:4">j</span><span style="--i:5">e</span></div></div>
+    <div class="ski-intro-sign" id="skije-intro-sign"><img class="ski-original-logo" src="brand-skije.svg" width="320" height="213" alt="SKI-je: originele logo met skiër, bergen en rode letters" decoding="async"></div>
     <span class="ski-intro-line" aria-hidden="true"></span><p class="ski-intro-sub">Jouw skidag. Jouw route. Samen.</p>
   </div>
   <button type="button" class="ski-intro-skip" id="ski-intro-skip" aria-label="Intro overslaan">Overslaan ✕</button>
@@ -157,7 +191,7 @@ body.brand-arriving .ski-hero .brand-lockup{visibility:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><div class="logo"><svg class="skije-mark" viewBox="0 0 100 70" role="img" aria-label="Origineel SKI-je-logo met ski, skibril en zon"><path d="M9 56 Q43 64 89 42" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M9 56 Q43 64 89 42" fill="none" stroke="#ff8a13" stroke-width="4" stroke-linecap="round"/><path d="M11 39 L33 14 L46 28 L62 6 L89 34" fill="none" stroke="white" stroke-width="6" stroke-linejoin="round"/><rect x="29" y="24" width="47" height="24" rx="11" fill="#ff8a13" stroke="white" stroke-width="4"/><path d="M35 30 Q51 23 69 30 L65 40 Q51 44 38 39Z" fill="#07538c"/><path d="M39 33 Q49 28 57 30" fill="none" stroke="#b8edff" stroke-width="3"/><circle cx="79" cy="10" r="8" fill="#ffcb33"/></svg></div><div><strong>SKI-je</strong><small>By BenMu Development</small></div></div></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.3.0</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -168,7 +202,7 @@ body.brand-arriving .ski-hero .brand-lockup{visibility:hidden}
 </header>
 <main class="main">
   <section class="mode active" id="page-plan" aria-label="Routeplanner">
-    <h1 class="banner">🧭 Mijn skiroute</h1><div class="subhead">Zo weinig mogelijk invullen. Meer opties alleen als je ze nodig hebt.</div>
+    <h1 class="banner">🧭 Mijn skiroute</h1><div class="subhead">Zo weinig mogelijk invullen. Meer opties alleen als je ze nodig hebt.</div><p class="tiny">⚠️ Officiële piste- en liftinformatie gaat altijd voor. <a href="#legal-section" class="legal-inline-link">Disclaimer</a>.</p>
     <div class="card">
       <div class="row"><h2>Waar ga je skiën?</h2><span class="pill">Startpunt kiezen is genoeg</span></div>
       <div class="grid">
@@ -377,12 +411,47 @@ body.brand-arriving .ski-hero .brand-lockup{visibility:hidden}
       <div class="toolbar"><button class="btn secondary small-btn" id="issues-export" type="button">Controles exporteren</button></div>
       <div id="issue-list" class="compact-list" aria-live="polite"></div>
     </details>
+    <details class="feature-fold legal-section" id="legal-section">
+      <summary>⚖️ Juridisch: disclaimer, aansprakelijkheid &amp; vrijwaring</summary>
+      <div class="legal-copy" id="legal-text">
+        <p class="legal-revision">Gebruiksvoorwaarden en disclaimer · versie 1.0 · 20 november 2026</p>
+        <div class="notice"><strong>Altijd voorrang:</strong> officiële mededelingen van het skigebied, afzettingen, lokale pisteborden en aanwijzingen van liftpersoneel, pistebewaking, bergredding en hulpdiensten. SKI-je is geen officieel veiligheids- of navigatiesysteem.</div>
+        <h3>1. Toepassing en aanbieder</h3>
+        <p>Deze gebruiksvoorwaarden en disclaimer zijn van toepassing op de app SKI-je en de bijbehorende digitale diensten, aangeboden door <strong>BenMu Development</strong> (hierna: de aanbieder), en zijn bedoeld om zowel de aanbieder als de bij de ontwikkeling en exploitatie betrokken personen te beschermen, voor zover wettelijk mogelijk. Door de app na kennisneming te gebruiken, aanvaardt de gebruiker deze voorwaarden. Wettelijke rechten waarvan niet mag worden afgeweken blijven onverkort gelden.</p>
+        <h3>2. Uitsluitend een niet-officieel hulpmiddel</h3>
+        <p>SKI-je is een vrijblijvend, aanvullend hulpmiddel voor routes, GPS, kaarten, weer, webcams, piste- en liftinformatie, groepen, snelheid en registraties. Het is <strong>geen officieel piste-, verkeers-, navigatie-, bewakings-, reddings- of veiligheidsinstrument</strong>. De app mag nooit als enige bron worden gebruikt voor veiligheidskritische keuzes, pistesluiting, routekeuze, terugkeertijd of noodhulp. Wintersport kent inherente risico's, ook wanneer de app naar behoren werkt.</p>
+        <h3>3. Officiële gegevens zijn altijd leidend</h3>
+        <p>De ter plaatse geldende aanwijzingen, afsluitingen, waarschuwingsborden, veiligheidsinstructies en mededelingen van het skigebied, liftexploitanten, autoriteiten en hulpdiensten gaan <strong>altijd vóór</strong> alle informatie en suggesties in SKI-je. Bij een verschil tussen de app en de werkelijkheid moet de gebruiker de feitelijke situatie en de officiële instructies volgen, ook wanneer een route, lift of piste in de app als open wordt weergegeven.</p>
+        <h3>4. Geen garantie op correctheid of continuïteit</h3>
+        <p>SKI-je wordt aangeboden in de feitelijk beschikbare staat ("as is") en naar beschikbaarheid ("as available"). De aanbieder verstrekt, <strong>voor zover rechtens toegestaan</strong>, geen garantie op juistheid, actualiteit, volledigheid, geschiktheid voor een bepaald doel, ononderbroken beschikbaarheid of foutloze werking van kaarten, routes, liftverbindingen, GPS-posities, veiligheidsinformatie, snelheid, weer, webcams, deelgroepen en gegevens van derden. Positiegegevens kunnen afwijken of vertraagd zijn; locatie delen kan stoppen bij weinig bereik, lege batterij, browserbeperkingen of vergrendeling van het toestel.</p>
+        <h3>5. Eigen verantwoordelijkheid en aanvaarding van risico's</h3>
+        <p>De gebruiker gebruikt SKI-je <strong>geheel op eigen risico</strong> en blijft volledig verantwoordelijk voor eigen veiligheid, voorbereiding, routekeuze, beslissingen, controle van actuele informatie, gedrag op de piste, apparaatbediening, toestemming voor delen van locaties en naleving van de lokale regels. Bedien de app niet wanneer dit de aandacht op de omgeving of de veiligheid vermindert. Controleer voldoende batterij, bereik, kaarten en alternatieve communicatiemiddelen. De app geeft geen persoonlijke begeleiding of veiligheidsadvies.</p>
+        <h3>6. Uitsluiting en beperking van aansprakelijkheid</h3>
+        <p><strong>BenMu Development, de achterliggende ondernemer of rechtspersoon, de ontwikkelaars, vertegenwoordigers, medewerkers, hulppersonen en overige betrokkenen wijzen, ieder voor zover rechtens toegestaan, iedere contractuele en buitencontractuele aansprakelijkheid af</strong> voor schade die voortvloeit uit of verband houdt met het gebruik, de onbeschikbaarheid of het vertrouwen op SKI-je. Dit betreft onder meer onjuiste of verouderde piste- of liftinformatie, onjuiste routes of terugkeertijden, ontbrekende of vertraagde GPS- en groepslocaties, verloren gegevens, netwerk- of softwarestoringen, vertragingen, gemiste aansluitingen, kosten, zaakschade, letsel en indirecte of gevolgschade.</p>
+        <p>Deze uitsluiting geldt <strong>niet</strong> voor aansprakelijkheid die volgens toepasselijk dwingend recht niet rechtsgeldig kan worden uitgesloten of beperkt, waaronder waar relevant aansprakelijkheid wegens opzet of bewuste roekeloosheid van de aanbieder of diens leiding, of andere wettelijke uitzonderingen. Geen bepaling is bedoeld om onvervreemdbare rechten van consumenten of betrokkenen bij persoonsgegevens te beperken. Voor zover slechts een deel van een uitsluiting ongeldig is, blijft het rechtsgeldige deel van toepassing.</p>
+        <h3>7. Volledige vrijwaring door de gebruiker</h3>
+        <p><strong>De gebruiker vrijwaart BenMu Development, de achterliggende ondernemer of rechtspersoon, de ontwikkelaars, bestuurders, medewerkers, vertegenwoordigers, hulppersonen en overige bij SKI-je betrokken partijen volledig</strong> tegen alle vorderingen, aanspraken, rechtsgedingen, schades en redelijkerwijs gemaakte kosten van derden, waaronder redelijke advocaat- en proceskosten, <strong>voor zover die voortvloeien uit aan de gebruiker toe te rekenen onrechtmatig handelen, overtreding van toepasselijke regels, schending van deze voorwaarden of onveilig of ongeoorloofd gebruik van SKI-je</strong>.</p>
+        <p>De vrijwaring omvat ook aanspraken in verband met door de gebruiker onrechtmatig gedeelde locatiegegevens of door hem of haar aangeleverde onjuiste informatie, voor zover de gevolgen aan de gebruiker kunnen worden toegerekend. <strong>Deze vrijwaring geldt uitsluitend voor zover rechtens toegestaan</strong> en ziet niet op schade of aanspraken voor zover die voortvloeien uit eigen aan de aanbieder toe te rekenen tekortkomingen of handelen waarvoor de aanbieder wettelijk aansprakelijk blijft.</p>
+        <h3>8. Geen nooddienst of vervanging van lokale hulpverlening</h3>
+        <p>De SOS-functie is uitsluitend een hulpmiddel voor het tonen van telefoonnummers en waar mogelijk locatiegegevens. SKI-je meldt geen noodgevallen automatisch en garandeert niet dat berichten of locaties hulpdiensten bereiken. <strong>Bel bij gevaar meteen de lokale hulpdiensten</strong> en wacht niet op de app. Voor Oostenrijk zijn onder meer 112 (algemeen alarmnummer) en 140 (bergredding) beschikbaar, afhankelijk van de situatie.</p>
+        <h3>9. Diensten en gegevens van derden</h3>
+        <p>Externe weer-, kaart-, webcam-, piste-, lift- of andere databronnen vallen buiten de feitelijke controle van de aanbieder. De aanbieder staat niet in voor de inhoud, beschikbaarheid, voorwaarden, juistheid of beveiliging van zulke diensten. Eventuele vermeldingen van skigebieden en derden houden niet in dat deze SKI-je officieel erkennen, beheren of goedkeuren.</p>
+        <h3>10. Persoonsgegevens en groepslocaties</h3>
+        <p>Het gebruik van groeps- en GPS-functies vereist afzonderlijke toestemming waar dat door de app wordt gevraagd. De gebruiker is verantwoordelijk voor het delen van zijn of haar eigen gegevens en mag de gegevens van anderen niet onrechtmatig delen. Deze aansprakelijkheidsbepalingen laten toepasselijke privacywetgeving en rechten onder de AVG volledig onverlet. Een eventuele privacyverklaring staat los van deze disclaimer.</p>
+        <h3>11. Nederlands recht en bevoegde rechter</h3>
+        <p>Op de verhouding tussen de gebruiker en BenMu Development en op deze voorwaarden is <strong>Nederlands recht</strong> van toepassing. Geschillen worden, voor zover wettelijk toegestaan, voorgelegd aan de bevoegde rechter in Nederland. Voor consumenten blijven eventuele dwingende rechten, waaronder bescherming op grond van het recht van hun gewone verblijfplaats en wettelijke bevoegdheidsregels van nationale rechters, onverkort van kracht. Deze rechtskeuze doet geen afbreuk aan ter plaatse geldende veiligheids- en openbare-orderegels.</p>
+        <h3>12. Deelbaarheid en wijzigingen</h3>
+        <p>Indien een bepaling geheel of gedeeltelijk nietig of vernietigbaar blijkt, blijven de overige bepalingen gelden voor zover zij zelfstandig van toepassing kunnen zijn. BenMu Development mag de app en voorwaarden wijzigen; bij wezenlijke aanpassingen aan deze voorwaarden wordt opnieuw kennisneming gevraagd. Versie en datum staan bovenaan dit hoofdstuk.</p>
+      </div>
+      <p class="tiny">Deze tekst is een concept voor gebruiksvoorwaarden; een disclaimer kan wettelijk niet alle aansprakelijkheid opheffen. Laat deze voorwaarden voor publieke verspreiding juridisch toetsen.</p>
+    </details>
     <details class="feature-fold" id="settings-section"><summary>&#9889; Zuinigheid, opslag &amp; privacy</summary>
       <div class="field"><label for="power-setting">Verbruik</label><select id="power-setting"><option value="auto">Automatisch (aanbevolen)</option><option value="eco">Extra zuinig</option><option value="full">Normaal</option></select></div>
       <p class="hint" id="power-explanation">Kaart, radar en webcams laden alleen wanneer nodig.</p>
       <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
       <label class="verify"><input id="motion-setting" type="checkbox" checked> Logoanimatie bij iedere nieuwe start tonen (niet bij verminderde beweging)</label>
-      <div class="toolbar"><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">Controleer nieuwe versie</button></div>
+      <div class="toolbar"><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">&#8635; Update app naar nieuwste versie</button></div>
+      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.3.0 · Controleer online op nieuwe updates.</p>
       <p class="hint" id="install-help">Android: Chrome-menu &rarr; App installeren of Toevoegen aan startscherm. iPhone: Safari &rarr; Deel &rarr; Zet op beginscherm.</p>
       <div class="toolbar"><button class="btn secondary small-btn" id="export-all" type="button">&#128190; Mijn data exporteren</button><button class="btn clear small-btn" id="clear-private" type="button">Lokale data wissen</button></div>
       <details><summary>🔄 Back-up van Netlify importeren</summary>
@@ -392,12 +461,25 @@ body.brand-arriving .ski-hero .brand-lockup{visibility:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.2.0-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. Geen vervanging voor pistemarkeringen, skipatrouille of liftaanwijzingen.</p>
+      <p class="tiny">SKI-je v4.3.0-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
 </main>
 <footer class="bottom" aria-label="Navigatie"><button data-page="plan" aria-selected="true"><span>&#129517;</span>Route</button><button data-page="map" aria-selected="false"><span>&#128506;</span>Kaart</button><button data-page="weather" aria-selected="false"><span>&#127782;</span>Weer</button><button data-page="webcams" aria-selected="false"><span>&#128247;</span>Webcams</button><button data-page="day" aria-selected="false"><span>&#9975;</span>Mijn dag</button><button data-page="more" aria-selected="false"><span>&#9881;</span>Meer</button></footer>
+</div>
+
+<div class="legal-gate" id="legal-gate" role="dialog" aria-modal="true" aria-labelledby="legal-gate-title" hidden>
+  <div class="legal-gate-panel">
+    <p class="legal-revision">SKI-je · BenMu Development · Gebruiksvoorwaarden 1.0</p>
+    <h2 id="legal-gate-title">Belangrijk voor je veiligheid</h2>
+    <p><strong>SKI-je is uitsluitend een hulpmiddel.</strong> Pisteborden, afsluitingen, instructies van het skigebied en hulpdiensten zijn altijd leidend. Vertrouw niet uitsluitend op de app voor routekeuze, GPS, veiligheid of noodhulp. Gebruik is op eigen risico.</p>
+    <p>BenMu Development sluit aansprakelijkheid uit en wordt door de gebruiker gevrijwaard <strong>voor zover wettelijk toegestaan</strong>. Nederlands recht is van toepassing, met behoud van dwingende consumentenrechten.</p>
+    <details class="legal-gate-full"><summary>Lees de volledige disclaimer en voorwaarden</summary><div class="legal-gate-terms" id="legal-gate-terms"></div></details>
+    <label class="legal-gate-accept"><input id="legal-accept-checkbox" type="checkbox"> <span>Ik heb de disclaimer en voorwaarden gelezen en ga akkoord met de toepassing ervan, voor zover rechtens toegestaan. Ik begrijp dat officiële instructies altijd voorrang hebben.</span></label>
+    <button class="btn full" id="legal-gate-enter" type="button" disabled>Akkoord en SKI-je openen</button>
+    <p class="tiny">Niet akkoord? Gebruik SKI-je dan niet. In nood: bel direct <a href="tel:112">112</a>.</p>
+  </div>
 </div>
 
 <div class="utility-modal" id="checkpoint-modal" hidden role="dialog" aria-modal="true" aria-labelledby="checkpoint-title"><div class="utility-panel">
@@ -436,7 +518,29 @@ body.brand-arriving .ski-hero .brand-lockup{visibility:hidden}
 (() => {
 const $ = (id) => document.getElementById(id);
 const dataSaver = navigator.connection?.saveData === true;
-if (!dataSaver) document.querySelectorAll('.hero-scene img[data-src], .ski-intro-photo[data-src]').forEach(img=>{img.src=img.dataset.src;});
+// Gebruik een andere lokaal opgeslagen sfeerfoto bij een nieuwe appstart.
+// De volgorde wisselt vrouw/man en ski/snowboard af, zonder extra downloads.
+const introPhotos=[
+  'ski-intro-woman-skis.webp',
+  'ski-intro-man-skis.webp',
+  'ski-intro-woman-snowboard.webp',
+  'ski-intro-man-snowboard.webp'
+];
+let introPhotoIndex=0;
+try {
+  const stored=localStorage.getItem('skije-intro-photo-last');
+  const previous=stored===null?-1:Number(stored);
+  introPhotoIndex=Number.isInteger(previous)&&previous>=0&&previous<introPhotos.length ? (previous+1)%introPhotos.length : Math.floor(Math.random()*introPhotos.length);
+  localStorage.setItem('skije-intro-photo-last',String(introPhotoIndex));
+} catch (_) {introPhotoIndex=Math.floor(Math.random()*introPhotos.length);}
+const chosenIntroPhoto=introPhotos[introPhotoIndex];
+if (!dataSaver) document.querySelectorAll('.hero-scene img[data-src], .ski-intro-photo[data-src]').forEach(img=>{
+  img.dataset.src=chosenIntroPhoto;
+  img.addEventListener('error',()=>{
+    if(!img.src.endsWith('/ski-sfeer.webp'))img.src='ski-sfeer.webp';
+  },{once:true});
+  img.src=img.dataset.src;
+});
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
   window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}), {once:true});
 }
@@ -761,7 +865,7 @@ window.addEventListener('beforeunload',()=>{stopGps();stopRadar();closeCamera();
 </script>
 
 <script>
-/* SKI-je 4.2: iedere nieuwe appstart opnieuw de originele SVG-logoanimatie.
+/* SKI-je 4.3: iedere nieuwe appstart het aangeleverde originele logo.
    Geen sessionStorage-blokkade; korte GPU-fotoanimatie stopt na de intro.
    Systeeminstelling 'verminder beweging' en de eigen uit-schakelaar blijven gelden. */
 (()=>{
@@ -779,7 +883,7 @@ window.addEventListener('beforeunload',()=>{stopGps();stopRadar();closeCamera();
   } catch {}
   let timer=null,cleanupTimer=null,travel=null;
   let remaining=3250,startedAt=0,finished=true,visible=false;
-  const animated=[...intro.querySelectorAll('.ski-intro-photo,.ski-intro-kicker,.ski-intro-word span,.ski-intro-line,.ski-intro-sub')];
+  const animated=[...intro.querySelectorAll('.ski-intro-photo,.ski-intro-kicker,.ski-original-logo,.ski-intro-line,.ski-intro-sub')];
   const clearTimers=()=>{clearTimeout(timer);clearTimeout(cleanupTimer);timer=cleanupTimer=null;};
   function hide(){
     clearTimers();travel?.cancel();travel=null;
@@ -831,6 +935,44 @@ window.addEventListener('beforeunload',()=>{stopGps();stopRadar();closeCamera();
   play();
 })();
 </script>
+<script>
+/* First-use legal acknowledgement stays local; it is not proof of absolute immunity. */
+(()=>{
+  const VERSION='2026-11-20-v1';
+  const STORAGE_KEY='skije-legal-ack-v1';
+  const gate=document.getElementById('legal-gate');
+  const agreement=document.getElementById('legal-accept-checkbox');
+  const enter=document.getElementById('legal-gate-enter');
+  const intro=document.getElementById('ski-intro');
+  const full=document.getElementById('legal-text');
+  const inModal=document.getElementById('legal-gate-terms');
+  if(!gate||!agreement||!enter||!full||!inModal)return;
+  inModal.innerHTML=full.innerHTML;
+  try {if(JSON.parse(localStorage.getItem(STORAGE_KEY)||'null')?.version===VERSION)return;}catch{}
+  agreement.addEventListener('change',()=>{enter.disabled=!agreement.checked;});
+  enter.addEventListener('click',()=>{
+    if(!agreement.checked)return;
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify({version:VERSION,acceptedAt:new Date().toISOString()}));}catch{}
+    gate.hidden=true;
+    document.body.classList.remove('legal-open');
+  });
+  const reveal=()=>{
+    if(intro&&!intro.hidden){setTimeout(reveal,200);return;}
+    gate.hidden=false;document.body.classList.add('legal-open');agreement.focus();
+  };
+  setTimeout(reveal,600);
+})();
+</script>
+<script>
+document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault();
+  document.querySelector('.bottom button[data-page="more"]')?.click();
+  const section=document.getElementById('legal-section');
+  if(section){section.open=true;setTimeout(()=>section.scrollIntoView({block:'start',behavior:'smooth'}),50);}
+}));
+</script>
+
+<script src="app-update.js" defer></script>
 <script src="route-engine.js" defer></script>
 <script src="extra.js" defer></script>
 <script src="group-cloudflare.js" defer></script>

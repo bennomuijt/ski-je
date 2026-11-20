@@ -11,8 +11,16 @@ const sw=load('public/sw.js');
 test('all core files exist and original logo/intro, SOS, piste map, day features remain',()=>{
  for(const f of ['public/group-cloudflare.js','public/group-cloudflare.css','public/backup-migration.js','public/route-engine.js','public/extra.js','public/sw.js','public/icons/icon-192.png','public/Kaart 2026-2027.png'])assert.ok(existsSync(new URL(f,BASE)),f);
  for(const id of ['skije-intro-sign','skije-header-lockup','open-sos','page-plan','page-map','page-webcams','page-day','checkpoint-main','group-section','cf-group-join','cf-share-position','cf-close','group-quick','cf-group-map'])assert.ok(html.includes(`id="${id}"`),id);
- assert.match(html,/skije-mark/);
+ assert.match(html,/brand-skije\.svg/);
  assert.match(html,/group-cloudflare\.js/);
+});
+test('legal protection chapter, visible version and first-use acknowledgement exist',()=>{
+ for(const id of ['legal-section','legal-text','legal-gate','legal-accept-checkbox','legal-gate-enter'])assert.ok(html.includes(`id="${id}"`),id);
+ assert.match(html,/Nederlands recht/);
+ assert.match(html,/De gebruiker vrijwaart BenMu Development/);
+ assert.match(html,/wettelijk toegestaan/);
+ assert.match(html,/v4\.3\.0/);
+ assert.match(sw,/v4-3-splash-rotation/);
 });
 test('offline app files cached and private group API requests excluded from SW',()=>{
  assert.match(sw,/pathname\.startsWith\('\/api\/'\)/);

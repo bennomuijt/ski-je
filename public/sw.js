@@ -1,8 +1,8 @@
 /* SKI-je 4.0 test PWA shell.
    Cache first-party app files only. NEVER download/cache third-party map tiles,
    radar frames, wind, webcams or GPS data in service worker. */
-const SHELL='skije-shell-20261120-cloudflare-v2-intro';
-const CORE=['./index.html','./extra.css','./extra.js','./group-cloudflare.css','./group-cloudflare.js','./backup-migration.js','./route-engine.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./Kaart 2026-2027.png','./ski-sfeer.webp'];
+const SHELL='skije-shell-20261120-cloudflare-v4-3-splash-rotation';
+const CORE=['./index.html','./extra.css','./extra.js','./group-cloudflare.css','./group-cloudflare.js','./backup-migration.js','./route-engine.js','./app-update.js','./brand-skije.svg','./manifest.webmanifest','./icons/icon-192-v43.png','./icons/icon-512-v43.png','./Kaart 2026-2027.png','./ski-sfeer.webp','./ski-intro-woman-skis.webp','./ski-intro-man-skis.webp','./ski-intro-woman-snowboard.webp','./ski-intro-man-snowboard.webp'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(SHELL).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
@@ -30,3 +30,5 @@ self.addEventListener('fetch',event=>{
   return response;
  }));
 });
+
+self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting();});

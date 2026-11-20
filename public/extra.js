@@ -496,12 +496,6 @@
    await prompt.prompt();await prompt.userChoice;
  });
  window.addEventListener('appinstalled',()=>{$('install-app').hidden=true;$('install-help').textContent='SKI-je staat op je beginscherm.';});
- $('check-update').addEventListener('click',async()=>{
-   if(!('serviceWorker' in navigator)||!navigator.onLine){showToast('Updatecontrole vereist internet en een ondersteunde PWA-browser.');return;}
-   try{const reg=await navigator.serviceWorker.getRegistration();if(!reg){showToast('Installeer SKI-je eerst via HTTPS om de offline app bij te werken.');return;}
-     await reg.update();showToast('Updatecontrole klaar. Heropen de app om een nieuwe versie te gebruiken.');}
-   catch(e){showToast('Updatecontrole mislukt. Controleer internet en probeer later opnieuw.');}
- });
  // Be transparent about what this installation does and does not do.
- window.SKIFeatures={version:'4.0-test',routeAvailable:()=>store.network.some(e=>e.verified),getCounts:()=>({checkpoints:store.checkpoints.length,issues:store.issues.length,days:store.days.length,edges:store.network.length}),isTracking:()=>!!session&&!session.paused};
+ window.SKIFeatures={version:'4.3.0-cf',routeAvailable:()=>store.network.some(e=>e.verified),getCounts:()=>({checkpoints:store.checkpoints.length,issues:store.issues.length,days:store.days.length,edges:store.network.length}),isTracking:()=>!!session&&!session.paused};
 })();

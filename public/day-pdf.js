@@ -89,27 +89,54 @@
    box(ctx,58,y,9,95,{ski:'#1585bd',lunch:'#f18b2a',break:'#8aa7b7',return:'#d85b4f',buffer:'#178d6c'}[row.type]||COL.blue);
    label(ctx,row.start+'–'+row.end,88,y+40,28,COL.navy,true);
    label(ctx,row.minutes+' min',88,y+80,20,COL.gray);
-   label(ctx,row.label,402,y+37,24,COL.ink,true);
-   lines(ctx,row.detail,403,y+75,735,18,1,COL.gray);y+=103;
+   // Shrink unusually long restaurant labels rather than running into the margin.
+   let titleSize=24;
+   do{ctx.font='700 '+titleSize+'px system-ui,"Segoe UI",sans-serif';if(ctx.measureText(row.label).width<=744||titleSize===17)break;titleSize--;}while(true);
+   label(ctx,row.label,402,y+36,titleSize,COL.ink,true);
+   // Keep both lines of longer safety notes. No more clipped last words.
+   lines(ctx,row.detail,403,y+65,742,17,2,COL.gray);y+=103;
   }
  }
- function regionPage(ctx,legs,notes){
-  label(ctx,'VERBINDINGEN & WAARSCHUWINGEN',62,291,35,COL.navy,true);
-  label(ctx,'Bron: skiwelt.at/nl/verbindingen.html',62,332,19,COL.gray);
-  let y=358;
-  for(const leg of legs){
-   if(y>H-320)break;
-   box(ctx,58,y,1120,150,'#e9f5fc');box(ctx,58,y,9,150,COL.blue);
-   label(ctx,leg.from+' → '+leg.to,81,y+40,28,COL.navy,true);
-   lines(ctx,leg.via,81,y+74,1030,20,3,COL.ink);
-   label(ctx,'⚠  Niet live gecontroleerd · '+leg.minutes+' minuten indicatief',81,y+140,17,'#945f23');
-   y+=166;
+ function noteCapacity(legCount){
+  // Leave enough room for three wrapped lines per notice and the page footer.
+  const legHeight=legCount*166,emptyHelp=legCount===0?130:0;
+  const noteStart=358+legHeight+emptyHelp+55;
+  return Math.max(0,Math.floor((H-186-noteStart)/104));
+ }
+ function layoutPages(legs,notes){
+  const pages=[{kind:'schedule',legs:[],notes:[]}];
+  const paths=[];for(let i=0;i<legs.length;i+=7)paths.push(legs.slice(i,i+7));
+  if(!paths.length)paths.push([]);
+  const remaining=notes.slice();
+  for(let i=0;i<paths.length;i++){
+   const segment=paths[i];
+   const take=i===paths.length-1?noteCapacity(segment.length):0;
+   pages.push({kind:'regions',legs:segment,notes:remaining.splice(0,take)});
   }
-  if(!legs.length){lines(ctx,'Geen gedocumenteerde open verbinding beschikbaar. Het dagtijdschema blijft bruikbaar, maar is geen navigatieroute.',70,y+38,1080,23,3,COL.ink);y+=130;}
-  if(y<H-280){
+  // Never discard safety warnings when a long itinerary fills the connection page.
+  while(remaining.length)pages.push({kind:'notes',legs:[],notes:remaining.splice(0,10)});
+  return pages;
+ }
+ function regionPage(ctx,legs,notes,notesOnly=false){
+  label(ctx,notesOnly?'AANDACHTSPUNTEN – VERVOLG':'VERBINDINGEN & WAARSCHUWINGEN',62,291,35,COL.navy,true);
+  if(!notesOnly)label(ctx,'Bron: skiwelt.at/nl/verbindingen.html',62,332,19,COL.gray);
+  let y=358;
+  if(!notesOnly){
+   for(const leg of legs){
+    box(ctx,58,y,1120,150,'#e9f5fc');box(ctx,58,y,9,150,COL.blue);
+    label(ctx,leg.from+' → '+leg.to,81,y+40,28,COL.navy,true);
+    lines(ctx,leg.via,81,y+74,1030,20,3,COL.ink);
+    label(ctx,'⚠  Niet live gecontroleerd · '+leg.minutes+' minuten indicatief',81,y+140,17,'#945f23');
+    y+=166;
+   }
+   if(!legs.length){lines(ctx,'Geen gedocumenteerde open verbinding beschikbaar. Het dagtijdschema blijft bruikbaar, maar is geen navigatieroute.',70,y+38,1080,23,3,COL.ink);y+=130;}
+  }
+  if(notes.length){
    label(ctx,'BELANGRIJK',65,y+38,27,COL.navy,true);y+=55;
-   for(const note of notes.slice(0,Math.max(1,Math.floor((H-180-y)/66)))){
-    box(ctx,60,y,1120,58,'#fff3e4');lines(ctx,note,82,y+28,1050,18,2,'#8a5c32');y+=67;
+   for(const note of notes){
+    box(ctx,60,y,1120,94,'#fff3e4');
+    lines(ctx,note,82,y+30,1050,18,3,'#8a5c32');
+    y+=104;
    }
   }
  }
@@ -117,15 +144,14 @@
   if(!plan?.ok)throw Error('Maak eerst een geldige dagplanning');
   if(typeof document==='undefined')throw Error('PDF vereist een browser');
   const logo=await loadLogo(),legs=route?.steps||[],notes=[...(route?.notes||[]),...(plan.notes||[])];
-  const legPages=[];for(let i=0;i<legs.length;i+=7)legPages.push(legs.slice(i,i+7));
-  if(!legPages.length)legPages.push([]);
-  const total=1+legPages.length,jpegs=[];
-  for(let page=0;page<total;page++){
+  const pages=layoutPages(legs,notes),jpegs=[];
+  for(let i=0;i<pages.length;i++){
    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
    const ctx=canvas.getContext('2d');if(!ctx)throw Error('Geen canvas');
-   pageStart(ctx,logo,page+1,total);
-   if(page===0)schedule(ctx,plan);
-   else regionPage(ctx,legPages[page-1],notes);
+   pageStart(ctx,logo,i+1,pages.length);
+   const p=pages[i];
+   if(p.kind==='schedule')schedule(ctx,plan);
+   else regionPage(ctx,p.legs,p.notes,p.kind==='notes');
    jpegs.push(jpegBytes(canvas.toDataURL('image/jpeg',0.9)));
    canvas.width=1;canvas.height=1;
   }
@@ -136,5 +162,5 @@
   a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),45000);
  }
- return {generate,save,encodePdf};
+ return {generate,save,encodePdf,layoutPages};
 });

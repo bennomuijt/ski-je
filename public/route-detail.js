@@ -63,7 +63,10 @@
  ];
  const clock=text=>/^\d\d:\d\d$/.test(String(text||''))?Number(text.slice(0,2))*60+Number(text.slice(3)):null;
  const hh=minute=>String(Math.floor(minute/60)).padStart(2,'0')+':'+String(minute%60).padStart(2,'0');
- function split(leg){
+ // Incomplete colour metadata must never become an automatically recommended
+ // black (or otherwise unsuitable) descent.
+ const knownPisteLevels={'99a':'blue','96b':'blue','70':'red','43':'red'};
+ function split(leg,options={}){
   const steps=catalog[leg.id]?.[leg.direction]||[item('transfer','','Volg de aangegeven gebiedsverbinding')];
   const weight=steps.map(s=>s.type==='lift'?1.35:s.type==='piste'?1:0.55);
   const sum=weight.reduce((v,n)=>v+n,0);
@@ -72,11 +75,14 @@
   return steps.map((s,i)=>{
    const duration=i===steps.length-1?left:Math.max(1,Math.round(minutes*weight[i]/sum));
    left-=duration;
-   return {...s,from:leg.from,to:leg.to,corridor:leg.id,minutes:duration,verified:false,mapListed:true,
-    warning:'⚠ Niet live gecontroleerd. Aansluitingen en wachttijden controleren.'};
+   const level=s.type==='piste'?(s.level==='unknown'?knownPisteLevels[s.code]||'unknown':s.level):s.level;
+   const forbidden=s.type==='piste'&&(level==='unknown'||(level==='red'&&options.skill==='blue')||(level==='black'&&!(options.allowBlack===true&&options.skill!=='blue')));
+   const shown=forbidden?{...s,type:'transfer',level,name:(s.code?'Piste '+s.code+': ':'')+(level==='unknown'?'kleur onbekend, aansluiting ter plaatse controleren':'niet passend bij jouw pistekeuze, alternatief controleren')}:{...s,level};
+   return {...shown,from:leg.from,to:leg.to,corridor:leg.id,minutes:duration,verified:false,mapListed:true,
+    warning:forbidden?'⚠ Geen automatische pisteaanbeveling; controleer de bewegwijzering en veilige aansluiting.':'⚠ Niet live gecontroleerd. Aansluitingen en wachttijden controleren.'};
   });
  }
- function buildSegments(legs){return (legs||[]).flatMap(split);}
+ function buildSegments(legs,options={}){return (legs||[]).flatMap(leg=>split(leg,options));}
  function placesFor(legs){
   const visited=new Set();
   for(const leg of legs||[]){visited.add(leg.from);visited.add(leg.to);}
@@ -102,7 +108,7 @@
    if(!liftCount)totals.liftComplete=false;
    return totals;
  }
- function buildTimeline(plan,route){
+ function buildTimeline(plan,route,options={}){
   if(!plan?.ok)return {steps:[],warnings:['Ongeldige dagplanning'],pois:[]};
   const phases=route?.phases||{preLunch:route?.steps||[],postLunch:[],return:[]};
   const warnings=[],events=[];
@@ -116,7 +122,7 @@
   let returnSlot=plan.sections.find(s=>s.type==='return');
   if(from===null||safe===null||end===null)return {steps:[],warnings:['Tijdnotatie onbekend'],pois:[]};
   function fillPhase(legs,slots,kind,location){
-   const parts=buildSegments(legs);
+   const parts=buildSegments(legs,options);
    const capacity=duration(slots);
    if(estimate(legs)>capacity)warnings.push('⚠️ '+kind+': verbindingen duren naar schatting '+estimate(legs)+' min, beschikbare skitijd slechts '+capacity+' min.');
    let index=0;
@@ -147,7 +153,7 @@
   fillPhase(phases.postLunch,afternoon,'Na de lunch',route?.scenicTarget||'Buiten het startgebied');
   if(returnSlot){
    const start=returnSlot.startMinute;
-   const returnParts=buildSegments(phases.return);
+   const returnParts=buildSegments(phases.return,options);
    let now=start;
    for(const step of returnParts){
     if(now+step.minutes>safe){
@@ -170,6 +176,7 @@
    const nearby=events.find(step=>step.area===p.area&&['lift','piste','transfer'].includes(step.type));
    return {...p,estimatedNearTime:nearby?.end||null};
   });
+  if(events.some(x=>x.type==='transfer'&&/kleur onbekend|niet passend bij jouw pistekeuze/.test(x.label)))warnings.push('Sommige pisteverbindingen zijn niet automatisch voorgesteld wegens onbekende pistekleur of gekozen skiniveau. De dagroute is op die punten nog niet compleet gecontroleerd.');
   if(!pois.length)warnings.push('Er zijn voor deze route nog geen officieel onderbouwde WC-locaties bekend; vraag ter plaatse.');
   else warnings.push('🚻 WC-locaties zijn mogelijke stops nabij de route, niet automatisch gegarandeerde toiletten op jouw piste.');
   return {steps:events,pois,warnings,routeMinutes:estimate(route?.steps),liftMinutes:events.filter(x=>x.type==='lift').reduce((sum,x)=>sum+x.minutes,0),

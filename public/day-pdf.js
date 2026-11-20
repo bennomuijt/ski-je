@@ -200,7 +200,14 @@
   }
   if(!items.length)lines(ctx,'Geen officieel onderbouwde WC-plek langs deze gebiedsroute gevonden. Vraag bij liftstations of restaurants.',68,y+50,1070,21,3,COL.ink);
  }
- function summaryPage(ctx,data){
+ function distanceText(itinerary,type){
+   const data=window.SKIRouteDetail?.routeDistances?.(itinerary);
+   if(!data)return 'Niet bekend';
+   const km=type==='piste'?data.pisteKm:data.liftKm;
+   const complete=type==='piste'?data.pisteComplete:data.liftComplete;
+   return complete?km.toFixed(2)+' km':km>0?'Minimaal '+km.toFixed(2)+' km (onvolledig)':'Niet bekend';
+  }
+  function summaryPage(ctx,data){
   const {plan,route,itinerary}=data;
   label(ctx,'ROUTEVERSLAG & CONTROLE',62,293,36,COL.navy,true);
   label(ctx,'Vertrek: '+plan.startPoint,62,340,23,COL.ink,true);
@@ -208,6 +215,8 @@
   label(ctx,'Datum: '+(plan.date||'-')+'    '+plan.departure+' - '+plan.returnTime,62,408,22,COL.blue,true);
   const cards=[
    ['VOORGESTELDE REISTIJD',(itinerary?.routeMinutes||0)+' minuten'],
+    ['PISTEKILOMETERS',distanceText(itinerary,'piste')],
+    ['LIFTKILOMETERS',distanceText(itinerary,'lift')],
    ['IN LIFTEN (GESCHAT)',(itinerary?.liftMinutes||0)+' minuten'],
    ['OP PISTES (GESCHAT)',(itinerary?.pisteMinutes||0)+' minuten'],
    ['LUNCH',plan.useLunch?plan.lunchMinutes+' minuten':'Niet ingepland'],

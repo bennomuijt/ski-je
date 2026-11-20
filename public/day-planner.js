@@ -18,7 +18,10 @@
  const earliestReturn=result.useLunch?lunch+lunchDuration:start;
  if(safe-earliestReturn<25){result.reason='Er blijft te weinig tijd over om de terugweg veilig te plannen.';return result;}
  let endSki=safe;
- const reserve=Math.min(75,Math.max(35,Math.floor((safe-start-lunchDuration-(result.morningBreak?30:0)-(result.afternoonBreak?30:0))*.20)));
+ const estimatedReturn=Number(input.returnEstimate);
+ const baseReserve=Math.min(75,Math.max(35,Math.floor((safe-start-lunchDuration-(result.morningBreak?30:0)-(result.afternoonBreak?30:0))*.20)));
+ // Never pretend the return trip fits into 35–75 min when known area connections need longer.
+ const reserve=Number.isFinite(estimatedReturn)&&estimatedReturn>0?Math.max(baseReserve,Math.ceil(estimatedReturn)+15):baseReserve;
  if(endSki-reserve<start+30){result.reason='Te weinig tijd voor een bruikbare skidag met veiligheidsmarge.';return result;}
  const push=(begin,finish,type,label,detail)=>{
   if(finish<=begin)return;

@@ -29,6 +29,7 @@
  };
  // Reserve time for the return; this is not an asserted travel-time calculation.
  const finalLegStart=safe-reserve;
+ if(result.useLunch&&finalLegStart<lunch+lunchDuration+10){result.reason='De lunch en terugweg passen niet samen. Vertrek eerder, lunch korter of kies een dichterbij gelegen route.';return result;}
  let cursor=start;
  let chunks=[];
  if(result.useLunch)chunks=[{at:lunch,duration:lunchDuration,type:'lunch',label:result.lunchRestaurant&&result.lunchRestaurant!=='Geen voorkeur, laat SKI-je kiezen'?'Lunch bij '+result.lunchRestaurant:'Lunchpauze',detail:'Restaurant en bereikbaarheid ter plaatse controleren.'}];

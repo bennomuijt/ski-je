@@ -100,7 +100,9 @@ export class SkiPhotoBoard {
    const item=await this.ctx.storage.get('p:'+id);
    if(!item||item.status!=='pending')return bad('Foto is niet meer in behandeling.',404);
    if(decision==='reject'){await this.ctx.storage.delete('p:'+id);return response({ok:true,status:'rejected'});}
-   if(!item.gps||!skiWelt(item.gps))return bad('GPS ontbreekt of ligt buiten SkiWelt. Deze inzending afwijzen of opnieuw laten fotograferen.',400);
+   const match=this.check(item,await this.readAll());
+   if(['no-gps','outside','uncertain','mismatch','unverified'].includes(match.state)&&data.manualOverride!==true)
+    return bad('Deze GPS-controle is niet sluitend. Controleer de foto en vink handmatige locatiecontrole aan.',400);
    item.status='approved';item.reviewedAt=Date.now();item.visitor=null;
    item.gpsVerified=Boolean(data.verifyLocation)&&item.gps.accuracy<=50;
    await this.ctx.storage.put('p:'+item.id,item);

@@ -215,3 +215,18 @@ body.utility-open{overflow:hidden}
  #pano-modal .pano-viewport{min-height:155px}
  #pano-modal .pano-bottom{padding-bottom:calc(9px + env(safe-area-inset-bottom,0px))}
 }
+
+/* SKI-je veilige zwarte-pistekeuze en kaart-hutten */
+.black-piste-choice{margin:12px 0;padding:12px;border:2px solid #edb363;border-radius:12px;background:#fff8e9}
+.black-piste-choice legend{font-size:14px;font-weight:800;color:#754614;padding:0 5px}
+.black-piste-choice label{display:inline-flex;align-items:center;gap:6px;min-height:45px;margin-right:16px;font-size:13px;font-weight:700}
+.black-piste-choice input{accent-color:#b3550b;width:21px;height:21px}
+.ski-distance-summary{display:flex;gap:8px;flex-wrap:wrap}
+.pano-hut-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.pano-hut{position:absolute;pointer-events:auto;transform:translate(-50%,-50%);border:2px solid white;box-shadow:0 2px 8px #0638598c;background:#ffd588;color:#532c08;border-radius:50%;min-width:35px;min-height:35px;font-size:19px;cursor:pointer;touch-action:manipulation}
+.pano-hut:focus-visible{outline:3px solid #002bff;outline-offset:2px}
+.pano-hut-info{padding:9px 12px;flex:none;background:#fff8e8;color:#51361b;border-top:1px solid #f0d08f;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pano-hut-info[hidden]{display:none}
+.pano-hut-info strong{display:block}
+.pano-hut-info a{color:#075c93;font-weight:750}
+.pano-hut-info button{border:1px solid #c7b89d;border-radius:8px;background:white;min-height:40px;min-width:40px;font-size:18px}

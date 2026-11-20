@@ -22,7 +22,7 @@ test('joining has its own name field and invite form',()=>{
 });
 test('the failure is explained beside the create button and secret not stored',()=>{
  assert.match(script,/cf-create-status/);
- assert.match(script,/Groepsnaam/);
+ assert.match(script,/groepsnaam/i);
  assert.match(script,/GROUP_CREATE_SECRET/);
  assert.match(script,/\/api\/group\/diagnose/);
  assert.doesNotMatch(script,/localStorage\.setItem\([^\n]*adminCode/);

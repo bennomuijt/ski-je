@@ -25,7 +25,7 @@ function adminReady(env){return typeof env.GROUP_CREATE_SECRET==='string'&&env.G
 export default {
  async fetch(request,env){
   const url=new URL(request.url);const p=url.pathname;
-  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.1.0-cf',groups:!!env.GROUPS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.2.0-cf',groups:!!env.GROUPS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
   if(p.startsWith('/api/')){
    if(!sameOrigin(request))return fail('Verzoek van ander domein geweigerd.',403);
    if(p==='/api/group/socket'){

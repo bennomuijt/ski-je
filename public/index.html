@@ -229,8 +229,12 @@ body.legal-open{overflow:hidden}
           <div id="lunch-settings">
             <div class="field"><label for="lunch-restaurant">Lunchrestaurant</label><select id="lunch-restaurant"><option value="">Geen voorkeur, laat SKI-je kiezen</option></select></div>
             <div class="grid">
-              <div class="field"><label for="lunch-time">Gewenste lunchtijd</label><select id="lunch-time"><option>11:45</option><option>12:00</option><option selected>12:30</option><option>13:15</option></select></div>
-              <div class="field"><label for="lunch-duration">Duur: <output id="lunch-duration-value" for="lunch-duration">60 min</output></label><input type="range" id="lunch-duration" min="30" max="120" step="15" value="60" aria-label="Duur van de lunch in minuten"><div class="range-ends"><span>30 min</span><span>120 min</span></div></div>
+              <div class="field"><label for="lunch-time">Gewenste lunchtijd (per minuut)</label>
+  <input id="lunch-time" type="time" lang="nl-NL" value="12:30" min="11:45" max="13:15" step="60" aria-describedby="lunch-time-help">
+  <input id="lunch-time-slider" type="range" min="705" max="795" step="1" value="750" aria-label="Lunchtijd per minuut aanpassen">
+  <div class="range-ends"><span>11:45</span><output id="lunch-time-display" for="lunch-time lunch-time-slider">12:30</output><span>13:15</span></div>
+  <p class="hint" id="lunch-time-help">Schuif of kies zelf een tijd tussen 11:45 en 13:15, op de minuut nauwkeurig.</p></div>
+              <div class="field"><label for="lunch-duration">Duur: <output id="lunch-duration-value" for="lunch-duration">60 min</output></label><input type="range" id="lunch-duration" min="30" max="120" step="1" value="60" aria-label="Duur van de lunch in minuten"><div class="range-ends"><span>30 min</span><span>120 min</span></div></div>
             </div>
           </div>
         </div>
@@ -251,6 +255,7 @@ body.legal-open{overflow:hidden}
       </details>
       <div class="toolbar plan-shortcuts"><button class="btn secondary small-btn" id="quick-return" type="button">&#8634; Terug naar start</button><button class="btn secondary small-btn" id="share-intent" type="button">&#128279; Deel alleen wensen</button></div>
       <button class="btn full" id="create">🧭 Stel mijn skidag samen</button>
+<button class="btn secondary full" type="button" id="return-home-planner">🏠 Kortste terugweg vanaf mijn GPS</button>
       <p class="hint">Je keuzes worden op dit apparaat onthouden. Terugrekenen houdt standaard 30 minuten veiligheidsmarge aan.</p>
       <div id="plan-output" class="route-summary" aria-live="polite"><strong>Jouw dag, eenvoudig gepland</strong><p class="muted">Kies start, eind en tijd; SKI-je maakt een volledige dagindeling.</p></div>
       <details class="closure-details" id="closed-report"><summary>⚠️ Gesloten piste of lift melden</summary>
@@ -271,7 +276,7 @@ body.legal-open{overflow:hidden}
     <h1 class="banner">📍 Mijn locatie & pistes</h1>
     <div class="card">
       <div class="row"><h2>Waar ben ik?</h2><span class="pill" id="inside-state">SkiWelt</span></div>
-      <div class="toolbar"><button class="btn" id="locate">◎ Toon mijn GPS</button><button class="btn secondary" id="follow-location" aria-pressed="false">▶ Live volgen</button><button class="btn secondary" id="cf-group-map" type="button">👥 Mijn groep</button><button class="btn secondary" id="copy-location" disabled>📋 Kopieer GPS</button><button class="btn" type="button" id="share-location-map">📤 Deel mijn locatie</button><button class="btn secondary" id="reset-map">🏔️ SkiWelt</button><button class="btn secondary" id="toggle-pistes" aria-pressed="true">⛷️ Pistes aan</button></div>
+      <div class="toolbar"><button class="btn" id="locate">◎ Toon mijn GPS</button><button class="btn secondary" id="follow-location" aria-pressed="false">▶ Live volgen</button><button class="btn secondary" id="cf-group-map" type="button">👥 Mijn groep</button><button class="btn secondary" id="copy-location" disabled>📋 Kopieer GPS</button><button class="btn" type="button" id="share-location-map">📤 Deel mijn locatie</button><button class="btn secondary" type="button" id="return-home-map">🏠 Terug naar eindpunt</button><button class="btn secondary" id="reset-map">🏔️ SkiWelt</button><button class="btn secondary" id="toggle-pistes" aria-pressed="true">⛷️ Pistes aan</button></div>
       <div class="toolbar checkpoint-quick"><button class="btn btn-checkpoint" type="button" id="checkpoint-map">&#128205; IJkpunt opslaan</button><button class="btn secondary" type="button" id="pano-open">&#127956; Panoramakaart groot</button></div>
       <div class="map" id="piste-map" role="region" aria-label="Geografische SkiWelt-kaart met pistes"></div><div class="static-fallback" id="map-fallback">Kaartbibliotheek niet geladen. Internet is nodig om kaartlagen op te halen.</div>
       <p class="gps-status" id="gps-status" role="status">GPS is uit om de batterij te sparen. Tik voor een eenmalige meting of start bewust live volgen.</p>
@@ -520,6 +525,19 @@ body.legal-open{overflow:hidden}
  <button type="button" class="btn secondary full" id="sos-copy">&#128203; Co&ouml;rdinaten kopi&euml;ren</button>
  <button type="button" class="btn full" id="share-location-sos">📤 Deel mijn locatie</button>
  </div></div></div>
+<div class="utility-modal" id="return-home-modal" hidden role="dialog" aria-modal="true" aria-labelledby="return-home-title">
+ <div class="utility-panel">
+  <div class="utility-head"><strong id="return-home-title">🏠 Snelste terugweg naar eindpunt</strong><button class="modal-close" id="return-home-close" type="button" aria-label="Sluiten">&times;</button></div>
+  <div class="utility-content">
+   <p class="hint">SKI-je gebruikt je GPS alleen op je toestel. De huidige piste en liftrichting zijn nog niet exact herkend; dit is een voorlopige route tussen skigebieden.</p>
+   <div id="return-home-status" class="gps-status" role="status" aria-live="polite">Tik op GPS ophalen.</div>
+   <div class="field"><label for="return-area-override">Geschat skigebied (controleer zelf)</label><select id="return-area-override" aria-label="Corrigeer herkend vertrekgebied"></select></div>
+   <div class="toolbar"><button class="btn" id="return-home-retry" type="button">◎ Nieuwe GPS-meting</button><button class="btn secondary" id="return-home-manual" type="button">Bereken vanaf gekozen gebied</button></div>
+   <div id="return-home-output" aria-live="polite"></div>
+   <p class="notice">⚠️ Geen turn-by-turn pisteherkenning. Niet bedoeld als veiligheidsnavigatie. Check de actuele lifttijden, afsluitingen en bewegwijzering. Bel in nood 112 of bergredding 140.</p>
+  </div>
+ </div>
+</div>
 <div class="utility-modal" id="share-location-modal" hidden role="dialog" aria-modal="true" aria-labelledby="share-location-title">
  <div class="utility-panel">
   <div class="utility-head"><strong id="share-location-title">📍 Locatie delen</strong><button class="modal-close" type="button" id="share-location-close" aria-label="Sluiten">&times;</button></div>
@@ -1044,9 +1062,12 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 <script src="route-engine.js" defer></script>
 <script src="day-planner.js" defer></script>
 <script src="skiwelt-corridors.js" defer></script>
+<script src="route-detail.js" defer></script>
 <script src="day-pdf.js" defer></script>
 <script src="extra.js" defer></script>
 <script src="day-ui.js" defer></script>
+<script src="return-home-ui.js" defer></script>
+<script src="lunch-minute.js" defer></script>
 <script src="share-location.js" defer></script>
 <script src="group-cloudflare.js" defer></script>
 <script src="backup-migration.js" defer></script>

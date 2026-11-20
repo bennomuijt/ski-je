@@ -22,3 +22,12 @@ jobs:
           result=$(curl -L -sS --max-time 40 -o /dev/null -w '%{http_code} %{content_type} %{size_download}' "$url" || true)
           echo "Official panorama: $result"
           # Do not fail unit tests due to temporary external media downtime.
+      - name: Probe public Cloudflare release (informational)
+        shell: bash
+        run: |
+          echo "Live health:"
+          curl -L -sS --max-time 18 -w '\nHTTP %{http_code} %{content_type}\n' 'https://ski-je.bennomuijt.workers.dev/api/health' || true
+          echo "Live full panorama:"
+          curl -L -sS --max-time 30 -o /dev/null -w 'HTTP %{http_code} %{content_type} %{size_download}\n' 'https://ski-je.bennomuijt.workers.dev/api/skimap.jpg' || true
+          echo "Live installation page:"
+          curl -L -sS --max-time 18 -o /dev/null -w 'HTTP %{http_code} %{content_type}\n' 'https://ski-je.bennomuijt.workers.dev/install.html' || true

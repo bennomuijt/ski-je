@@ -313,7 +313,7 @@
    style:document.querySelector('[data-style][aria-pressed="true"]')?.dataset.style||'relaxed',skill:$('skill').value,speed:$('speed').value,allowBlack:$('allow-black')?.checked===true&&$('skill').value!=='blue',
    wishes:[...$('wishes-list').querySelectorAll('select')].map(el=>el.value).filter(Boolean),useLunch:$('use-lunch').checked,lunchTime:$('lunch-time').value,
    lunchDuration:Number($('lunch-duration').value),lunchRestaurant:$('lunch-restaurant').value,
-   morningBreak:$('early-break').checked,afternoonBreak:$('late-break').checked};}
+   morningBreak:$('early-break').checked,morningDuration:Number($('early-duration')?.value||30),afternoonBreak:$('late-break').checked,afternoonDuration:Number($('late-duration')?.value||30),useSafety:$('use-safety').checked,safetyMarginMin:$('use-safety').checked?Number($('safety-duration').value):0};}
  let lastRoute=null;
  function showComputedRoute(){
    const settings=routeSettings(),result=engine.calculate(settings);lastRoute=result;

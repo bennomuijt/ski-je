@@ -416,17 +416,31 @@ body.legal-open{overflow:hidden}
 <details class="feature-fold" id="group-section"><summary>&#128101; Skigroep &amp; afspreken</summary>
       <p class="hint">Via Cloudflare kun je met maximaal 50 skiërs een afgeschermde skigroep vormen. Alleen leden met de uitnodigingslink kunnen aanmelden. <strong>GPS-delen staat altijd standaard uit.</strong> Posities worden niet blijvend op de server bewaard.</p>
       <div class="cf-panel" id="cf-group-before">
-        <h3>Live skigroep</h3>
-        <div class="field"><label for="cf-display-name">Jouw naam in de groep</label><input id="cf-display-name" maxlength="24" placeholder="Bijv. Ben"></div>
-        <div class="field"><label for="cf-room-invite">Uitnodigingslink of groepscode</label><input id="cf-room-invite" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Plak de link van de groepsbeheerder"></div>
-        <button id="cf-group-join" class="btn full" type="button">👥 Deelnemen aan skigroep</button>
-        <details><summary>+ Nieuwe groep aanmaken (beheerder)</summary>
-          <div class="field"><label for="cf-new-name">Groepsnaam</label><input id="cf-new-name" maxlength="60" placeholder="Wintersport SkiWelt 2026"></div>
-          <div class="field"><label for="cf-admin-code">Cloudflare-beheerderscode</label><input id="cf-admin-code" type="password" autocomplete="off" placeholder="De bij Cloudflare ingestelde geheime code"></div>
-          <p class="cf-small">De beheerdercode stel je één keer in op Cloudflare. Andere skiërs hebben hem niet nodig.</p>
-          <button id="cf-group-diagnose" class="btn clear full" type="button">🔎 Controleer groepsserver en beheerderscode-instelling</button>
-          <p class="cf-small">De controle leest alleen of de Cloudflare-code is ingesteld. Je geheime code wordt niet verzonden of getoond.</p>
-          <button id="cf-group-create" class="btn secondary full" type="button">+ Maak nieuwe skigroep</button>
+        <h3>👥 Skigroepen</h3>
+        <p class="cf-small">Begin zelf een groep of sluit je aan bij iemand anders. Je kiest zelf je groepsnaam.</p>
+        <details class="cf-mode" id="cf-group-create-panel" open>
+          <summary>➕ Nieuwe groep aanmaken</summary>
+          <div class="cf-mode-body">
+            <div class="field"><label for="cf-display-name"><b>1. Jouw naam</b> (zichtbaar voor groepsleden)</label><input id="cf-display-name" type="text" maxlength="24" autocomplete="nickname" placeholder="Bijvoorbeeld: Ben" aria-required="true"></div>
+            <div class="field"><label for="cf-new-name"><b>2. Groepsnaam</b> (vrij te kiezen)</label><input id="cf-new-name" type="text" maxlength="60" placeholder="Bijvoorbeeld: SkiWelt vrienden 2026" aria-required="true"></div>
+            <div class="field"><label for="cf-admin-code"><b>3. Beheerderscode</b> (alleen voor aanmaken)</label><input id="cf-admin-code" type="password" autocomplete="off" spellcheck="false" placeholder="Jouw GROUP_CREATE_SECRET" aria-required="true"></div>
+            <p class="cf-small">Vul de waarde van <code>GROUP_CREATE_SECRET</code> uit Cloudflare in. Deze code wordt niet op je telefoon opgeslagen of gedeeld met groepsleden.</p>
+            <button id="cf-group-create" class="btn full" type="button">➕ Groep aanmaken</button>
+            <p id="cf-create-status" class="cf-group-status" role="status" aria-live="polite">Vul de drie velden hierboven in en tik op Groep aanmaken.</p>
+            <details class="cf-troubleshoot"><summary>🔎 Groep aanmaken lukt niet?</summary>
+              <button id="cf-group-diagnose" class="btn secondary full" type="button">Controleer Cloudflare-groepsserver</button>
+              <p class="cf-small">Dit controleert of de server en code-instelling bestaan, niet of de ingevoerde code overeenkomt.</p>
+            </details>
+          </div>
+        </details>
+        <details class="cf-mode" id="cf-group-join-panel">
+          <summary>🔗 Deelnemen aan bestaande groep</summary>
+          <div class="cf-mode-body">
+            <div class="field"><label for="cf-join-name">Jouw naam voor deze groep</label><input id="cf-join-name" maxlength="24" placeholder="Bijvoorbeeld: Ben" autocomplete="nickname"></div>
+            <div class="field"><label for="cf-room-invite">Uitnodigingslink of groepscode</label><input id="cf-room-invite" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Plak de link van de groepsbeheerder"></div>
+            <button id="cf-group-join" class="btn secondary full" type="button">👥 Deelnemen aan skigroep</button>
+            <p id="cf-join-status" class="cf-group-status" role="status" aria-live="polite">Vraag de groepsbeheerder om een uitnodigingslink.</p>
+          </div>
         </details>
       </div>
       <div class="cf-panel" id="cf-group-active" hidden>
@@ -440,8 +454,8 @@ body.legal-open{overflow:hidden}
         <div class="cf-actions"><button class="btn clear cf-danger" type="button" id="cf-group-leave">Groep verlaten</button><button class="btn clear cf-danger" type="button" id="cf-close" hidden>Hele groep sluiten</button></div>
       </div>
       <p id="cf-group-status" class="cf-group-status" role="status" aria-live="polite">Maak een groep of plak een uitnodigingslink.</p>
-      <hr style="border:0;border-top:1px solid #d7e7f0;margin:16px 0"><h3>Afspraak delen</h3>
-      <div class="field"><label for="group-name">Groepsnaam</label><input id="group-name" maxlength="60" placeholder="Bijv. Wintersport 2026"></div>
+      <hr style="border:0;border-top:1px solid #d7e7f0;margin:16px 0"><h3>Losse afspraak delen</h3><p class="cf-small">Dit deelt alleen een afspraakbericht en maakt geen live skigroep aan.</p>
+      <div class="field"><label for="group-name">Naam bij de afspraak (optioneel)</label><input id="group-name" maxlength="60" placeholder="Bijv. Wintersport 2026"></div>
       <div class="field"><label for="meet-name">Ontmoetingsplek</label><input id="meet-name" maxlength="90" placeholder="Bijv. Hartkaiser bergstation"></div>
       <div class="field"><label for="meet-time">Tijd</label><input id="meet-time" type="time" value="12:30"></div>
       <button class="btn full" id="group-share" type="button">&#128279; Deel groepsafspraak</button>

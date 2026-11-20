@@ -58,6 +58,14 @@ test('invalid pictures, outside position and rapid repeat are restricted',async(
  for(let i=0;i<3;i++)assert.equal((await request(env,'submit',pic)).status,201);
  assert.equal((await request(env,'submit',pic)).status,429);
 });
+test('a manual-only photograph cannot be falsely marked as GPS-verified',async()=>{
+ const {env}=setup();
+ const uploaded=await request(env,'submit',{type:'lift',entity:'Testlift',image,gps:null});
+ assert.equal(uploaded.status,201);
+ const approved=await request(env,'review',{adminCode:env.GROUP_CREATE_SECRET,id:uploaded.body.id,decision:'approve',manualOverride:true,verifyLocation:true});
+ assert.equal(approved.status,200);
+ assert.equal(approved.body.gpsVerified,false);
+});
 test('restaurant layer is opt-in and Netlify references were removed',()=>{
  const root=new URL('../',import.meta.url);
  const html=readFileSync(new URL('public/index.html',root),'utf8');

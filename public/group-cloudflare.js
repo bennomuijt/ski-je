@@ -120,6 +120,16 @@
   $('cf-share-info').textContent='Uit. Je GPS-positie wordt niet naar groepsleden verzonden.';render();
  }
  function endSocket(){clearTimeout(reconnectTimer);reconnectTimer=null;if(ws){const old=ws;ws=null;try{old.close(1000,'App gepauzeerd');}catch{}}peers.clear();render();}
+ async function checkBackend(){
+  let response;
+  try{response=await fetch('/api/health?check='+Date.now(),{cache:'no-store',headers:{accept:'application/json'}});}
+  catch{throw Error('De Cloudflare-server is niet bereikbaar. Controleer internet en het appadres.');}
+  let data;try{data=await response.json();}catch{throw Error('Dit adres reageert niet als de SKI-je Cloudflare Worker. Controleer of je de workers.dev-versie gebruikt.');}
+  if(!response.ok||data?.service!=='SKI-je Cloudflare')throw Error('SKI-je-groepsserver reageert niet correct. Controleer je Worker-publicatie.');
+  if(!data.groups)throw Error('Cloudflare mist de GROUPS Durable Objects-binding. Publiceer de Worker met wrangler.jsonc.');
+  if(!data.createConfigured)throw Error('Beheerderscode ontbreekt in de actieve Worker: stel het secret GROUP_CREATE_SECRET in bij Cloudflare → Workers & Pages → ski-je → Instellingen → Variabelen en geheimen (minimaal 16 tekens).');
+  return data;
+ }
  async function api(path,data){const response=await fetch('/api/group/'+path,{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify(data)});
   let json;try{json=await response.json();}catch{throw Error('Geen geldig antwoord van Cloudflare.');}
   if(!response.ok||!json?.ok)throw Error(json?.error||'Cloudflare antwoordt niet.');return json;
@@ -132,7 +142,7 @@
   const adminCode=$('cf-admin-code').value.trim(),memberName=cleanName($('cf-display-name').value),name=$('cf-new-name').value.trim().slice(0,60);
   if(!adminCode||!memberName){status('Vul jouw naam én de Cloudflare-beheerderscode in.',true);return;}
   const button=$('cf-group-create');button.disabled=true;
-  try{const data=await api('create',{adminCode,memberName,name});$('cf-admin-code').value='';startSession(data,data.room,memberName);status('Nieuwe groep aangemaakt. Deel de uitnodigingslink met je skigroep.');}
+  try{await checkBackend();const data=await api('create',{adminCode,memberName,name});$('cf-admin-code').value='';startSession(data,data.room,memberName);status('Nieuwe groep aangemaakt. Deel de uitnodigingslink met je skigroep.');}
   catch(e){status(e.message,true);}finally{button.disabled=false;}
  });
  $('cf-group-join').addEventListener('click',async()=>{

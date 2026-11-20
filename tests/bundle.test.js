@@ -19,7 +19,7 @@ test('legal protection chapter, visible version and first-use acknowledgement ex
  assert.match(html,/Nederlands recht/);
  assert.match(html,/De gebruiker vrijwaart BenMu Development/);
  assert.match(html,/wettelijk toegestaan/);
- assert.match(html,/v4\.5\.4/);
+ assert.match(html,/v4\.5\.5/);
  assert.match(sw,/v4-5-5-photo-review-restaurants/);
 });
 test('offline app files cached and private group API requests excluded from SW',()=>{

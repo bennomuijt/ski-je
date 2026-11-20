@@ -1,10 +1,11 @@
 /* SKI-je v4.3: online update of the existing PWA (without deleting local user data). */
 (()=>{
  'use strict';
- const CURRENT='4.4.1-cf';
+ const CURRENT='4.5.0-cf';
  const buttons=['app-update-now','check-update'].map(id=>document.getElementById(id)).filter(Boolean);
  const status=document.getElementById('app-update-status');
  let busy=false;
+ const setState=state=>{for(const b of buttons){b.classList.remove('is-updating','is-current','is-failed');if(state)b.classList.add(state);if(b.id==='app-update-now')b.textContent=state==='is-updating'?'⏳ Controleren…':state==='is-current'?'✓ Bijgewerkt':state==='is-failed'?'⚠ Opnieuw':'↻ Update';}};
  const say=(message)=>{if(status)status.textContent=message;};
  const semver=(value)=>String(value||'').match(/^\s*v?(\d+)\.(\d+)\.(\d+)/)?.slice(1).map(Number)||null;
  function newer(a,b){
@@ -16,7 +17,8 @@
  }
  async function refresh(){
    if(busy)return;
-   if(!navigator.onLine){say('Offline: internetverbinding nodig om SKI-je bij te werken.');return;}
+   setState('is-updating');
+   if(!navigator.onLine){setState('is-failed');say('Offline: internetverbinding nodig om SKI-je bij te werken.');return;}
    busy=true;for(const b of buttons){b.disabled=true;b.setAttribute('aria-busy','true');}
    say('Controleren of er een nieuwe SKI-je-versie is…');
    try{
@@ -37,17 +39,17 @@
        }
      }
      if(isNewer){
-       say('Nieuwe versie '+live+' beschikbaar. SKI-je wordt nu vernieuwd…');
+       setState('is-current');say('Nieuwe versie '+live+' beschikbaar. SKI-je wordt nu vernieuwd…');
        // Navigation is network-first in our SW. Avoid touching localStorage/IndexedDB.
        const url=new URL(location.href);url.searchParams.set('skije-update',live);url.searchParams.set('t',String(Date.now()));
        location.replace(url.href);
      }else if(live===CURRENT||semver(live).join('.')===semver(CURRENT).join('.')){
-       say('Je gebruikt de nieuwste versie '+CURRENT+'. Je routes, GPS-ijkpunten en groepen blijven bewaard.');
+       setState('is-current');say('Je gebruikt de nieuwste versie '+CURRENT+'. Je routes, GPS-ijkpunten en groepen blijven bewaard.');
      }else{
-       say('Cloudflare heeft versie '+live+'; deze app toont '+CURRENT+'. Probeer later opnieuw of ververs de pagina.');
+       setState('is-failed');say('Cloudflare heeft versie '+live+'; deze app toont '+CURRENT+'. Probeer later opnieuw of ververs de pagina.');
      }
    }catch(error){
-     say('Updatecontrole niet gelukt. Controleer je internetverbinding en probeer opnieuw.');
+     setState('is-failed');say('Updatecontrole niet gelukt. Controleer je internetverbinding en probeer opnieuw.');
    }finally{
      busy=false;for(const b of buttons){b.disabled=false;b.removeAttribute('aria-busy');}
    }

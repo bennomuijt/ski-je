@@ -31,7 +31,7 @@
     id:safeText(raw.id||`${from}-${to}-${name}`),from,to,name,
     code:safeText(raw.code||'',32),type,level,lengthKm,
     minutes,waitMinutes,closingTime,
-    verified:raw.verified===true,
+    verified:raw.verified===true,mapListed:raw.mapListed===true,
     status:['open','closed','unknown'].includes(raw.status)?raw.status:'unknown',
     updatedAt:safeText(raw.updatedAt||'',60),
     source:safeText(raw.source||'Lokale meting',100),
@@ -55,7 +55,7 @@
  }
  function shortest(edges,origin,target,atMinute,opts={}){
   if(origin===target)return {steps:[],finishAt:atMinute,weight:0};
-  const usable=edges.filter(e=>e.verified&&e.status!=='closed'&&
+  const usable=edges.filter(e=>(e.verified||e.mapListed)&&e.status!=='closed'&&
     (e.type!=='piste'||LEVELS[e.level]<=LEVELS[opts.skill||'red']));
   const map=new Map();for(const e of usable){if(!map.has(e.from))map.set(e.from,[]);map.get(e.from).push(e);}
   const best=new Map([[origin,{weight:0,at:atMinute,prev:null,edge:null}]]);const waiting=new Set([origin]);
@@ -94,7 +94,7 @@
      const node=TOPS[want];const available=edges.some(e=>e.from===node||e.to===node);
      if(available)result.push({type:'node',name:node,original:want});else missing.push(want);
    }else if(want.startsWith('piste:')||want.startsWith('lift:')){
-     const candidates=edges.filter(e=>e.code===want&&e.verified);
+     const candidates=edges.filter(e=>e.code===want&&(e.verified||e.mapListed));
      if(candidates.length)result.push({type:'edge',edge:candidates[0],original:want});else missing.push(want);
    }else{missing.push(want);}
   }
@@ -105,7 +105,7 @@
   if(begin===null||end===null||end<=begin+90)return {ok:false,reason:'Controleer vertrek- en terugkeertijd.'};
   if(useLunch&&(!Number.isFinite(Number(lunchDuration))||Number(lunchDuration)<30||Number(lunchDuration)>120||lunchtime===null||lunchtime<clock('11:45')||lunchtime>clock('13:15')))
     return {ok:false,reason:'Lunch moet tussen 11:45 en 13:15 beginnen; duur 30 tot 120 minuten.'};
-  const checked=edges.map(normalizedEdge).filter(e=>e?.verified);
+  const checked=edges.map(normalizedEdge).filter(e=>e&&(e.verified||e.mapListed));
   if(!checked.length)return {ok:false,reason:'Nog geen gecontroleerd piste-/liftnetwerk. Importeer eerst gecontroleerde verbindingen.',missingNetwork:true};
   if(!start||!finish)return {ok:false,reason:'Kies een startpunt en eindpunt.'};
   const via=requestedStops(wishes,checked);
@@ -125,7 +125,7 @@
     const p=shortest(checked,current,target,at,opts);if(!p)return false;
     for(const edge of p.steps){const duration=segmentMinutes(edge,skill,speed);
       const startAt=at;at+=duration;steps.push({edge,startAt,endAt:at,duration});
-      if(edge.status==='unknown')notes.push('Status onbekend: '+edge.name);
+      if(edge.status==='unknown')notes.push('⚠ Niet live gecontroleerd; op kaart aangenomen open: '+edge.name);if(edge.mapListed&&!edge.verified)notes.push('⚠ Kaartverbinding niet met GPS gecontroleerd: '+edge.name);
       if(!edge.minutes)notes.push('Tijd geschat voor '+edge.name);
       current=edge.to;
     }
@@ -180,7 +180,7 @@
     steps,travelMinutes,lunchMinutes,breakMinutes,startTime:departure,arrival:hhmm(realArrival),arrivalMinute:realArrival,scheduledLunch:scheduledLunchAt===null?null:hhmm(scheduledLunchAt),
     latestArrival:hhmm(latestArrival),marginMinutes:latestArrival-realArrival,warnings,edgeCount:steps.length,
     statusVerified:steps.every(s=>s.edge.status==='open'),
-    estimatesUsed:steps.some(s=>s.edge.minutes===0),model:'User-verified, no official guarantee'};
+    estimatesUsed:steps.some(s=>s.edge.minutes===0),model:steps.every(s=>s.edge.verified)?'User-verified, no official guarantee':'Map-listed provisional, not live verified'};
  }
  return {clock,hhmm,normalizedEdge,importNetwork,segmentMinutes,shortest,calculate,requestedStops};
 });

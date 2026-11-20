@@ -87,7 +87,31 @@
  $('pano-open').addEventListener('click',()=>{if(!$('pano-img').src||!$('pano-img').hasAttribute('src'))$('pano-img').src=$('pano-img').dataset.src;zoom=1;panX=panY=0;updatePano();ownModal('pano-modal');});
  $('pano-plus').addEventListener('click',()=>{zoom=limit(zoom+.4,1,4);updatePano();});
  $('pano-minus').addEventListener('click',()=>{zoom=limit(zoom-.4,1,4);if(zoom===1)panX=panY=0;updatePano();});
- $('pano-reset').addEventListener('click',()=>{zoom=1;panX=panY=0;updatePano();});
+ $('pano-reset').addEventListener('click',()=>{zoom=1;panX=panY=0;updatePano();if($('pano-focus'))$('pano-focus').value='overview';});
+ const panoCenters={going:[.27,.38],ellmau:[.27,.45],scheffau:[.22,.55],soll:[.35,.72],itter:[.46,.86],hopfgarten:[.68,.84],brixen:[.73,.46],westendorf:[.79,.67]};
+ $('pano-focus').addEventListener('change',()=>{
+   const center=panoCenters[$('pano-focus').value];
+   if(!center){zoom=1;panX=panY=0;updatePano();return;}
+   zoom=2.6;const box=$('pano-viewport').getBoundingClientRect();
+   panX=(.5-center[0])*box.width*zoom;panY=(.5-center[1])*box.height*zoom;updatePano();
+ });
+ $('pano-focus-open').addEventListener('click',()=>{
+   $('pano-open').click();$('pano-focus').value=$('pano-quick-area').value;
+   $('pano-focus').dispatchEvent(new Event('change',{bubbles:true}));
+ });
+ const panoImg=$('pano-img');
+ panoImg.addEventListener('error',()=>{
+   if(!panoImg.src.endsWith('Kaart%202026-2027.png')){
+     panoImg.src='Kaart%202026-2027.png';
+     $('pano-map-status').textContent='⚠️ Volledige kaart tijdelijk niet bereikbaar. Dit is alleen de oude uitsnede; probeer later opnieuw.';
+   }
+ });
+ const preview=$('page-map').querySelector('.preview img');
+ if(preview)preview.addEventListener('error',()=>{
+   if(!preview.src.endsWith('Kaart%202026-2027.png')){
+     preview.src='Kaart%202026-2027.png';$('pano-download-note').textContent='⚠️ Volledige panorama tijdelijk niet beschikbaar; de kleine uitsnede is getoond. Probeer later opnieuw.';
+   }
+ });
  $('pano-viewport').addEventListener('pointerdown',e=>{if(zoom<=1)return;panoDown={id:e.pointerId,x:e.clientX,y:e.clientY,startX:panX,startY:panY};$('pano-viewport').setPointerCapture(e.pointerId);});
  $('pano-viewport').addEventListener('pointermove',e=>{if(!panoDown||panoDown.id!==e.pointerId)return;panX=panoDown.startX+e.clientX-panoDown.x;panY=panoDown.startY+e.clientY-panoDown.y;updatePano();});
  const clearPan=()=>panoDown=null;$('pano-viewport').addEventListener('pointerup',clearPan);$('pano-viewport').addEventListener('pointercancel',clearPan);
@@ -231,7 +255,7 @@
    $('plan-output').innerHTML=`<strong>Route berekend op eigen controledata</strong><p><b>${result.edgeCount} verbindingen</b> | geschatte aankomst <b>${result.arrival}</b> | terugdoel <b>${result.latestArrival}</b> | reserve <b>${result.marginMinutes} min</b></p><div class="route-steps">${steps}</div>${notes?'<details><summary>Waarschuwingen ('+result.warnings.length+')</summary><ul>'+notes+'</ul></details>':''}<p class="hint">Niet-officieel gebruikersnetwerk; live liftstatus en alle pisterichtingen zijn niet onafhankelijk geverifieerd. Gebruik deze route niet als enige navigatie.</p>`;
  }
  // Replace the summary-only prototype action with a real conservative solver.
- $('create').addEventListener('click',e=>{e.stopImmediatePropagation();showComputedRoute();},true);
+ $('create').addEventListener('click',e=>{e.stopImmediatePropagation();if(window.SKIDayUI?.render)window.SKIDayUI.render();else showComputedRoute();},true);
  $('quick-return').addEventListener('click',()=>{const same=$('same-end');same.checked=true;same.dispatchEvent(new Event('change',{bubbles:true}));showToast('Eindpunt teruggezet naar je startpunt.');});
  $('share-intent').addEventListener('click',()=>{
   const s=routeSettings();let message='SKI-je skiroute\n'+s.start+' -> '+s.finish+'\n'+s.departure+' tot '+s.returnTime+' (30 min veiligheidsmarge)';
@@ -395,7 +419,13 @@
  // Mountain-vs-valley model comparison, loaded only after explicit tap.
  const AREAS={
   salve:[{name:'Hohe Salve (berg)',lat:47.46508,lng:12.20384,elevation:1829},{name:'S\u00f6ll (dal, benadering)',lat:47.503,lng:12.192,elevation:700}],
-  hartkaiser:[{name:'Hartkaiser (berg)',lat:47.49194,lng:12.27167,elevation:1555},{name:'Ellmau (dal, benadering)',lat:47.514,lng:12.301,elevation:820}]
+  hartkaiser:[{name:'Hartkaiser (berg)',lat:47.49194,lng:12.27167,elevation:1555},{name:'Ellmau (dal, benadering)',lat:47.514,lng:12.301,elevation:820}],
+  scheffau:[{name:'Brandstadl (berg, benadering)',lat:47.490,lng:12.258,elevation:1650},{name:'Scheffau (dal, benadering)',lat:47.529,lng:12.251,elevation:745}],
+  brixen:[{name:'Hochbrixen (berg, benadering)',lat:47.457,lng:12.239,elevation:1300},{name:'Brixen im Thale (dal, benadering)',lat:47.449,lng:12.251,elevation:790}],
+  westendorf:[{name:'Choralpe (berg, benadering)',lat:47.413,lng:12.235,elevation:1820},{name:'Westendorf (dal, benadering)',lat:47.436,lng:12.213,elevation:790}],
+  going:[{name:'Astberg (berg, benadering)',lat:47.505,lng:12.337,elevation:1267},{name:'Going (dal, benadering)',lat:47.531,lng:12.328,elevation:800}],
+  itter:[{name:'Kleine Salve (berg, benadering)',lat:47.454,lng:12.168,elevation:1565},{name:'Itter (dal, benadering)',lat:47.472,lng:12.142,elevation:703}],
+  hopfgarten:[{name:'Hohe Salve (berg)',lat:47.46508,lng:12.20384,elevation:1829},{name:'Hopfgarten (dal, benadering)',lat:47.451,lng:12.156,elevation:621}]
  };
  const compareCache=new Map(Object.entries(store.windComparison||{}).filter(([,entry])=>entry&&now()-entry.at<7*86400000));
  function compareHTML(items,note){
@@ -497,5 +527,5 @@
  });
  window.addEventListener('appinstalled',()=>{$('install-app').hidden=true;$('install-help').textContent='SKI-je staat op je beginscherm.';});
  // Be transparent about what this installation does and does not do.
- window.SKIFeatures={version:'4.4.1-cf',routeAvailable:()=>store.network.some(e=>e.verified),getCounts:()=>({checkpoints:store.checkpoints.length,issues:store.issues.length,days:store.days.length,edges:store.network.length}),isTracking:()=>!!session&&!session.paused};
+ window.SKIFeatures={version:'4.5.0-cf',routeAvailable:()=>store.network.some(e=>e.verified),getCounts:()=>({checkpoints:store.checkpoints.length,issues:store.issues.length,days:store.days.length,edges:store.network.length}),isTracking:()=>!!session&&!session.paused};
 })();

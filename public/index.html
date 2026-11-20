@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07538c">
-<link rel="manifest" href="manifest.webmanifest?v=440">
+<link rel="manifest" href="manifest.webmanifest?v=450">
 <link rel="icon" type="image/svg+xml" href="brand-skije.svg?v=440">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192-v43.png">
 <link rel="apple-touch-icon" href="icons/icon-192-v43.png">
@@ -195,7 +195,7 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.4.1</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.0</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -249,12 +249,23 @@ body.legal-open{overflow:hidden}
         </div>
         <p class="hint">Dit zijn routewensen, geen bevestigde piste- of liftverbindingen. Controleer actuele status en sluitingstijden voor vertrek.</p>
       </details>
-      <div class="toolbar plan-shortcuts"><button class="btn secondary" id="quick-return" type="button">&#8634; Terug naar start</button><button class="btn secondary" id="share-intent" type="button">&#128279; Deel routewensen</button></div>
+      <div class="toolbar plan-shortcuts"><button class="btn secondary small-btn" id="quick-return" type="button">&#8634; Terug naar start</button><button class="btn secondary small-btn" id="share-intent" type="button">&#128279; Deel alleen wensen</button></div>
       <button class="btn full" id="create">🧭 Stel mijn skidag samen</button>
       <p class="hint">Je keuzes worden op dit apparaat onthouden. Terugrekenen houdt standaard 30 minuten veiligheidsmarge aan.</p>
-      <div id="plan-output" class="route-summary" aria-live="polite"><strong>Jouw dag, eenvoudig gepland</strong><p class="muted">Vul alleen je startpunt en terugkeertijd in. De rest staat al goed.</p></div>
+      <div id="plan-output" class="route-summary" aria-live="polite"><strong>Jouw dag, eenvoudig gepland</strong><p class="muted">Kies start, eind en tijd; SKI-je maakt een volledige dagindeling.</p></div>
+      <details class="closure-details" id="closed-report"><summary>⚠️ Gesloten piste of lift melden</summary>
+       <p class="hint">Meld zelf een afgesloten piste of lift. SKI-je vermijdt bekende gemelde verbindingen bij volgende berekeningen. Deze informatie blijft op jouw telefoon.</p>
+       <form id="closed-form" class="closure-form">
+        <div class="field"><label for="closed-kind">Wat is gesloten?</label><select id="closed-kind"><option value="piste">Piste</option><option value="lift">Lift</option><option value="corridor">Gebiedsverbinding</option></select></div>
+        <div class="field"><label for="closed-code">Nummer of verbindingscode</label><input id="closed-code" type="text" maxlength="20" placeholder="Bijv. 99a" required></div>
+        <div class="field"><label for="closed-note">Toelichting (optioneel)</label><input id="closed-note" maxlength="150" placeholder="Bijv. afgezet met netten"></div>
+        <button class="btn secondary full" type="submit">⚠️ Sluiting melden</button>
+       </form>
+       <div id="closed-status" class="gps-status" role="status" aria-live="polite"></div>
+       <div id="closed-list"></div>
+      </details>
     </div>
-    <div class="notice">Dit is een <strong>ontwerp- en interfaceproef</strong>, niet de volledige routeberekening. Liften, pistes, reistijden en overstappen worden pas als route getoond wanneer ze geografisch gecontroleerd zijn. Gebruik dit niet als veiligheidsnavigatie.</div>
+    <p class="hint">⚠️ Gebiedsverbindingen uit de officiële SkiWelt-kaart worden voor de planning als beschikbaar aangenomen zolang er geen sluiting gemeld is. De route en reistijden zijn indicatief, niet live gecontroleerd. Officiële informatie is altijd leidend.</p>
   </section>
   <section class="mode" id="page-map" aria-label="GPS-kaart">
     <h1 class="banner">📍 Mijn locatie & pistes</h1>
@@ -268,8 +279,12 @@ body.legal-open{overflow:hidden}
       <div class="notice">De GPS is niet altijd nauwkeurig genoeg voor pisteherkenning. Blijf op borden en officiële aanwijzingen vertrouwen; meetfouten komen vaak voor bij liften, bos en steile hellingen.</div>
     </div>
     <div class="card"><div class="row"><h2>🏔️ SkiWelt panoramakaart</h2><span class="pill">Referentie</span></div>
-      <div class="preview"><img data-src="Kaart%202026-2027.png" alt="Uitsnede van de SkiWelt kaart 2026-2027 met pistes en liften" loading="lazy" decoding="async"></div>
-      <p class="hint">Deze aangeleverde uitsnede is een getekende panoramakaart. Daarom plaatsen we er <strong>geen GPS-punt op alsof de afbeelding geografisch exact is</strong>. De GPS-kaart hierboven doet dat wél.</p>
+      <div class="field"><label for="pano-quick-area">Waar ben je? Zoom naar:</label><select id="pano-quick-area">
+<option value="overview">Hele SkiWelt</option><option value="going">Going</option><option value="ellmau">Ellmau</option><option value="scheffau">Scheffau</option><option value="soll">Söll</option><option value="itter">Itter</option><option value="hopfgarten">Hopfgarten</option><option value="brixen">Brixen im Thale</option><option value="westendorf">Westendorf</option></select></div>
+<button id="pano-focus-open" type="button" class="btn full">🏔️ Toon volledige kaart en zoom in</button>
+<div class="preview"><img data-src="/api/skimap.jpg" alt="Volledige officiële SkiWelt-panorama 2026-2027 met pistes en liften" loading="lazy" decoding="async"></div>
+<p class="hint" id="pano-download-note">Volledige officiële SkiWelt-panorama uit 2026–2027, getoond binnen SKI-je. Bij slechte verbinding kan tijdelijk alleen de oude uitsnede geladen worden.</p>
+      <p class="hint">Op de panoramakaart zoom je naar een skidorp; dit is een illustratie en geen exacte GPS-ondergrond. De GPS-kaart hierboven toont je werkelijke locatie.</p>
     </div>
   </section>
   <section class="mode" id="page-weather" aria-label="Weer en buienradar">
@@ -290,14 +305,14 @@ body.legal-open{overflow:hidden}
     </div>
     <div class="card"><div class="row"><h2>🌧️ Buienradar</h2><span class="pill">Historische radar</span></div>
       <div class="map radar" id="radar-map" data-loaded="false" role="region" aria-label="Radarkaart neerslag rond SkiWelt"></div>
-      <div class="toolbar"><button class="btn" id="radar-load">🛰️ Toon radar</button><button class="btn secondary small-btn" id="radar-play" disabled>▶ Korte animatie</button><button class="btn secondary small-btn" id="radar-refresh">↻ Radar verversen</button></div>
+      <div class="toolbar"><button class="btn" id="radar-load">🛰️ Toon radar</button><button class="btn secondary small-btn" id="radar-gps">📍 GPS voor radar</button><button class="btn secondary small-btn" id="radar-play" disabled>▶ Korte animatie</button><button class="btn secondary small-btn" id="radar-refresh">↻ Radar verversen</button></div>
       <label for="radar-timeline" class="small">Radarbeeld: <strong id="radar-time">nog niet geladen</strong></label>
       <input id="radar-timeline" class="radar-slider" type="range" min="0" max="0" value="0" disabled>
       <div id="radar-status" class="gps-status">Radar wordt alleen geladen wanneer je op “Toon radar” tikt. Het zijn historische waarnemingen, geen voorspelling.</div>
       <p class="tiny sources">Radar: <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a>. Geen garantie voor dekking op alle berglocaties.</p>
     </div>
     <div class="card" id="mountain-weather"><div class="row"><h2>&#127956; Wind op berg en in dal</h2><span class="pill">Op aanvraag</span></div>
-      <div class="field"><label for="compare-area">Vergelijk gebieden</label><select id="compare-area"><option value="salve">Hohe Salve / S&ouml;ll</option><option value="hartkaiser">Hartkaiser / Ellmau</option></select></div>
+      <div class="field"><label for="compare-area">Vergelijk gebieden</label><select id="compare-area"><option value="salve">Hohe Salve / Söll</option><option value="hartkaiser">Hartkaiser / Ellmau</option><option value="scheffau">Brandstadl / Scheffau</option><option value="brixen">Hochbrixen / Brixen</option><option value="westendorf">Choralpe / Westendorf</option><option value="going">Astberg / Going</option><option value="itter">Kleine Salve / Itter</option><option value="hopfgarten">Hohe Salve / Hopfgarten</option></select></div>
       <button class="btn secondary full" id="compare-wind" type="button">&#127744; Vergelijk wind &amp; neerslag</button>
       <div class="compare-grid" id="wind-comparison" role="status"><p class="hint">Laad alleen wanneer je de verschillen wilt zien. Condities zijn voorspellingen, geen liftstatus.</p></div>
     </div>
@@ -457,7 +472,7 @@ body.legal-open{overflow:hidden}
       <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
       <label class="verify"><input id="motion-setting" type="checkbox" checked> Logoanimatie bij iedere nieuwe start tonen (niet bij verminderde beweging)</label>
       <div class="toolbar"><a class="btn secondary small-btn" href="install.html">📲 Installeren / deel installatielink</a><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">&#8635; Update app naar nieuwste versie</button></div>
-      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.4.1 · Controleer online op nieuwe updates.</p>
+      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.0 · Controleer online op nieuwe updates.</p>
       <p class="hint" id="install-help">Android: Chrome-menu &rarr; App installeren of Toevoegen aan startscherm. iPhone: Safari &rarr; Deel &rarr; Zet op beginscherm.</p>
       <div class="toolbar"><button class="btn secondary small-btn" id="export-all" type="button">&#128190; Mijn data exporteren</button><button class="btn clear small-btn" id="clear-private" type="button">Lokale data wissen</button></div>
       <details><summary>🔄 Back-up van Netlify importeren</summary>
@@ -467,7 +482,7 @@ body.legal-open{overflow:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.4.1-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
+      <p class="tiny">SKI-je v4.5.0-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
@@ -529,17 +544,19 @@ body.legal-open{overflow:hidden}
 </div>
 <div class="utility-modal" id="pano-modal" hidden role="dialog" aria-modal="true" aria-labelledby="pano-title"><div class="utility-panel pano-panel">
  <div class="utility-head"><strong id="pano-title">&#127956; SkiWelt panoramakaart 2026/27</strong><button type="button" class="modal-close" data-close="pano-modal" aria-label="Sluiten">&times;</button></div>
- <div class="pano-tools"><button class="btn secondary" id="pano-minus" type="button">-</button><span id="pano-zoom">100%</span><button class="btn secondary" id="pano-plus" type="button">+</button><button class="btn clear" id="pano-reset" type="button">Herstel</button></div>
- <div class="pano-viewport" id="pano-viewport"><img id="pano-img" alt="Aangeleverde SkiWelt panoramakaart met pistes en liften" data-src="Kaart%202026-2027.png" draggable="false"></div>
- <div class="pano-bottom">Panoramakaart is illustratief, GPS staat op de geografische kaart.</div>
+ <div class="pano-tools"><label class="small" for="pano-focus">Zoom naar plaats</label><select id="pano-focus" aria-label="Kies plaats om in te zoomen">
+<option value="overview">Hele SkiWelt</option><option value="going">Going</option><option value="ellmau">Ellmau</option><option value="scheffau">Scheffau</option><option value="soll">Söll</option><option value="itter">Itter</option><option value="hopfgarten">Hopfgarten</option><option value="brixen">Brixen im Thale</option><option value="westendorf">Westendorf</option></select>
+<button class="btn secondary" id="pano-minus" type="button">−</button><span id="pano-zoom">100%</span><button class="btn secondary" id="pano-plus" type="button">+</button><button class="btn clear" id="pano-reset" type="button">Hele kaart</button></div>
+ <div class="pano-viewport" id="pano-viewport"><img id="pano-img" alt="Aangeleverde SkiWelt panoramakaart met pistes en liften" data-src="/api/skimap.jpg" draggable="false"></div>
+ <div class="pano-bottom" id="pano-map-status">Officiële SkiWelt kaart · 2026/27. Bron: SkiWelt Wilder Kaiser-Brixental. De illustratie is niet geografisch gekalibreerd.</div>
  </div></div>
 <div class="webcam-modal" id="camera-modal" role="dialog" aria-modal="true" aria-labelledby="camera-name" aria-describedby="camera-info" hidden>
   <div class="webcam-panel">
-    <div class="cam-head"><div class="cam-head-text"><strong id="camera-name">Live webcam</strong><small>SKI-je · SkiWelt</small></div><button type="button" class="cam-close" id="camera-close" aria-label="Webcam sluiten">×</button></div>
+    <div class="cam-head"><div class="cam-head-text"><strong id="camera-name">Live webcam</strong><small>SKI-je · SkiWelt</small></div><button type="button" class="cam-close" id="camera-close" aria-label="Terug naar webcams">← Terug</button></div>
     <div class="cam-picks" id="camera-picks" aria-label="Andere camera selecteren"></div>
     <div class="cam-frame-wrap"><iframe id="camera-frame" title="Geselecteerde SkiWelt live webcam" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
     <div class="cam-error" id="camera-info">Een externe livecam kan het insluiten blokkeren. Blijft het beeld leeg? Gebruik de officiële cameraknop hieronder.</div>
-    <div class="cam-footer"><a class="btn secondary" id="camera-source" href="https://www.skiwelt.at/en/webcams-in-winter.html" target="_blank" rel="noopener noreferrer">↗ Officiële livecam</a><span id="camera-location">SkiWelt · Tirol</span></div>
+    <div class="cam-footer"><button type="button" class="btn" id="camera-back-bottom">← Terug naar webcams</button><a class="btn secondary" id="camera-source" href="https://www.skiwelt.at/en/webcams-in-winter.html" target="_blank" rel="noopener noreferrer">↗ Officiële livecam</a><span id="camera-location">SkiWelt · Tirol</span></div>
   </div>
 </div>
 </div>
@@ -1006,7 +1023,11 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 <script src="i18n.js" defer></script>
 <script src="app-update.js" defer></script>
 <script src="route-engine.js" defer></script>
+<script src="day-planner.js" defer></script>
+<script src="skiwelt-corridors.js" defer></script>
+<script src="day-pdf.js" defer></script>
 <script src="extra.js" defer></script>
+<script src="day-ui.js" defer></script>
 <script src="share-location.js" defer></script>
 <script src="group-cloudflare.js" defer></script>
 <script src="backup-migration.js" defer></script>

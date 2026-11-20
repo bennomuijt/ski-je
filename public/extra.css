@@ -108,3 +108,44 @@ body.utility-open{overflow:hidden}
 .gps-share-fallback .btn{min-height:52px}
 #share-location-whatsapp[hidden],#share-location-sms[hidden]{display:none!important}
 @media(max-width:380px){.gps-share-actions,.gps-share-fallback{grid-template-columns:1fr}#share-location-native{grid-column:auto}}
+
+/* SKI-je v4.5: regain breathing room without hiding important emergency controls. */
+#page-plan .plan-shortcuts{justify-content:flex-end;margin:8px 0}
+#page-plan .card{padding:15px}
+#page-plan .route-summary{padding:16px 13px;margin-top:15px}
+#page-plan #create{min-height:59px;font-size:17px;box-shadow:0 3px 0 #c9691c}
+.day-intro{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}
+.day-pill{display:inline-flex;align-items:center;border-radius:50px;background:#e7f3fa;color:#125b85;padding:7px 11px;font-size:12px;font-weight:800}
+.plan-locations{font-size:14px;font-weight:800;color:#234e68}
+.day-timeline{margin:13px 0;display:grid;gap:8px}
+.day-timeline-row{display:grid;grid-template-columns:116px minmax(0,1fr);gap:9px;border-radius:12px;background:#fff;border:1px solid #dbe9f1;overflow:hidden}
+.day-time{padding:11px 8px;font-size:12px;color:#116497;background:#ecf6fc}
+.day-event{padding:10px 8px}
+.day-event strong{display:block;font-size:13px}
+.day-event p{color:#637b89;font-size:11px;margin:4px 0 0;line-height:1.45}
+.day-timeline-row.lunch .day-time{background:#fff0dc;color:#9c5812}
+.day-timeline-row.return .day-time{background:#ffebdf;color:#a64722}
+.day-timeline-row.buffer .day-time{background:#e8f7ef;color:#116d4d}
+.plan-regions{margin:17px 0 11px}
+.plan-regions h3{font-size:16px;margin:7px 0}
+.region-chain{display:grid;gap:8px}
+.region-leg{border:1px solid #d4e6ef;border-left:5px solid #1490b8;border-radius:10px;background:#f7fcff;padding:10px}
+.region-leg b{font-size:14px;color:#10527b}
+.region-leg p{margin:6px 0;font-size:12px;line-height:1.45}
+.region-leg small{color:#9d6623;font-weight:700}
+.day-plan-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0}
+#download-day-pdf{grid-column:1/-1;min-height:57px}
+.day-plan-actions .btn{white-space:normal;min-height:52px;text-align:center}
+.closure-details{margin:14px 0}
+.closure-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.closure-form .field:nth-child(3),.closure-form button{grid-column:1/-1}
+.closure-row{display:flex;align-items:center;justify-content:space-between;gap:9px;background:#eff8fc;border-radius:11px;padding:7px;margin:6px 0;font-size:13px}
+#camera-close{width:auto;min-width:115px;padding:6px 12px;font-weight:800;font-size:15px}
+#camera-back-bottom{min-height:48px;font-size:14px}
+.pano-tools{flex-wrap:wrap}
+#pano-focus{min-height:44px;max-width:190px;flex:1;min-width:120px;border:1px solid #a7cfe5;border-radius:9px;padding:5px;font-size:14px}
+#pano-focus-open{margin:9px 0;min-height:55px}
+#app-update-now.is-updating,#check-update.is-updating{background:#f5a528!important;color:#082b4a!important;box-shadow:0 0 0 2px #fff8}
+#app-update-now.is-current,#check-update.is-current{background:#128c61!important;color:#fff!important}
+#app-update-now.is-failed,#check-update.is-failed{background:#b74140!important;color:#fff!important}
+@media(max-width:420px){.day-timeline-row{grid-template-columns:99px minmax(0,1fr)}.day-time{font-size:11px}.closure-form{grid-template-columns:1fr}.closure-form .field:nth-child(3),.closure-form button{grid-column:auto}.day-plan-actions{grid-template-columns:1fr}#download-day-pdf{grid-column:auto}}

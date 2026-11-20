@@ -25,7 +25,17 @@ function adminReady(env){return typeof env.GROUP_CREATE_SECRET==='string'&&env.G
 export default {
  async fetch(request,env){
   const url=new URL(request.url);const p=url.pathname;
-  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.4.1-cf',groups:!!env.GROUPS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.0-cf',groups:!!env.GROUPS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/skimap.jpg'){
+   if(request.method!=='GET')return fail('Alleen GET toegestaan.',405);
+   // Fixed public media URL. No user-controlled proxy address or GPS is sent.
+   try{
+    const upstream=await fetch('https://media.skiwelt.at/media/panorama/winter/SkiWelt-Panorama-26-27-NL.jpg',{headers:{Accept:'image/jpeg'},cf:{cacheTtl:21600,cacheEverything:true}});
+    if(!upstream.ok)return new Response('Officiële kaart tijdelijk niet bereikbaar',{status:503,headers:JSON_HEADERS});
+    const headers=new Headers({'content-type':'image/jpeg','cache-control':'public, max-age=21600','x-content-type-options':'nosniff','referrer-policy':'no-referrer'});
+    return new Response(upstream.body,{status:200,headers});
+   }catch{return new Response('Officiële kaart tijdelijk niet bereikbaar',{status:503,headers:JSON_HEADERS});}
+  }
   if(p.startsWith('/api/')){
    if(!sameOrigin(request))return fail('Verzoek van ander domein geweigerd.',403);
    if(p==='/api/group/socket'){

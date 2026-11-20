@@ -17,11 +17,11 @@ test('original image on intro, header and fresh app icons',()=>{
   assert.match(manifest,/icon-192-v455\.png/);
 });
 
-test('4.5.5 PWA update and PDF watermark are in sync',()=>{
+test('4.5.6 PWA update and PDF watermark are in sync',()=>{
  const pdf=read('public/day-pdf.js'),api=read('src/index.js'),pkg=JSON.parse(read('package.json'));
- assert.equal(pkg.version,'4.5.5');
+ assert.equal(pkg.version,'4.5.6');
  assert.match(html,/v4\.5\.5/);assert.match(js,/4\.5\.5-cf/);assert.match(api,/4\.5\.5-cf/);
- assert.match(sw,/v4-5-5-photo-review-restaurants/);
+ assert.match(sw,/v4-5-6-group-ui/);
  assert.match(html,/app-update\.js\?v=455/);assert.match(html,/day-pdf\.js\?v=455/);
  assert.match(pdf,/globalAlpha=0\.12/);
 });

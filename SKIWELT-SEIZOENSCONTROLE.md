@@ -1,7 +1,7 @@
 # SKI-je — jaarlijkse SkiWelt-seizoenscontrole
 
 ## Vast ritme en startdatum
-**Ieder jaar vanaf 1 oktober** een nieuwe volledige inhoudscontrole voor het komende winterseizoen. De eerste automatische controle is ingesteld voor **1 oktober 2027** (Europe/Amsterdam). Als de nieuwe kaart of liftlijst dan nog niet gepubliceerd is: de status **'Nog niet beschikbaar'** laten staan en in oktober/november opnieuw controleren totdat de wijzigingen aantoonbaar zijn verwerkt. Een bericht op 1 oktober is **geen** bewijs dat alle onderdelen al bijgewerkt of geverifieerd zijn.
+**Ieder jaar van 1 oktober tot en met 31 maart** worden de officiële SkiWelt-gegevens gedurende het wintersportseizoen gecontroleerd. De automatische controle start op **1 oktober 2027** (Europe/Amsterdam) en wordt op de **eerste dag van iedere maand in oktober, november, december, januari, februari en maart** herhaald. De reeks stopt na maart en begint ieder jaar opnieuw op 1 oktober. Als de nieuwe kaart of liftlijst dan nog niet gepubliceerd is: de status **'Nog niet beschikbaar'** laten staan en in oktober/november opnieuw controleren totdat de wijzigingen aantoonbaar zijn verwerkt. Een bericht op 1 oktober is **geen** bewijs dat alle onderdelen al bijgewerkt of geverifieerd zijn.
 
 ## Alleen officiële SkiWelt-bronnen als eerste uitgangspunt
 1. Nederlandse panoramakaart voor het nieuwe winterseizoen: https://media.skiwelt.at/nl/skiwelt-panoramakaarten.html

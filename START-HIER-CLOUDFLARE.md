@@ -5,7 +5,7 @@
 - De volledige SKI-je v4-testinterface met origineel logo en openingsanimatie.
 - Routeplanner, pistes/kaart, offline panorama, weer en wind, webcams, SOS, lokale dagtracking en GPS-ijkpunten.
 - Nieuw: skigroepen met realtime optionele GPS-locatiedeling via Cloudflare Durable Objects; ontwerpmaximum **50 deelnemers per groep**.
-- Nieuw: oude v4-gegevens van Netlify als lokaal JSON-bestand importeren.
+Een SKI-je v4-back-up wordt alleen lokaal verwerkt en niet geüpload naar de groepsserver.
 - Inclusief broncode, tests en eenvoudige Windows-installatiescripts.
 
 **Wat zit er nog NIET in?**
@@ -29,7 +29,7 @@ Je hoeft niet te programmeren, maar voor een eenmalige installatie is een Window
 7. Open `https://<jouw-echte-URL>/api/health`. Je moet `"ok":true`, `"groups":true` en `"createConfigured":true` zien. Dit test de backendconfiguratie, nog niet de volledige mobiele werking.
 8. Open de app via de HTTPS-URL op je Android-telefoon of iPhone. Kies in de app `Groep` en maak een skigroep aan. Deel de uitnodigingslink met de anderen. De anderen vullen alleen hun naam in en kiezen zelf of zij hun GPS delen.
 9. Zet de nieuwe app als PWA op je startscherm. Android Chrome: menu > Installeren / Toevoegen aan startscherm. iPhone Safari: Deel > Zet op beginscherm.
-10. Is alles goed getest? Pas DAN mag de oude Netlify-deployment uiteindelijk worden uitgezet. Bewaar tot die tijd de bestaande URL.
+10. Controleer na een update de live Cloudflare-versie, je lokale back-up en de belangrijkste functies.
 
 Je hoeft op andere telefoons GEEN Cloudflare-account aan te maken.
 
@@ -41,14 +41,14 @@ Pak een nieuw SKI-je-Cloudflare-pakket uit en start `04-LATERE-UPDATE.cmd` vanui
 
 Via Cloudflare-dashboard > Workers & Pages > `ski-je` > Settings/Domains & Routes kun je later een eigen domein instellen. Het gratis `workers.dev`-adres is voldoende voor de praktijktest. Koppeling van een eigen domein vereist dat je domein/DNS correct beheerd wordt.
 
-## Bestaande Netlify-gegevens meenemen
+## Eerdere SKI-je-gegevens terugzetten
 
-1. Open de huidige SKI-je **v4-testversie** op Netlify op hetzelfde toestel waarop je eerder routes/ijkpunten hebt opgeslagen.
+1. Zoek een eerder geëxporteerd SKI-je v4 JSON-bestand op je telefoon.
 2. Open `Meer` > `Mijn data exporteren` en bewaar het JSON-bestand.
 3. Open de Cloudflare-versie > `Meer` > `Back-up terugzetten` en kies het JSON-bestand.
 4. Controleer je routes, ijkpunten en skidagen op het nieuwe domein.
 
-De back-up wordt uitsluitend lokaal in je browser ingelezen: hij wordt niet naar de groepsserver geupload. Een Netlify v3-back-up heeft mogelijk een ander formaat; import is voor v4 ingericht. Upload de nieuwe Cloudflare-versie niet over Netlify zolang deze nog dienstdoet.
+Een SKI-je v4-back-up wordt alleen lokaal verwerkt en niet geüpload naar de groepsserver.
 
 ## Kosten en limieten
 

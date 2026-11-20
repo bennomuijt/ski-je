@@ -138,6 +138,10 @@ await add('full SkiWelt 2026-27 panorama is an image and village zoom works',asy
  // New restaurant markers are validated here only after 4.5.4 is published.
  if(await page.locator('#pano-huts').count()){
    assert.ok(await page.locator('.pano-hut').count()>=4,'restaurant area pins must exist');
+   if(await page.locator('#pano-restaurants-visible').count()){
+     assert.equal(await page.locator('#pano-restaurants-visible').isChecked(),false,'restaurant markers default off');
+     await page.locator('#pano-restaurants-visible').check();
+   }
    await page.locator('.pano-hut:visible').first().click();
    assert.ok(await page.locator('#pano-hut-info').isVisible(),'restaurant detail must open in the app');
    await page.locator('#pano-hut-close').click();

@@ -1,4 +1,4 @@
-/* SKI-je backup migration across Netlify -> Cloudflare browser origins.
+/* SKI-je local JSON backup import/export in Cloudflare.
  * The JSON file is processed only in the browser. Nothing is uploaded.
  */
 (()=>{

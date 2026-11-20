@@ -324,8 +324,9 @@
    }
    const steps=result.steps.map(s=>{
       const color=s.edge.type==='piste'?'step-'+s.edge.level:s.edge.type==='lift'?'step-lift':'step-other';
-      const savedPhoto=s.edge.type==='lift'?store.photos[s.edge.code]:null;
-      const photoHTML=savedPhoto&&/^data:image\/(?:jpeg|webp|png);base64,/.test(savedPhoto)?'<img class="lift-thumb" alt="Eigen foto van de lift" loading="lazy" src="'+escape(savedPhoto)+'">':'';
+      const approvedPhoto=s.edge.type==='lift'?(window.SKIPublicPhotos?.all?.()||[]).find(p=>p.type==='lift'&&(p.entity===s.edge.name||p.entity.startsWith(String(s.edge.code||'').replace('lift:','')+' - '))):null;
+       const savedPhoto=s.edge.type==='lift'?(approvedPhoto?.image||store.photos[s.edge.code]):null;
+      const photoHTML=savedPhoto&&(/^(?:data:image\/(?:jpeg|webp|png);base64,)/.test(savedPhoto)||/^\/api\/photos\/image\/[a-f0-9-]{36}$/.test(savedPhoto))?'<img class="lift-thumb" alt="Eigen foto van de lift" loading="lazy" src="'+escape(savedPhoto)+'">':'';
       return `<div class="route-step ${color}"><b>${engine.hhmm(s.startAt)}</b><div><strong>${escape(s.edge.type==='lift'?'Lift':s.edge.type==='piste'?'Piste':'Overstap')} ${escape(s.edge.name)}</strong><br>${escape(s.edge.from)} &rarr; ${escape(s.edge.to)} | ${s.duration} min${s.edge.status==='unknown'?' | status onbekend':''}${photoHTML}</div></div>`;
    }).join('');
    const notes=result.warnings.map(w=>'<li>'+escape(w)+'</li>').join('');

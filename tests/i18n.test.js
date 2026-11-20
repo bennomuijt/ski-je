@@ -30,7 +30,7 @@ test('language picker available from header and legal gate, installation page',(
  assert.match(sw,/\.\/i18n\.js/);
 });
 test('original SKI-je logo is the browser favicon on both pages',()=>{
- for(const html of [index,install])assert.match(html,/rel="icon" type="image\/svg\+xml" href="icons\/skije-logo-v454\.svg"/);
+ for(const html of [index,install])assert.match(html,/rel="icon" type="image\/svg\+xml" href="icons\/skije-logo-v455\.svg"/);
  assert.match(index,/apple-touch-icon/);
 });
 

@@ -86,7 +86,6 @@ body.utility-open{overflow:hidden}
   #tracking-stop{grid-column:1/-1}
 }
 @media(max-width:365px){.bottom button span{font-size:18px}.bottom button{font-size:8px}}
-@media(max-width:760px){html.netlify-host .utility-panel{max-height:calc(100dvh - var(--host-toolbar-clearance,94px))}}
 @media(prefers-reduced-motion:reduce){.hero-scene img,.ski-intro-photo{animation:none!important}}
 @media print{
  .bottom,.hero-actions,.ski-intro,.webcam-modal,.utility-modal,.toolbar,.plan-shortcuts,#page-plan,#page-map,#page-weather,#page-webcams,#page-more{display:none!important}
@@ -235,3 +234,21 @@ body.utility-open{overflow:hidden}
 .pano-hut-info select{min-height:42px;width:100%;border:1px solid #b9cad8;border-radius:9px;background:white;color:#173e5a;padding:7px;font:inherit}
 .pano-hut-info img{display:block;object-fit:cover;max-width:100%;max-height:140px;border-radius:10px}
 .pano-hut-info img[hidden]{display:none!important}
+
+/* Optional restaurant markers: leave map clear during navigation. */
+.pano-filter{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 12px;background:#f6fbff;border-bottom:1px solid #cbdfe9}
+.pano-filter label{display:inline-flex;align-items:center;gap:9px;min-height:45px;color:#115880;font-size:13px;font-weight:800;cursor:pointer}
+.pano-filter input{width:23px;height:23px;accent-color:#0876ac}
+.pano-hut-layer[hidden]{display:none!important}
+@media(max-width:430px){.pano-filter{padding:4px 8px}.pano-filter label{font-size:12px}.pano-filter span{font-size:10px}}
+
+/* SKI-je lightweight community photo controls. No permanent giant images in HTML. */
+.community-photo-preview{max-width:100%;max-height:230px;display:block;object-fit:contain;background:#eaf5fa;border-radius:12px;margin:10px auto}
+.community-photo-preview[hidden]{display:none!important}
+.community-photo-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;margin:10px 0}
+.community-photo-item{padding:10px;border:1px solid #c9dce7;background:#fff;border-radius:12px;min-width:0}
+.community-photo-item img{display:block;width:100%;max-height:195px;object-fit:cover;border-radius:8px;background:#e5f1f8}
+.community-photo-item strong{display:block;font-size:13px;margin:7px 0 4px}
+.community-photo-item small{display:block;font-size:11px;color:#536d81;line-height:1.4}
+.community-photo-item .toolbar{margin:7px 0 0}
+.community-photo-item button{min-height:45px}

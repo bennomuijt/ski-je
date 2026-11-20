@@ -54,7 +54,7 @@ Let op: dit is **geen** bewijs van productiecapaciteit of fysieke GPS-nauwkeurig
 
 ## Herstel als een test mislukt
 
-- Cloudflare Worker gebruiken op een apart `workers.dev`-testadres; oude Netlify-app aanhouden.
+- Controleer de huidige Cloudflare Worker en het versie-endpoint.
 - Download lokale back-up voordat je opslag wist of versies bijwerkt.
 - Bij groepsuitval de serverfunctie herstellen of tijdelijk uitschakelen; routeplanner/SOS blijven eigen schermen.
 - Wanneer de GPS-toestemming wordt geweigerd, uitleg tonen maar de app niet blokkeren.

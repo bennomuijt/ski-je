@@ -19,8 +19,8 @@ test('original image on intro, header and fresh app icons',()=>{
 test('4.5.3 PWA update and PDF watermark are in sync',()=>{
  const pdf=read('public/day-pdf.js'),api=read('src/index.js'),pkg=JSON.parse(read('package.json'));
  assert.equal(pkg.version,'4.5.3');
- assert.match(html,/v4\\.5\\.3/);assert.match(js,/4\\.5\\.3-cf/);assert.match(api,/4\\.5\\.3-cf/);
+ assert.match(html,/v4\.5\.3/);assert.match(js,/4\.5\.3-cf/);assert.match(api,/4\.5\.3-cf/);
  assert.match(sw,/v4-5-3-pdf-watermark-updater/);
- assert.match(html,/app-update\\.js\\?v=453/);assert.match(html,/day-pdf\\.js\\?v=453/);
- assert.match(pdf,/globalAlpha=0\\.12/);
+ assert.match(html,/app-update\.js\?v=453/);assert.match(html,/day-pdf\.js\?v=453/);
+ assert.match(pdf,/globalAlpha=0\.12/);
 });

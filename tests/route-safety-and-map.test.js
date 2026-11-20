@@ -43,7 +43,8 @@ test('planning speeds vary by selected level and type distances are explicit',()
 test('restaurant pins clearly mark only approximate areas and never fake interior photos',()=>{
  const source=read('public/pano-restaurants.js');
  assert.match(source,/precision:'area-only'/);
- assert.match(source,/binnenfoto is nog niet beschikbaar/i);
+ assert.match(source,/geverifieerde binnenfoto volgt/i);
+ assert.match(source,/westendorf-gipfelrestaurant-hohe-salve-innen2\.jpg/);
  assert.match(source,/pano-hut/);
  const group=read('public/group-cloudflare.js');
  assert.match(group,/checkBackend/);

@@ -11,16 +11,16 @@ test('visible header version, manual update button and safe version-check route'
 });
 test('original image on intro, header and fresh app icons',()=>{
   assert.ok(existsSync(new URL('../public/brand-skije.svg',import.meta.url)));
-  for(const name of ['icon-192-v43.png','icon-512-v43.png'])assert.ok(existsSync(new URL('../public/icons/'+name,import.meta.url)));
+  for(const name of ['icon-192-v454.png','icon-512-v454.png'])assert.ok(existsSync(new URL('../public/icons/'+name,import.meta.url)));
   assert.match(sw,/brand-skije\.svg/);assert.match(sw,/app-update\.js/);
   assert.match(manifest,/icon-192-v43\.png/);
 });
 
-test('4.5.3 PWA update and PDF watermark are in sync',()=>{
+test('4.5.4 PWA update and PDF watermark are in sync',()=>{
  const pdf=read('public/day-pdf.js'),api=read('src/index.js'),pkg=JSON.parse(read('package.json'));
- assert.equal(pkg.version,'4.5.3');
+ assert.equal(pkg.version,'4.5.4');
  assert.match(html,/v4\.5\.3/);assert.match(js,/4\.5\.3-cf/);assert.match(api,/4\.5\.3-cf/);
- assert.match(sw,/v4-5-3-pdf-watermark-updater/);
- assert.match(html,/app-update\.js\?v=453/);assert.match(html,/day-pdf\.js\?v=453/);
+ assert.match(sw,/v4-5-4-skill-map-icon/);
+ assert.match(html,/app-update\.js\?v=454/);assert.match(html,/day-pdf\.js\?v=454/);
  assert.match(pdf,/globalAlpha=0\.12/);
 });

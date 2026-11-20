@@ -150,7 +150,10 @@
   }
   add('buffer','Veiligheidsmarge – uiterlijk terug',safe,end,'Streef ernaar om '+plan.safeArrival+' bij het gekozen eindpunt te zijn.');
   events.sort((a,b)=>a.startMinute-b.startMinute||(a.type==='lunch'?-1:1));
-  const pois=placesFor(route?.steps);
+  const pois=placesFor(route?.steps).map(p=>{
+   const nearby=events.find(step=>step.area===p.area&&['lift','piste','transfer'].includes(step.type));
+   return {...p,estimatedNearTime:nearby?.end||null};
+  });
   if(!pois.length)warnings.push('Er zijn voor deze route nog geen officieel onderbouwde WC-locaties bekend; vraag ter plaatse.');
   else warnings.push('🚻 WC-locaties zijn mogelijke stops nabij de route, niet automatisch gegarandeerde toiletten op jouw piste.');
   return {steps:events,pois,warnings,routeMinutes:estimate(route?.steps),liftMinutes:events.filter(x=>x.type==='lift').reduce((sum,x)=>sum+x.minutes,0),

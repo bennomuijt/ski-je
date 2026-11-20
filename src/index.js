@@ -25,7 +25,18 @@ function adminReady(env){return typeof env.GROUP_CREATE_SECRET==='string'&&env.G
 export default {
  async fetch(request,env){
   const url=new URL(request.url);const p=url.pathname;
-  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.1-cf',groups:!!env.GROUPS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.2-cf',groups:!!env.GROUPS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/skimap.pdf'){
+   if(request.method!=='GET')return fail('Alleen GET toegestaan.',405);
+   // Fixed, official source; no GPS or user-supplied URLs are transmitted.
+   try{
+    const upstream=await fetch('https://media.skiwelt.at/media/panorama/winter/SkiWelt-Panorama-26-27-NL.pdf',{headers:{Accept:'application/pdf'},cf:{cacheTtl:21600,cacheEverything:true}});
+    if(!upstream.ok||!/application\/pdf/i.test(upstream.headers.get('content-type')||''))
+     return new Response('Officiele PDF-kaart tijdelijk niet bereikbaar',{status:503,headers:JSON_HEADERS});
+    const headers=new Headers({'content-type':'application/pdf','content-disposition':'inline; filename="SkiWelt-Panorama-26-27-NL.pdf"','cache-control':'public, max-age=21600','x-content-type-options':'nosniff','referrer-policy':'no-referrer'});
+    return new Response(upstream.body,{status:200,headers});
+   }catch{return new Response('Officiele PDF-kaart tijdelijk niet bereikbaar',{status:503,headers:JSON_HEADERS});}
+  }
   if(p==='/api/skimap.jpg'){
    if(request.method!=='GET')return fail('Alleen GET toegestaan.',405);
    // Fixed public media URL. No user-controlled proxy address or GPS is sent.

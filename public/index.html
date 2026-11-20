@@ -195,7 +195,7 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.1</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.2</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -288,7 +288,7 @@ body.legal-open{overflow:hidden}
 <option value="overview">Hele SkiWelt</option><option value="going">Going</option><option value="ellmau">Ellmau</option><option value="scheffau">Scheffau</option><option value="soll">Söll</option><option value="itter">Itter</option><option value="hopfgarten">Hopfgarten</option><option value="brixen">Brixen im Thale</option><option value="westendorf">Westendorf</option></select></div>
 <button id="pano-focus-open" type="button" class="btn full">🏔️ Toon volledige kaart en zoom in</button>
 <div class="preview"><img data-src="/api/skimap.jpg" alt="Volledige officiële SkiWelt-panorama 2026-2027 met pistes en liften" loading="lazy" decoding="async"></div>
-<p class="hint" id="pano-download-note">Volledige officiële SkiWelt-panorama uit 2026–2027, getoond binnen SKI-je. Bij slechte verbinding kan tijdelijk alleen de oude uitsnede geladen worden.</p>
+<p class="hint" id="pano-download-note">SkiWelt-panorama 2026–2027: rechtstreeks binnen SKI-je. Bij slecht bereik kan de lokale voorbeeldkaart verschijnen; deze is niet scherp genoeg voor exacte pistenummers.</p>
       <p class="hint">Op de panoramakaart zoom je naar een skidorp; dit is een illustratie en geen exacte GPS-ondergrond. De GPS-kaart hierboven toont je werkelijke locatie.</p>
     </div>
   </section>
@@ -477,7 +477,7 @@ body.legal-open{overflow:hidden}
       <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
       <label class="verify"><input id="motion-setting" type="checkbox" checked> Logoanimatie bij iedere nieuwe start tonen (niet bij verminderde beweging)</label>
       <div class="toolbar"><a class="btn secondary small-btn" href="install.html">📲 Installeren / deel installatielink</a><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">&#8635; Update app naar nieuwste versie</button></div>
-      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.1 · Controleer online op nieuwe updates.</p>
+      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.2 · Controleer online op nieuwe updates.</p>
       <p class="hint" id="install-help">Android: Chrome-menu &rarr; App installeren of Toevoegen aan startscherm. iPhone: Safari &rarr; Deel &rarr; Zet op beginscherm.</p>
       <div class="toolbar"><button class="btn secondary small-btn" id="export-all" type="button">&#128190; Mijn data exporteren</button><button class="btn clear small-btn" id="clear-private" type="button">Lokale data wissen</button></div>
       <details><summary>🔄 Back-up van Netlify importeren</summary>
@@ -487,7 +487,7 @@ body.legal-open{overflow:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.5.1-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
+      <p class="tiny">SKI-je v4.5.2-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
@@ -566,6 +566,7 @@ body.legal-open{overflow:hidden}
 <option value="overview">Hele SkiWelt</option><option value="going">Going</option><option value="ellmau">Ellmau</option><option value="scheffau">Scheffau</option><option value="soll">Söll</option><option value="itter">Itter</option><option value="hopfgarten">Hopfgarten</option><option value="brixen">Brixen im Thale</option><option value="westendorf">Westendorf</option></select>
 <button class="btn secondary" id="pano-minus" type="button">−</button><span id="pano-zoom">100%</span><button class="btn secondary" id="pano-plus" type="button">+</button><button class="btn clear" id="pano-reset" type="button">Hele kaart</button></div>
  <p class="pano-hint">🤏 Knijp met twee vingers · schuif met één vinger · dubbel tik om te vergroten</p>
+ <div class="pano-route-box" id="pano-route-box" hidden><div class="pano-route-label">🧭 Route door deelgebieden (indicatief, géén exacte piste/GPS-navigatie)</div><div class="pano-route-list" id="pano-route-list" aria-label="Deelgebieden langs de berekende route"></div></div>
  <div class="pano-viewport" id="pano-viewport"><img id="pano-img" alt="Aangeleverde SkiWelt panoramakaart met pistes en liften" data-src="/api/skimap.jpg" draggable="false"></div>
  <div class="pano-bottom" id="pano-map-status">Officiële SkiWelt kaart · 2026/27. Bron: SkiWelt Wilder Kaiser-Brixental. De illustratie is niet geografisch gekalibreerd.</div>
  </div></div>
@@ -1066,6 +1067,7 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 <script src="route-detail.js" defer></script>
 <script src="day-pdf.js" defer></script>
 <script src="extra.js" defer></script>
+<script src="panorama-tools.js" defer></script>
 <script src="day-ui.js" defer></script>
 <script src="return-home-ui.js" defer></script>
 <script src="lunch-minute.js" defer></script>

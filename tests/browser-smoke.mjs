@@ -11,10 +11,12 @@ const issues=[],checks=[];
 const add=async(name,fn)=>{try{await fn();checks.push('PASS '+name);console.log('PASS '+name);}catch(e){issues.push({name,error:String(e.stack||e)});console.error('FAIL '+name,String(e));}};
 const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,acceptDownloads:true,permissions:['geolocation'],geolocation:{latitude:47.47,longitude:12.245},locale:'nl-NL'});
 const page=await context.newPage();
+page.setDefaultTimeout(9000);
 const errors=[];
 page.on('pageerror',e=>{errors.push(String(e));console.error('PAGEERROR',String(e));});
 await add('open real published app and load route UI',async()=>{
  await page.goto(ROOT,{waitUntil:'domcontentloaded',timeout:40000});
+ await page.addStyleTag({content:'#ski-intro,#legal-gate{display:none!important}'});
  await page.waitForFunction(()=>Boolean(window.SKIDayUI&&window.SKIPdf&&window.SKIWeltCorridors),{timeout:25000});
  // The full-screen logo and first-use acknowledgement can block taps.
  await page.evaluate(()=>{
@@ -25,6 +27,7 @@ await add('open real published app and load route UI',async()=>{
  assert.ok(await page.locator('#create').isVisible());
 });
 await add('default 09:00-16:00 full day schedule and lunch',async()=>{
+ await page.locator('#extra-options').evaluate(el=>el.open=true);
  await page.locator('#departure').fill('09:00');
  await page.locator('#return-time').fill('16:00');
  await page.locator('#create').click();

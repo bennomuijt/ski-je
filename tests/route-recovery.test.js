@@ -10,7 +10,7 @@ test('restore route planner full day, PDF and share with uncertainty label',()=>
  assert.match(html,/src="day-planner\.js"/);
  assert.match(html,/src="skiwelt-corridors\.js"/);
  assert.match(html,/src="day-ui\.js"/);
- assert.match(html,/src="day-pdf\.js"/);
+ assert.match(html,/src="day-pdf\.js(?:\?v=\d+)?"/);
  assert.match(extra,/window\.SKIDayUI\.render\(\)/);
  assert.match(ui,/window\.SKIPdf\.generate/);
  assert.match(ui,/navigator\.share/);

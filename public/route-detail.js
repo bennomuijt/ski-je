@@ -160,7 +160,7 @@
    pisteMinutes:events.filter(x=>x.type==='piste').reduce((sum,x)=>sum+x.minutes,0)};
  }
  function haversine(a,b){
-  const rad=n=>n*Math.PI/180,R=6371,dLat=rad*(b.lat-a.lat),dLon=rad*(b.long-a.long);
+  const rad=n=>n*Math.PI/180,R=6371,dLat=rad(b.lat-a.lat),dLon=rad(b.long-a.long);
   const x=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
   return 2*R*Math.asin(Math.sqrt(Math.min(1,x)));
  }

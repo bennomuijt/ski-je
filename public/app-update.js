@@ -1,7 +1,7 @@
 /* SKI-je v4.3: online update of the existing PWA (without deleting local user data). */
 (()=>{
  'use strict';
- const CURRENT='4.3.0-cf';
+ const CURRENT='4.4.0-cf';
  const buttons=['app-update-now','check-update'].map(id=>document.getElementById(id)).filter(Boolean);
  const status=document.getElementById('app-update-status');
  let busy=false;

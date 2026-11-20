@@ -33,3 +33,43 @@ test('original SKI-je logo is the browser favicon on both pages',()=>{
  for(const html of [index,install])assert.match(html,/rel="icon" type="image\/svg\+xml" href="brand-skije\.svg\?v=440"/);
  assert.match(index,/apple-touch-icon/);
 });
+
+test('translations remain in sync for all supported languages after future releases',()=>{
+ const expectedLanguages=['en','de','fr','es','zh','pl','da'];
+ const keys=Object.keys(data.translations.en);
+ assert.ok(keys.length>=238,'The language list may have lost existing translations');
+ for(const lang of expectedLanguages){
+  const table=data.translations[lang];
+  assert.deepEqual(Object.keys(table).sort(),keys.slice().sort(),lang+' keys differ from the other languages');
+  for(const [source,value] of Object.entries(table)){
+   assert.equal(typeof value,'string',lang+': '+source);
+   assert.ok(value.trim().length>0,lang+': '+source);
+  }
+ }
+});
+test('critical route, group, safety, update and installation labels exist in every language',()=>{
+ const mandatory=[
+  'Mijn skiroute',
+  'Mijn locatie & pistes',
+  'Weer voor SkiWelt',
+  'Live webcams SkiWelt',
+  'Mijn skidag',
+  'Skigroep & afspreken',
+  'Groepsleden',
+  'Officiële piste- en liftinformatie gaat altijd voor.',
+  'GPS-delen staat altijd standaard uit.',
+  'Disclaimer en gebruiksvoorwaarden',
+  'Installeer SKI-je op dit toestel',
+  'Update app naar nieuwste versie',
+  'Blijft \'Download in behandeling\' staan?'
+ ];
+ for(const lang of ['en','de','fr','es','zh','pl','da']){
+  for(const key of mandatory){
+   assert.ok(data.translations[lang][key]?.trim(),lang+': missing '+key);
+   assert.notEqual(data.translations[lang][key],key,lang+': untranslated '+key);
+  }
+ }
+ assert.match(engine,/localStorage\.setItem\(LANG_KEY,current\)/);
+ assert.match(engine,/#legal-text/);
+ assert.match(engine,/legalNotices/);
+});

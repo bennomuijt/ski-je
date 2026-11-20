@@ -7,12 +7,15 @@
  const layer=$('pano-huts'),view=$('pano-viewport'),img=$('pano-img');
  if(!layer||!view||!img)return;
  const groups=[
-  {area:'going',x:.27,y:.38,restaurants:['Berggasthof Astberg']},
-  {area:'ellmau',x:.27,y:.45,restaurants:['Kaiserlounge']},
-  {area:'scheffau',x:.22,y:.55,restaurants:['Bergrestaurant Brandstadl','Tanzbodenalm','Jochstubn','Kummereralm','Au Alm']},
-  {area:'soll',x:.35,y:.72,restaurants:['Gipfelalm Hohe Salve','Alpengasthof Hochsöll','Gründlalm','Stöcklalm']},
-  {area:'itter',x:.46,y:.86,restaurants:['KRAFTalm']},
-  {area:'westendorf',x:.79,y:.67,restaurants:['Bergrestaurant Talkaser','Panorama Restaurant Choralpe']}
+  // Huts are drawn as indicative clusters per area: illustration is NOT georeferenced.
+  {area:'going',x:.27,y:.38,restaurants:['Berggasthof Astberg','Blattlalm','Treichlhof','Brenneralm','Aschenwald']},
+  {area:'ellmau',x:.27,y:.45,restaurants:['Kaiserlounge','Ellmauer Hex','Rübezahl-Alm','Bergkaiser','Jägerhütte','Kummereralm']},
+  {area:'scheffau',x:.22,y:.55,restaurants:['Bergrestaurant Brandstadl','Tanzbodenalm','Jochstubn','Kummereralm','Au Alm','Marchental Skihütte','Neualm','Hochlechen']},
+  {area:'soll',x:.35,y:.72,restaurants:['Gipfelalm Hohe Salve','Alpengasthof Hochsöll','Gründlalm','Stöcklalm','Salvenmoos','Bergrestaurant Gründlalm','Keat Alm','Alpengasthof Hochsöll']},
+  {area:'itter',x:.46,y:.86,restaurants:['KRAFTalm','Salvistastadl','Alpengasthof Rigi','Stoagrub’n Hütte']},
+  {area:'hopfgarten',x:.54,y:.72,restaurants:['Sunnseithütte','Salvenalm','Stoagrub’n Hütte','Alpengasthof Rigi','Salvistastadl']},
+  {area:'brixen',x:.67,y:.65,restaurants:['SkiWelt Hütte','Brantlalm','Filzalm','Holzalm','Biwak','Glühbirnstadl','Berggasthof Nieding','Jausenstation Oberkaslach','Brixner Stadl','Jausenstation Frankalm']},
+  {area:'westendorf',x:.79,y:.67,restaurants:['Bergrestaurant Talkaser','Panorama Restaurant Choralpe','Sonnalm','Gassnerwirt','Alpenrosenhütte','Brechhornhaus','Fleidingalm']}
  ];
  const photos={
   'Kaiserlounge':{
@@ -50,6 +53,7 @@
    'Bergrestaurant Brandstadl':'https://www.bergrestaurant-brandstadl.at/Bergrestaurant-Brandstadl-Impressionen_pid%2C65543%2Ctype%2Cgalerie.html',
    'Gipfelalm Hohe Salve':'https://www.skiwelt.at/nl/soell/info/gipfelrestaurant-hohe-salve.html'
  };
+ const toggle=$('pano-restaurants-visible'),count=$('pano-restaurant-count');
  const select=$('pano-hut-select'),photo=$('pano-hut-photo'),photoStatus=$('pano-hut-photo-status'),link=$('pano-hut-link');
  function showRestaurant(name){
    $('pano-hut-name').textContent=name;
@@ -68,6 +72,14 @@
  });
  select.addEventListener('change',()=>showRestaurant(select.value));
  const points=[];
+ function updateVisibility(){
+  const enabled=toggle?.checked===true;
+  if(layer)layer.hidden=!enabled;
+  count.textContent=enabled?'Restaurantgroepen aan ('+groups.length+' gebieden)':'Markeringen verborgen';
+  if(!enabled)$('pano-hut-info').hidden=true;
+  if(enabled)requestAnimationFrame(position);
+ }
+ toggle?.addEventListener('change',updateVisibility);
  for(const area of groups){
   const button=document.createElement('button');button.type='button';button.className='pano-hut';
   button.textContent='🍽';button.title=area.restaurants.join(', ');
@@ -89,7 +101,7 @@
   const box=view.getBoundingClientRect(),iw=img.naturalWidth,ih=img.naturalHeight;
   const fallback=/Kaart(?:%20| )2026-2027\.png(?:\?|$)/i.test(img.currentSrc||img.src);
   // Legacy cropped artwork has another layout: do not place misleading markers on it.
-  layer.hidden=fallback||!iw||!ih;
+  layer.hidden=!toggle?.checked||fallback||!iw||!ih;
   if(layer.hidden)return;
   const shape=img.style.transform.match(/translate3d\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px\s*,\s*0(?:px)?\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
   const panX=shape?Number(shape[1]):0,panY=shape?Number(shape[2]):0,zoom=shape?Number(shape[3]):1;
@@ -107,5 +119,6 @@
  if(typeof ResizeObserver!=='undefined')new ResizeObserver(position).observe(view);
  $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));
  document.addEventListener('skije-languagechange',position);
+ updateVisibility();
  window.SKIRestaurantMap={getAnchors:()=>groups.map(({area,restaurants})=>({area,restaurants:restaurants.slice(),precision:'area-only'}))};
 })();

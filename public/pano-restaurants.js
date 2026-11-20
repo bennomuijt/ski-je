@@ -57,7 +57,8 @@
  const select=$('pano-hut-select'),photo=$('pano-hut-photo'),photoStatus=$('pano-hut-photo-status'),link=$('pano-hut-link');
  function showRestaurant(name){
    $('pano-hut-name').textContent=name;
-   const data=photos[name];
+   const approved=window.SKIPublicPhotos?.getFor?.('restaurant',name);
+   const data=approved?{src:approved.image,credit:'Goedgekeurde SKI-je foto'+(approved.gpsVerified?' · GPS-ijkpunt bevestigd':''),page:'https://skimap.skiwelt.at/en/'}:photos[name];
    if(data){
       photo.hidden=false;photo.src=data.src;photo.alt='Binnenfoto van '+name;
       photoStatus.textContent=data.credit;
@@ -119,6 +120,7 @@
  if(typeof ResizeObserver!=='undefined')new ResizeObserver(position).observe(view);
  $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));
  document.addEventListener('skije-languagechange',position);
+ document.addEventListener('skije-photo-list-updated',()=>{if(!$('pano-hut-info').hidden&&select.value)showRestaurant(select.value);});
  updateVisibility();
  window.SKIRestaurantMap={getAnchors:()=>groups.map(({area,restaurants})=>({area,restaurants:restaurants.slice(),precision:'area-only'}))};
 })();

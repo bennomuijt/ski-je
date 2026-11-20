@@ -198,3 +198,20 @@ body.utility-open{overflow:hidden}
 #return-home-output .day-pill{margin:8px 0}
 #return-home-modal .utility-content{max-height:75vh;overflow-y:auto}
 @media(max-width:360px){.ski-route-step{grid-template-columns:87px minmax(0,1fr)}.ski-route-clock{font-size:10px}.ski-route-description strong{font-size:12px}}
+
+/* SKI-je 4.5.2: route areas on the official, uncalibrated panorama. */
+.pano-route-box[hidden]{display:none!important}
+.pano-route-box{flex:none;background:#eaf6ff;border-top:1px solid #cde4f3;border-bottom:1px solid #cde4f3;padding:8px 10px}
+.pano-route-label{font-size:11px;font-weight:750;color:#375d7e;line-height:1.4;margin-bottom:6px}
+.pano-route-list{display:flex;align-items:center;gap:7px;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding:2px 0 5px}
+.pano-route-stop{flex:none;min-height:43px;border-radius:11px;border:1px solid #acd1e9;background:#fff;color:#12618b;padding:9px 12px;font-size:13px;font-weight:850}
+.pano-route-stop[aria-pressed="true"]{background:#0c709e;color:white;border-color:#0c709e}
+.pano-route-stop:focus-visible{outline:3px solid #ffa33d;outline-offset:2px}
+@media(max-width:760px){
+ #pano-modal{padding:0}
+ #pano-modal .pano-panel{height:100vh;height:100dvh;width:100%;border-radius:0}
+ #pano-modal .pano-tools{padding:7px;gap:5px}
+ #pano-modal .pano-tools .btn{min-height:46px;min-width:46px}
+ #pano-modal .pano-viewport{min-height:155px}
+ #pano-modal .pano-bottom{padding-bottom:calc(9px + env(safe-area-inset-bottom,0px))}
+}

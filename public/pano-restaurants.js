@@ -15,6 +15,31 @@
   {area:'westendorf',x:.79,y:.67,restaurants:['Bergrestaurant Talkaser','Panorama Restaurant Choralpe']}
  ];
  const photos={
+  'Kaiserlounge':{
+    src:'https://sgm.skiwelt.at/media/facility/kaiser-loung-sun-downerfotogretter-014-1-retusche.webp',
+    credit:'Binnenfoto: SkiWelt / Kaiserlounge',
+    page:'https://www.skiwelt.at/de/info/kaiserlounge-ellmau-essen-einkehren-apres-ski-skiwelt/'
+  },
+  'Tanzbodenalm':{
+    src:'https://tourism.skiwelt.at/media/event/detail/tanzbodenalm-soell-sommer-hr-013-1.jpg',
+    credit:'Binnenfoto (zomer): SkiWelt / Tanzbodenalm',
+    page:'https://www.skiwelt.at/nl/scheffau/events/live-muziek-in-de-tanzbodenalm.html'
+  },
+  'Jochstubn':{
+    src:'https://www.kitzbueheler-alpen.com/feratel/info/large/ellmau-alpengasthof-jochstubn-innen-2.jpg',
+    credit:'Binnenfoto: Kitzbüheler Alpen / Jochstubn',
+    page:'https://www.kitzbueheler-alpen.com/de/bri/infra/a-z/bergrestaurant-jochstubn.html'
+  },
+  'Stöcklalm':{
+    src:'https://sgm.skiwelt.at/media/facility/stoecklalm-innen-soell-6.webp',
+    credit:'Binnenfoto: SkiWelt / Stöcklalm',
+    page:'https://www.skiwelt.at/en/info/gasthof-stoecklalm-soell/'
+  },
+  'KRAFTalm':{
+    src:'https://www.kitzbueheler-alpen.com/feratel/info/large/itter-kraftalm-itterkraftalmhohe-salvedefrancescophootographe.jpg',
+    credit:'Binnenfoto: Kitzbüheler Alpen / KRAFTalm',
+    page:'https://www.kitzbueheler-alpen.com/da/hosa/infra/a-z/kraftalm.html'
+  },
   'Gipfelalm Hohe Salve':{
     src:'https://www.kitzbueheler-alpen.com/feratel/info/large/westendorf-gipfelrestaurant-hohe-salve-innen2.jpg',
     credit:'Binnenfoto: Kitzbüheler Alpen / accommodatieinformatie',
@@ -22,7 +47,7 @@
   }
  };
  const pages={
-   'Bergrestaurant Brandstadl':'https://www.skiwelt.at/nl/webcam-restaurant-brandstadl.html',
+   'Bergrestaurant Brandstadl':'https://www.bergrestaurant-brandstadl.at/Bergrestaurant-Brandstadl-Impressionen_pid%2C65543%2Ctype%2Cgalerie.html',
    'Gipfelalm Hohe Salve':'https://www.skiwelt.at/nl/soell/info/gipfelrestaurant-hohe-salve.html'
  };
  const select=$('pano-hut-select'),photo=$('pano-hut-photo'),photoStatus=$('pano-hut-photo-status'),link=$('pano-hut-link');
@@ -35,7 +60,7 @@
    }else{
       photo.hidden=true;photo.removeAttribute('src');photoStatus.textContent='Geverifieerde binnenfoto volgt. Geen willekeurige foto getoond.';
    }
-   link.href=pages[name]||data?.page||'https://skimap.skiwelt.at/en/winter/hausberg.html';
+   link.href=pages[name]||data?.page||'https://skimap.skiwelt.at/en/';
    link.textContent='Restaurantinformatie bij bron';
  }
  photo?.addEventListener('error',()=>{

@@ -19,7 +19,7 @@ De echte domeinnaam ski-je.nl moet je eerst bezitten/registreren (meestal jaarli
    Controleer: ok true, groups true, createConfigured true.
 9. Test in Chrome/Safari op je telefoon. Groep aanmaken, groepsuitnodiging delen,
    GPS alleen met toestemming; test met 2 personen en dan 6 / 20.
-10. Laat de bestaande Netlify-app staan totdat de nieuwe versie is getest.
+10. Controleer een nieuwe Cloudflare-versie op je telefoon en exporteer belangrijke data.
 11. Bij latere updates: gebruik 04-LATERE-UPDATE.cmd uit de nieuwe pakketmap,
     maar behoud dezelfde Worker-naam ski-je en hetzelfde Cloudflare-account.
 

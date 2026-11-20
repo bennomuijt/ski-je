@@ -21,5 +21,5 @@ for(const size of [192,512]){
    <path d="M0 431 152 283 271 405 370 298 512 438 512 512 0 512Z" fill="#eafaff" opacity=".22"/>
    </svg>`);
   const left=Math.round((size-width)/2),top=Math.round((size-height)/2);
-  await sharp(background).composite([{input:logoData,left,top}]).png().toFile(fileURLToPath(new URL(`icon-${size}-v454.png`,dir)));
+  await sharp(background).composite([{input:logoData,left,top}]).png().toFile(fileURLToPath(new URL(`icon-${size}-v455.png`,dir)));
 }

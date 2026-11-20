@@ -19,7 +19,7 @@
   const option=$('lunch-restaurant')?.selectedOptions?.[0];
   return {start:input('start'),finish:input('finish'),departure:input('departure'),returnTime:input('return-time'),
    date:input('day')||(()=>{const d=new Date();const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());})(),style:document.querySelector('[data-style][aria-pressed="true"]')?.dataset.style||'relaxed',
-   skill:input('skill')||'red',speed:input('speed')||'normal',
+   skill:input('skill')||'red',speed:input('speed')||'normal',allowBlack:checked('allow-black')&&input('skill')!=='blue',
    wishes:[...document.querySelectorAll('#wishes-list select')].map(x=>x.value).filter(Boolean),
    useLunch:checked('use-lunch'),lunchTime:input('lunch-time'),lunchDuration:Number(input('lunch-duration')||60),
    lunchRestaurant:input('lunch-restaurant'),lunchRestaurantLabel:input('lunch-restaurant')?(option?.textContent||''):'',
@@ -69,6 +69,12 @@
   intro.append(el('span','day-pill',plan.lunchMinutes+' '+t('minuten lunch')));
   output.append(intro);
   output.append(el('p','plan-locations',plan.startPoint+' → '+plan.endPoint));
+  const lengths=detail.routeDistances?.(itinerary)||{pisteKm:null,liftKm:null,pisteComplete:false,liftComplete:false};
+  const kms=el('div','day-intro ski-distance-summary');
+  for(const [title,km,complete] of [['⛷️ Pistekilometers',lengths.pisteKm,lengths.pisteComplete],['🚡 Liftkilometers',lengths.liftKm,lengths.liftComplete]]){
+   kms.append(el('span','day-pill',title+': '+(complete?km.toFixed(2)+' km':km>0?'minimaal '+km.toFixed(2)+' km (onvolledig)':'nog niet bekend')));
+  }
+  output.append(kms);
   const timeline=el('div','day-timeline');
   for(const s of plan.sections){
    const row=el('div','day-timeline-row '+s.type);

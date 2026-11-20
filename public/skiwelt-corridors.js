@@ -74,62 +74,131 @@
  function shortest(start,finish,closures){
   if(!areas.includes(start)||!areas.includes(finish))return null;
   if(start===finish)return [];
-  const queue=[start],parents=new Map([[start,null]]);
-  while(queue.length){
-   const current=queue.shift();
+  // Dijkstra by stated approximate corridor minutes, not by number of area changes.
+  const distances=new Map([[start,0]]),parents=new Map(),visited=new Set();
+  while(visited.size<areas.length){
+   let current=null,cost=Infinity;
+   for(const [area,d] of distances){if(!visited.has(area)&&d<cost){current=area;cost=d;}}
+   if(!current)break;
+   if(current===finish)break;
+   visited.add(current);
    for(const edge of corridors){
     if(closedCorridor(edge,closures))continue;
     const next=edge.a===current?edge.b:edge.b===current?edge.a:null;
-    if(!next||parents.has(next))continue;
-    parents.set(next,{previous:current,edge});queue.push(next);
-    if(next===finish){
-     const route=[];let node=finish;
-     while(node!==start){
-      const found=parents.get(node),e=found.edge;
-      route.push({id:e.id,from:found.previous,to:node,via:found.previous===e.a?e.ab:e.ba,
-       minutes:e.minutes,status:'unknown',mapListed:true,warning:'⚠️ Op SkiWelt-kaart / verbindingspagina; niet live gecontroleerd',
-       codes:e.codes.slice(),source:SOURCE});
-      node=found.previous;
-     }
-     return route.reverse();
+    if(!next||visited.has(next))continue;
+    const candidate=cost+edge.minutes;
+    if(candidate<(distances.get(next)??Infinity)){
+     distances.set(next,candidate);parents.set(next,{previous:current,edge});
     }
    }
   }
-  return null;
+  if(!parents.has(finish))return null;
+  const route=[];let node=finish;
+  while(node!==start){
+   const found=parents.get(node);if(!found)return null;
+   const e=found.edge;
+   route.push({id:e.id,from:found.previous,to:node,
+    via:found.previous===e.a?e.ab:e.ba,
+    direction:found.previous===e.a?'ab':'ba',minutes:e.minutes,
+    status:'unknown',mapListed:true,
+    warning:'⚠️ Op officiële verbindingspagina, niet live gecontroleerd',
+    codes:e.codes.slice(),source:SOURCE});
+   node=found.previous;
+  }
+  return route.reverse();
+ }
+ const cost=steps=>steps?.reduce((total,step)=>total+step.minutes,0)??Infinity;
+ const minutes=x=>/^\d{2}:\d{2}$/.test(String(x||''))?Number(x.slice(0,2))*60+Number(x.slice(3)):null;
+ function pickScenicTarget(start,finish,through,available,closures,date=''){
+  const candidates=[];
+  for(const area of areas){
+   if(area===start||area===finish)continue;
+   const first=shortest(start,through||area,closures);
+   const toCandidate=through?shortest(through,area,closures):[];
+   const last=shortest(area,finish,closures);
+   if(!first||!toCandidate||!last)continue;
+   const total=cost(first)+cost(toCandidate)+cost(last);
+   if(total>available||total<65)continue;
+   const hops=first.length+toCandidate.length+last.length;
+   const depth=shortest(start,area,closures)?.length||0;
+   // Longer scenic circuits score better; avoid a short first-neighbour loop at home.
+   const score=Math.min(total,available*.9)+(depth>=2?85:0)+(hops>=4?28:0);
+   candidates.push({area,total,score,depth});
+  }
+  if(!candidates.length)return null;
+  candidates.sort((a,b)=>b.score-a.score||b.depth-a.depth||a.area.localeCompare(b.area));
+  // Diversify similarly attractive outings by date without random behaviour.
+  const tied=candidates.filter(x=>x.score>=candidates[0].score-8);
+  const dayNumber=String(date||'').replace(/\D/g,'').split('').reduce((n,d)=>n+Number(d),0);
+  return tied[dayNumber%tied.length].area;
  }
  function build(settings,closures=[]){
   const start=areaOf(settings?.start),finish=areaOf(settings?.finish);
   const blocked=parseClosures(closures),notes=[],unreachable=[];
-  if(!start||!finish)return {ok:false,steps:[],reason:'Start- of eindstation nog niet aan een SkiWelt-gebied gekoppeld.',notes,source:SOURCE};
-  let stops=[];
+  const empty={ok:false,startArea:start,endArea:finish,steps:[],phases:{preLunch:[],postLunch:[],return:[]},
+   notes,unreachable,source:SOURCE,provisional:true,returnEstimate:0,durationEstimate:0};
+  if(!start||!finish)return {...empty,reason:'Start- of eindstation nog niet aan een SkiWelt-gebied gekoppeld.'};
+  const dayStart=minutes(settings?.departure||'09:00')??540;
+  const end=minutes(settings?.returnTime||'16:00')??960;
+  const lunchStart=minutes(settings?.lunchTime||'12:30')??750;
+  const withLunch=settings?.useLunch!==false;
+  const lunchMinutes=withLunch?Math.max(30,Math.min(120,Number(settings?.lunchDuration||60))):0;
+  const breaks=(settings?.morningBreak?30:0)+(settings?.afternoonBreak?30:0);
+  const available=Math.max(0,end-dayStart-30-lunchMinutes-breaks-15);
+  const lunchRestaurant=String(settings?.lunchRestaurantLabel||'');
+  const assignedLunch=withLunch?areaOf(lunchRestaurant):null;
+  const wishes=[];
   if(Array.isArray(settings?.wishes))for(const wish of settings.wishes){
-   const area=wishAreas[wish];if(area&&!stops.includes(area)&&area!==start&&area!==finish)stops.push(area);
+   const area=wishAreas[wish];if(area&&!wishes.includes(area))wishes.push(area);
   }
-  const restaurantArea=areaOf(settings?.lunchRestaurantLabel||'');
-  if(settings?.useLunch!==false&&restaurantArea&&restaurantArea!==start&&restaurantArea!==finish&&!stops.includes(restaurantArea)){
-   stops.unshift(restaurantArea);
-  }else if(settings?.useLunch!==false&&settings?.lunchRestaurantLabel&&!restaurantArea)
-   notes.push('⚠️ Restaurantlocatie niet aan de officiële verbindingskaart gekoppeld; controleer bereikbaarheid.');
-  // At identical start and end, make an optional circuit on known corridors for a full-day proposal.
-  if(!stops.length&&start===finish){
-   const loop=corridors.find(e=>(e.a===start||e.b===start)&&!closedCorridor(e,blocked));
-   if(loop&&String(settings?.departure||'09:00')<'12:00')stops.push(loop.a===start?loop.b:loop.a);
+  let preLunchArea=assignedLunch||null,scenicTarget=null;
+  const explicit=wishes.find(x=>x!==start&&x!==finish);
+  // Prioritise explicit wishes, otherwise travel away from the often-skied home area.
+  if(explicit)scenicTarget=explicit;
+  else if(settings?.style!=='fast'||start===finish){
+   scenicTarget=pickScenicTarget(start,finish,preLunchArea,available*.78,blocked,settings?.date);
   }
-  const legs=[];let current=start;const targets=[...stops,finish];
-  for(const target of targets){
-   const path=shortest(current,target,blocked);
-   if(path===null){unreachable.push(current+' → '+target);continue;}
-   legs.push(...path);current=target;
+  if(!scenicTarget&&start!==finish)scenicTarget=finish;
+  if(!scenicTarget&&start===finish)scenicTarget=preLunchArea||start;
+  if(!preLunchArea)preLunchArea=scenicTarget;
+  // A requested lunch venue must be reachable before lunch, not after.
+  let preLunch=shortest(start,preLunchArea,blocked);
+  if(preLunch===null){unreachable.push(start+' → '+preLunchArea);preLunch=[];}
+  let timeUntilLunch=withLunch?lunchStart-dayStart-15:Infinity;
+  if(withLunch&&cost(preLunch)>timeUntilLunch){
+   notes.push('⚠️ De gekozen lunchlocatie is mogelijk niet vóór '+settings.lunchTime+' bereikbaar. Wijzig vertrek of lunchtijd.');
   }
-  if(unreachable.length){
-   notes.push('⚠️ Geen gedocumenteerde open verbinding gevonden voor '+unreachable.join(', ')+'. Er wordt geen niet-bestaande verbinding verzonnen.');
+  let postLunch=[];
+  if(scenicTarget!==preLunchArea){
+   const path=shortest(preLunchArea,scenicTarget,blocked);
+   if(path!==null)postLunch=path;else unreachable.push(preLunchArea+' → '+scenicTarget);
   }
-  if(blocked.length)notes.push('⚠️ '+blocked.length+' eigen sluitingsmelding(en) meegenomen. Deze zijn nog niet onafhankelijk bevestigd.');
-  notes.push('⚠️ Alle kaartverbindingen zonder actuele status zijn voor de planning als beschikbaar aangenomen; controleer de officiële lift- en pistestatus voor vertrek.');
-  return {ok:unreachable.length===0,startArea:start,endArea:finish,steps:legs,notes,unreachable,
+  let latestArea=postLunch.length?postLunch.at(-1).to:preLunchArea;
+  let returnSteps=shortest(latestArea,finish,blocked);
+  if(returnSteps===null){unreachable.push(latestArea+' → '+finish);returnSteps=[];}
+  if(withLunch){
+   const afterLunchTime=end-30-(lunchStart+lunchMinutes)-15-(settings?.afternoonBreak?30:0);
+   if(cost(postLunch)+cost(returnSteps)>afterLunchTime){
+    if(!explicit&&postLunch.length){
+     scenicTarget=preLunchArea;postLunch=[];
+     latestArea=preLunchArea;returnSteps=shortest(latestArea,finish,blocked)||[];
+     notes.push('Een te lange extra omweg na de lunch is geschrapt om tijdig terug te keren.');
+    } else notes.push('⚠️ De gekozen route kan na de lunch niet binnen de opgegeven terugkeertijd passen.');
+   }
+  }
+  const minCost=cost(preLunch)+cost(postLunch)+cost(returnSteps);
+  if(minCost>available)notes.push('⚠️ Verwachte verbindingstijd is langer dan de beschikbare tijd. Kies minder stops of een latere eindtijd.');
+  if(unreachable.length)notes.push('⚠️ Geen gedocumenteerde open verbinding voor '+unreachable.join(', ')+'. Er worden geen ontbrekende pistes verzonnen.');
+  if(blocked.length)notes.push('⚠️ '+blocked.length+' zelf gemelde sluiting(en) meegenomen (niet onafhankelijk gecontroleerd).');
+  if(assignedLunch&&assignedLunch!==scenicTarget)notes.push('Lunch in '+assignedLunch+' is als gewenste stop opgenomen. Exacte bereikbaarheid restaurant controleren.');
+  if(!assignedLunch&&withLunch)notes.push('Lunchgebied: '+preLunchArea+'. Kies een bereikbaar restaurant ter plaatse.');
+  notes.push('⚠️ Kaartverbindingen zijn voorlopig als geopend aangenomen. Liften, pistes, overstappen en wachttijden zijn niet live gecontroleerd.');
+  const steps=[...preLunch,...postLunch,...returnSteps];
+  return {ok:unreachable.length===0,startArea:start,endArea:finish,steps,notes,unreachable,
+   phases:{preLunch,postLunch,return:returnSteps},scenicTarget,preLunchArea,lunchArea:preLunchArea,
    source:SOURCE,provisional:true,closuresApplied:blocked.length,
-   durationEstimate:legs.reduce((sum,leg)=>sum+leg.minutes,0),
-   reason:unreachable.length?'Niet alle gewenste gebieden hebben een beschikbare gedocumenteerde verbinding.':'Voorlopige gebiedsroute op officiële verbindingsinformatie (geen lift-voor-lift-navigatie).'};
+   returnEstimate:cost(returnSteps),durationEstimate:cost(steps),minimumMinutes:minCost,
+   reason:unreachable.length?'Niet alle gebieden hebben een gedocumenteerde beschikbare verbinding.':'Voorlopig reisvoorstel via officiële gebiedsverbindingen, niet exact van liftstation tot liftstation.'};
  }
  return {SOURCE,areas,corridors,areaOf,parseClosures,closedCorridor,shortest,build};
 });

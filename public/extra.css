@@ -230,3 +230,8 @@ body.utility-open{overflow:hidden}
 .pano-hut-info strong{display:block}
 .pano-hut-info a{color:#075c93;font-weight:750}
 .pano-hut-info button{border:1px solid #c7b89d;border-radius:8px;background:white;min-height:40px;min-width:40px;font-size:18px}
+
+.pano-hut-info .pano-hut-details{display:grid;gap:6px;min-width:0;flex:1}
+.pano-hut-info select{min-height:42px;width:100%;border:1px solid #b9cad8;border-radius:9px;background:white;color:#173e5a;padding:7px;font:inherit}
+.pano-hut-info img{display:block;object-fit:cover;max-width:100%;max-height:140px;border-radius:10px}
+.pano-hut-info img[hidden]{display:none!important}

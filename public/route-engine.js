@@ -108,7 +108,7 @@
   }
   return {result,missing};
  }
- function calculate({edges=[],start='',finish='',departure='09:00',returnTime='16:00',style='relaxed',skill='red',speed='normal',allowBlack=false,wishes=[],useLunch=true,lunchDuration=60,lunchTime='12:30',lunchRestaurant='',morningBreak=false,afternoonBreak=false}={}){
+ function calculate({edges=[],start='',finish='',departure='09:00',returnTime='16:00',style='relaxed',skill='red',speed='normal',allowBlack=false,wishes=[],useLunch=true,lunchDuration=60,lunchTime='12:30',lunchRestaurant='',morningBreak=false,morningDuration=30,afternoonBreak=false,afternoonDuration=30,useSafety=true,safetyMarginMin=30}={}){
   const begin=clock(departure),end=clock(returnTime),lunchtime=clock(lunchTime);
   if(begin===null||end===null||end<=begin+90)return {ok:false,reason:'Controleer vertrek- en terugkeertijd.'};
   if(useLunch&&(!Number.isFinite(Number(lunchDuration))||Number(lunchDuration)<30||Number(lunchDuration)>120||lunchtime===null||lunchtime<clock('11:45')||lunchtime>clock('13:15')))
@@ -152,10 +152,13 @@
   }
   if(!addPath(finish))return {ok:false,reason:'Er bestaat geen gecontroleerde verbinding tussen start, wensen en eindpunt.'};
   if(!steps.length)return {ok:false,reason:'Nog geen skiroute: het start- en eindpunt zijn gelijk en er zijn geen gecontroleerde pistes of rondjes gekozen.'};
-  const breakMinutes=(morningBreak?30:0)+(afternoonBreak?30:0);
+  const early=morningBreak?Math.max(5,Math.min(120,Number(morningDuration)||30)):0;
+   const late=afternoonBreak?Math.max(5,Math.min(120,Number(afternoonDuration)||30)):0;
+   const breakMinutes=early+late;
   const lunchMinutes=useLunch?Number(lunchDuration):0;
   const travelMinutes=steps.reduce((sum,s)=>sum+s.duration,0);
-  const latestArrival=end-30;
+  const margin=useSafety===false?0:Math.max(0,Math.min(120,Number.isFinite(Number(safetyMarginMin))?Number(safetyMarginMin):30));
+   const latestArrival=end-margin;
   const warnings=[...new Set(notes)];
   // Include pauses in the ACTUAL segment clock before checking lift deadlines.
   // The model is conservative: if a late lunch cannot be scheduled, fail instead
@@ -165,8 +168,8 @@
   if(lunchNode){const idx=steps.findIndex(s=>s.edge.to===lunchNode);if(idx>=0)lunchIndex=idx;}
   let actualClock=begin,scheduledLunchAt=null;
   for(let i=0;i<steps.length;i++){
-    if(morningBreak&&i===Math.max(0,Math.floor(steps.length/4)))actualClock+=30;
-    if(afternoonBreak&&i===Math.max(0,Math.floor(steps.length*3/4)))actualClock+=30;
+    if(morningBreak&&i===Math.max(0,Math.floor(steps.length/4)))actualClock+=early;
+    if(afternoonBreak&&i===Math.max(0,Math.floor(steps.length*3/4)))actualClock+=late;
     const step=steps[i],closing=clock(step.edge.closingTime);
     if(step.edge.type==='lift'&&closing!==null&&actualClock>=closing)
       return {ok:false,reason:'Een lift zou al gesloten kunnen zijn na ingeplande pauzes: '+step.edge.name};

@@ -13,13 +13,27 @@
  };
  const groupNames=window.SKIRestaurantMap?.getAnchors?.()||[];
  catalog.restaurant=[...new Set(groupNames.flatMap(g=>g.restaurants))].sort((a,b)=>a.localeCompare(b,'nl'));
+ try{
+  const saved=JSON.parse(localStorage.getItem('skije-extended-2026-v1')||'{}');
+  for(const edge of saved.network||[]){
+   if(edge?.type==='lift'&&edge.name){
+    const label=(edge.code?String(edge.code).replace(/^lift:/,'')+' - ':'')+String(edge.name);
+    if(label.length<85&&!catalog.lift.includes(label))catalog.lift.push(label);
+   }
+  }
+ }catch{}
+ catalog.lift.sort((a,b)=>a.localeCompare(b,'nl'));
  let jpeg=null,gps=null,approved=[],busy=false,lastLoaded=0;
  function options(){
   target.replaceChildren();
   for(const name of catalog[type.value]||[]){
    const option=document.createElement('option');option.value=name;option.textContent=name;target.append(option);
   }
+  const other=document.createElement('option');other.value='__other__';other.textContent='+ Andere lift / hut invullen';target.append(other);
+  showOther();
  }
+ function showOther(){$('community-photo-other-wrap').hidden=target.value!=='__other__';}
+ target.addEventListener('change',showOther);
  type.addEventListener('change',options);options();
  const choose=file=>{
   if(!file)return;
@@ -139,12 +153,13 @@
  $('community-photo-send').addEventListener('click',async()=>{
   if(busy)return;
   if(!jpeg){message(status,'Maak of selecteer eerst een foto.');return;}
-  if(!target.value){message(status,'Kies eerst een lift of restaurant.');return;}
+  const entity=target.value==='__other__'?read('community-photo-other').trim():target.value;
+  if(!entity||entity.length<2){message(status,'Kies of vul eerst een lift of restaurant in.');return;}
   if(!$('community-photo-consent').checked){message(status,'Bevestig dat je de foto mag delen.');return;}
   busy=true;const button=$('community-photo-send');button.disabled=true;
   message(status,'Versturen naar de privéwachtrij...');
   try{
-   const v=await post('submit',{type:type.value,entity:target.value,caption:read('community-photo-note'),image:jpeg,gps});
+   const v=await post('submit',{type:type.value,entity,caption:read('community-photo-note'),image:jpeg,gps});
    jpeg=null;preview.hidden=true;preview.removeAttribute('src');
    $('community-photo-note').value='';$('community-photo-consent').checked=false;gps=null;
    message(gpsStatus,'GPS voor volgende foto opnieuw ophalen.');

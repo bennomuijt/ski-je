@@ -310,7 +310,7 @@
    return e;
  });}
  function routeSettings(){return {edges:statusSafeEdges(),start:$('start').value,finish:$('finish').value,departure:$('departure').value,returnTime:$('return-time').value,
-   style:document.querySelector('[data-style][aria-pressed="true"]')?.dataset.style||'relaxed',skill:$('skill').value,speed:$('speed').value,
+   style:document.querySelector('[data-style][aria-pressed="true"]')?.dataset.style||'relaxed',skill:$('skill').value,speed:$('speed').value,allowBlack:$('allow-black')?.checked===true&&$('skill').value!=='blue',
    wishes:[...$('wishes-list').querySelectorAll('select')].map(el=>el.value).filter(Boolean),useLunch:$('use-lunch').checked,lunchTime:$('lunch-time').value,
    lunchDuration:Number($('lunch-duration').value),lunchRestaurant:$('lunch-restaurant').value,
    morningBreak:$('early-break').checked,afternoonBreak:$('late-break').checked};}

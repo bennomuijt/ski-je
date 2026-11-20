@@ -195,7 +195,7 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.3</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.4</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -246,15 +246,21 @@ body.legal-open{overflow:hidden}
         </div>
         <div class="option-section">
           <h3>Overige voorkeuren</h3>
-          <div class="grid"><div class="field"><label for="day">Skidatum</label><input id="day" type="date"></div><div class="field"><label for="skill">Niveau</label><select id="skill"><option value="blue">Blauw</option><option value="red" selected>Blauw &amp; rood</option><option value="black">Ook zwart</option></select></div></div>
-          <div class="field"><label for="speed">Skisnelheid</label><select id="speed"><option value="easy">Rustig</option><option value="normal" selected>Gemiddeld</option><option value="sporty">Sportief</option></select></div>
+          <div class="grid"><div class="field"><label for="day">Skidatum</label><input id="day" type="date"></div><div class="field"><label for="skill">Skiniveau</label><select id="skill"><option value="blue">Beginner</option><option value="red" selected>Gevorderd</option><option value="pro">Professional</option></select></div></div>
+          <input id="speed" type="hidden" value="normal">
+          <p class="hint" id="speed-profile" role="status">Je skiniveau bepaalt de indicatieve reistijden.</p>
+          <fieldset class="black-piste-choice"><legend>⚠️ Let op! Wil je ook zwarte pistes op je route?</legend>
+           <label><input type="radio" name="black-pistes" id="block-black" value="no" checked> Nee, geen zwarte pistes</label>
+           <label><input type="radio" name="black-pistes" id="allow-black" value="yes"> Ja, ik wil ook zwarte pistes</label>
+          </fieldset>
+          <p class="hint">Zwarte pistes staan altijd standaard uit, ook bij Professional. Bij Beginner zijn ze niet beschikbaar. Onbekende pistekleuren ter plaatse controleren.</p>
           <div class="switchrow"><label for="early-break">Ochtendpauze (30 min)</label><input id="early-break" type="checkbox"></div>
           <div class="switchrow"><label for="late-break">Middagpauze (30 min)</label><input id="late-break" type="checkbox"></div>
         </div>
         <p class="hint">Dit zijn routewensen, geen bevestigde piste- of liftverbindingen. Controleer actuele status en sluitingstijden voor vertrek.</p>
       </details>
       <div class="toolbar plan-shortcuts"><button class="btn secondary small-btn" id="quick-return" type="button">&#8634; Terug naar start</button><button class="btn secondary small-btn" id="share-intent" type="button">&#128279; Deel alleen wensen</button></div>
-      <button class="btn full" id="create">🧭 Stel mijn skidag samen</button>
+      <button class="btn full" id="create">🧭 Stel mijn route samen</button>
 <button class="btn secondary full" type="button" id="return-home-planner">🏠 Kortste terugweg vanaf mijn GPS</button>
       <p class="hint">Je keuzes worden op dit apparaat onthouden. Terugrekenen houdt standaard 30 minuten veiligheidsmarge aan.</p>
       <div id="plan-output" class="route-summary" aria-live="polite"><strong>Jouw dag, eenvoudig gepland</strong><p class="muted">Kies start, eind en tijd; SKI-je maakt een volledige dagindeling.</p></div>
@@ -477,7 +483,7 @@ body.legal-open{overflow:hidden}
       <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
       <label class="verify"><input id="motion-setting" type="checkbox" checked> Logoanimatie bij iedere nieuwe start tonen (niet bij verminderde beweging)</label>
       <div class="toolbar"><a class="btn secondary small-btn" href="install.html">📲 Installeren / deel installatielink</a><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">&#8635; Update app naar nieuwste versie</button></div>
-      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.3 · Controleer online op nieuwe updates.</p>
+      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.4 · Controleer online op nieuwe updates.</p>
       <p class="hint" id="install-help">Android: Chrome-menu &rarr; App installeren of Toevoegen aan startscherm. iPhone: Safari &rarr; Deel &rarr; Zet op beginscherm.</p>
       <div class="toolbar"><button class="btn secondary small-btn" id="export-all" type="button">&#128190; Mijn data exporteren</button><button class="btn clear small-btn" id="clear-private" type="button">Lokale data wissen</button></div>
       <details><summary>🔄 Back-up van Netlify importeren</summary>
@@ -487,7 +493,7 @@ body.legal-open{overflow:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.5.3-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
+      <p class="tiny">SKI-je v4.5.4-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
@@ -651,6 +657,7 @@ const restaurantChoices=[
 ];
 $('lunch-restaurant').innerHTML='<option value="">Geen voorkeur, laat SKI-je kiezen</option>'+restaurantChoices.map(r=>`<option value="${r[0]}:${r[1]}">Hut ${r[0]} - ${r[1]} (${r[2]})</option>`).join('');
 if(saved['lunch-restaurant'])$('lunch-restaurant').value=saved['lunch-restaurant'];
+if(saved.skill==='black')$('skill').value='pro'; // oude keuze voor zwart neemt GEEN toestemming mee
 const wishGroups=[
  ['Bergtoppen en uitzichtpunten',[
  ['top:salve','Bergtop / uitzichtpunt - Hohe Salve'],
@@ -702,11 +709,13 @@ const wishGroups=[
  ]]
 ];
 const wishesById=new Map(wishGroups.flatMap(group=>group[1]).map(pair=>pair));
-let wishes=Array.isArray(saved.wishes)?saved.wishes.filter(v=>wishesById.has(v)):[];
+const blackWishes=new Set(wishGroups.find(group=>group[0]==='Zwarte pistes')[1].map(pair=>pair[0]));
+let wishes=Array.isArray(saved.wishes)?saved.wishes.filter(v=>wishesById.has(v)&&!blackWishes.has(v)):[];
 wishes=[...new Set(wishes)];
 function renderWishes(){
  const list=$('wishes-list');list.replaceChildren();
- const choicesMarkup=wishGroups.map(([group,items])=>'<optgroup label="'+escapeHtml(group)+'">'+items.map(([key,label])=>'<option value="'+escapeHtml(key)+'">'+escapeHtml(label)+'</option>').join('')+'</optgroup>').join('');
+ const blackAllowed=$('allow-black').checked&&$('skill').value!=='blue';
+ const choicesMarkup=wishGroups.map(([group,items])=>'<optgroup label="'+escapeHtml(group)+'">'+items.map(([key,label])=>'<option value="'+escapeHtml(key)+'"'+(blackWishes.has(key)&&!blackAllowed?' disabled':'')+'>'+escapeHtml(label)+'</option>').join('')+'</optgroup>').join('');
  [...wishes,''].forEach((value,index)=>{
    const row=document.createElement('div');row.className='wish-row'+(value?'':' blank');
    const field=document.createElement('div');field.className='field';
@@ -715,7 +724,7 @@ function renderWishes(){
    sel.innerHTML='<option value="">+ Kies een piste, bergtop, uitzichtpunt of lift</option>'+choicesMarkup;
    sel.value=value;
    sel.addEventListener('change',()=>{
-      const val=sel.value;if(!val){if(value)wishes.splice(index,1);}
+      const val=sel.value;if(blackWishes.has(val)&&!($('allow-black').checked&&$('skill').value!=='blue')){$('wish-hint').textContent='Zwarte pistes zijn niet toegestaan. Kies Ja en minimaal Gevorderd.';sel.value=value;return;}if(!val){if(value)wishes.splice(index,1);}
       else if(wishes.includes(val)&&val!==value){$('wish-hint').textContent='Deze keuze staat al op je lijst.';sel.value=value;return;}
       else if(value){wishes[index]=val;}else{wishes.push(val);}
       $('wish-hint').textContent=val?'Keuze toegevoegd. Je kunt hieronder meteen nog een plek kiezen.':'Pistenummers zijn apart van liftnummers weergegeven.';
@@ -731,7 +740,18 @@ function updateLunch(){
  $('lunch-settings').classList.toggle('hidden',!$('use-lunch').checked);
  $('lunch-duration-value').textContent=$('lunch-duration').value+' min';
 }
-renderWishes();updateLunch();
+function syncSkiProfile(){
+ const profiles={blue:{speed:'easy',effective:12,measured:'19,9'},red:{speed:'normal',effective:20,measured:'32,4'},pro:{speed:'sporty',effective:28,measured:'44,5'}};
+ const profile=profiles[$('skill').value]||profiles.red;
+ $('speed').value=profile.speed;
+ $('speed-profile').textContent='Rekenwaarde op piste: circa '+profile.effective+' km/u (gemeten gemiddelde afdaling: '+profile.measured+' km/u). Liften en overstappen worden afzonderlijk berekend. Geen adviessnelheid.';
+ if($('skill').value==='blue')$('block-black').checked=true;
+ if(!$('allow-black').checked||$('skill').value==='blue')wishes=wishes.filter(v=>!blackWishes.has(v));
+ renderWishes();
+}
+syncSkiProfile();updateLunch();
+for(const radio of document.querySelectorAll('input[name="black-pistes"]'))radio.addEventListener('change',()=>{syncSkiProfile();save();});
+$('skill').addEventListener('change',syncSkiProfile);
 const editable=['start','finish','same-end','departure','return-time','day','skill','speed','use-lunch','lunch-time','lunch-duration','lunch-restaurant','early-break','late-break'];
 function save(){const f={};for(const id of editable){let e=$(id);f[id]=e.type==='checkbox'?e.checked:e.value;}
   f.wishes=wishes.slice();state.form=f;try{localStorage.setItem('skije-preview-v1',JSON.stringify(state));}catch{}
@@ -1060,12 +1080,12 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 
 <script src="i18n-data.js" defer></script>
 <script src="i18n.js" defer></script>
-<script src="app-update.js?v=453" defer></script>
+<script src="app-update.js?v=454" defer></script>
 <script src="route-engine.js" defer></script>
 <script src="day-planner.js" defer></script>
 <script src="skiwelt-corridors.js" defer></script>
 <script src="route-detail.js" defer></script>
-<script src="day-pdf.js?v=453" defer></script>
+<script src="day-pdf.js?v=454" defer></script>
 <script src="extra.js" defer></script>
 <script src="panorama-tools.js" defer></script>
 <script src="day-ui.js" defer></script>

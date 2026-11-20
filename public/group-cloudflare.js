@@ -139,7 +139,7 @@
  $('group-quick').addEventListener('click',openGroup);
  $('cf-group-map').addEventListener('click',openGroup);
  $('cf-group-create').addEventListener('click',async()=>{
-  const adminCode=$('cf-admin-code').value.trim(),memberName=cleanName($('cf-display-name').value),name=$('cf-new-name').value.trim().slice(0,60);
+  const adminCode=$('cf-admin-code').value,memberName=cleanName($('cf-display-name').value),name=$('cf-new-name').value.trim().slice(0,60);
   if(!adminCode||!memberName){status('Vul jouw naam én de Cloudflare-beheerderscode in.',true);return;}
   const button=$('cf-group-create');button.disabled=true;
   try{await checkBackend();const data=await api('create',{adminCode,memberName,name});$('cf-admin-code').value='';startSession(data,data.room,memberName);status('Nieuwe groep aangemaakt. Deel de uitnodigingslink met je skigroep.');}

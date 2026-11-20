@@ -69,12 +69,12 @@
   intro.append(el('span','day-pill',plan.lunchMinutes+' '+t('minuten lunch')));
   output.append(intro);
   output.append(el('p','plan-locations',plan.startPoint+' → '+plan.endPoint));
-  const lengths=detail.routeDistances?.(itinerary)||{pisteKm:null,liftKm:null,pisteComplete:false,liftComplete:false};
+  const lengths=detail.routeDistances?.(itinerary,options)||{pisteKm:0,liftKm:0,pisteCount:0,liftCount:0};
   const kms=el('div','day-intro ski-distance-summary');
-  for(const [title,km,complete] of [['⛷️ Pistekilometers',lengths.pisteKm,lengths.pisteComplete],['🚡 Liftkilometers',lengths.liftKm,lengths.liftComplete]]){
-   kms.append(el('span','day-pill',title+': '+(complete?km.toFixed(2)+' km':km>0?'minimaal '+km.toFixed(2)+' km (onvolledig)':'nog niet bekend')));
+  for(const [title,km,count,estimated] of [['⛷️ Pistekilometers',lengths.pisteKm,lengths.pisteCount,lengths.pisteEstimated],['🚡 Liftkilometers',lengths.liftKm,lengths.liftCount,lengths.liftEstimated]]){
+   kms.append(el('span','day-pill',title+': '+(count?(estimated?'ca. ':'')+km.toFixed(2)+' km'+(estimated?' (schatting)':''):'niet bekend')));
   }
-  output.append(kms);
+  output.append(kms,el('p','hint',lengths.note||'Alleen getoonde onderdelen, geen volledige officiële dagafstand.'));
   const timeline=el('div','day-timeline');
   for(const s of plan.sections){
    const row=el('div','day-timeline-row '+s.type);

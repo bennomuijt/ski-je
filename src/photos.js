@@ -22,6 +22,8 @@ function photoData(raw){
   const binary=atob(base64);
   if(binary.length>BYTES_CAP||binary.length<1200||binary.charCodeAt(0)!==255||binary.charCodeAt(1)!==216||binary.charCodeAt(2)!==255)return null;
   if(binary.charCodeAt(binary.length-2)!==255||binary.charCodeAt(binary.length-1)!==217)return null;
+  // Refuse metadata-bearing JPEGs from clients that bypass the canvas conversion.
+  if(binary.includes('Exif\\x00\\x00')||binary.includes('http://ns.adobe.com/xap/'))return null;
   return base64;
  }catch{return null;}
 }

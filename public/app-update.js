@@ -1,7 +1,7 @@
-/* SKI-je v4.3: online update of the existing PWA (without deleting local user data). */
+/* SKI-je v4.5.3: online update; existing local user data remain untouched. */
 (()=>{
  'use strict';
- const CURRENT='4.5.2-cf';
+ const CURRENT='4.5.3-cf';
  const buttons=['app-update-now','check-update'].map(id=>document.getElementById(id)).filter(Boolean);
  const status=document.getElementById('app-update-status');
  let busy=false;
@@ -27,26 +27,36 @@
      const data=await response.json();
      const live=String(data.version||'');
      if(!semver(live))throw new Error('versienummer niet gevonden');
-     const isNewer=newer(live,CURRENT);
+     // The server and displayed version are both checked, avoiding a mixed old/new PWA.
+     const displayed=document.querySelector('.app-version')?.textContent?.trim()||'';
+     const needsRefresh=newer(live,CURRENT)||newer(live,displayed);
+     let workerActivated=true;
      if('serviceWorker' in navigator){
-       // Update the SW before reloading so HTML, scripts and images receive the new cache.
        const reg=await navigator.serviceWorker.getRegistration();
        if(reg){
          await withTimeout(reg.update(),12000);
-         if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});
-       } else {
+         if(reg.waiting){
+           const waiting=reg.waiting;
+           const activeChange=new Promise(resolve=>{
+             if(navigator.serviceWorker.controller)navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true});
+             else resolve();
+           });
+           waiting.postMessage({type:'SKIP_WAITING'});
+           try{await withTimeout(activeChange,8000);}catch{workerActivated=false;}
+         }
+       }else{
          navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).catch(()=>{});
        }
      }
-     if(isNewer){
-       setState('is-current');say('Nieuwe versie '+live+' beschikbaar. SKI-je wordt nu vernieuwd…');
-       // Navigation is network-first in our SW. Avoid touching localStorage/IndexedDB.
+     if(needsRefresh){
+       say('Nieuwe versie '+live+' beschikbaar. SKI-je wordt vernieuwd…');
+       if(!workerActivated)say('Update is gedownload, maar de nieuwe cache is nog niet actief. Ververs zo nodig opnieuw.');
        const url=new URL(location.href);url.searchParams.set('skije-update',live);url.searchParams.set('t',String(Date.now()));
        location.replace(url.href);
-     }else if(live===CURRENT||semver(live).join('.')===semver(CURRENT).join('.')){
+     }else if(semver(live).join('.')===semver(CURRENT).join('.') && semver(displayed)?.join('.')===semver(CURRENT).join('.')){
        setState('is-current');say('Je gebruikt de nieuwste versie '+CURRENT+'. Je routes, GPS-ijkpunten en groepen blijven bewaard.');
      }else{
-       setState('is-failed');say('Cloudflare heeft versie '+live+'; deze app toont '+CURRENT+'. Probeer later opnieuw of ververs de pagina.');
+       setState('is-failed');say('De server meldt '+live+', maar deze pagina toont '+displayed+'. Vernieuw de pagina in Chrome.');
      }
    }catch(error){
      setState('is-failed');say('Updatecontrole niet gelukt. Controleer je internetverbinding en probeer opnieuw.');

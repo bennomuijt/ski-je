@@ -1,7 +1,7 @@
 /* SKI-je 4.0 test PWA shell.
    Cache first-party app files only. NEVER download/cache third-party map tiles,
    radar frames, wind, webcams or GPS data in service worker. */
-const SHELL='skije-shell-20261120-cloudflare-v4-5-2-panorama-map';
+const SHELL='skije-shell-20261120-cloudflare-v4-5-3-pdf-watermark-updater';
 const CORE=['./index.html','./i18n-data.js','./i18n.js','./i18n.css','./share-location.js','./install.html','./extra.css','./extra.js','./panorama-tools.js','./route-detail.js','./return-home-ui.js','./lunch-minute.js','./group-cloudflare.css','./group-cloudflare.js','./backup-migration.js','./route-engine.js','./day-planner.js','./skiwelt-corridors.js','./day-ui.js','./day-pdf.js','./app-update.js','./brand-skije.svg','./manifest.webmanifest','./icons/icon-192-v43.png','./icons/icon-512-v43.png','./Kaart 2026-2027.png','./ski-sfeer.webp','./ski-intro-woman-skis.webp','./ski-intro-man-skis.webp','./ski-intro-woman-snowboard.webp','./ski-intro-man-snowboard.webp'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(SHELL).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));

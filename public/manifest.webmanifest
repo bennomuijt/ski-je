@@ -1,7 +1,7 @@
 {
   "name": "SKI-je | SkiWelt winter 2026-2027",
   "short_name": "SKI-je",
-  "description": "SKI-je Cloudflare testapp met groepslocaties en skiroutes op gecontroleerde verbindingen, GPS, weer, wind, webcams en mijn skidagen.",
+  "description": "SKI-je voor SkiWelt: routeplanner met skillprofielen, veilige pistes, panoramakaart, GPS, skigroepen en dagrapporten.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -10,13 +10,13 @@
   "lang": "nl",
   "icons": [
     {
-      "src": "icons/icon-192-v43.png",
+      "src": "icons/icon-192-v454.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512-v43.png",
+      "src": "icons/icon-512-v454.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

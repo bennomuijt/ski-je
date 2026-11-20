@@ -155,7 +155,7 @@
   const explicit=wishes.find(x=>x!==start&&x!==finish);
   // Prioritise explicit wishes, otherwise travel away from the often-skied home area.
   if(explicit)scenicTarget=explicit;
-  else if(settings?.style!=='fast'||start===finish){
+  else if(settings?.style==='relaxed'||start===finish){
    scenicTarget=pickScenicTarget(start,finish,preLunchArea,available*.78,blocked,settings?.date);
   }
   if(!scenicTarget&&start!==finish)scenicTarget=finish;

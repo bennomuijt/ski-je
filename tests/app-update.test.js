@@ -22,6 +22,6 @@ test('4.5.6 PWA update and PDF watermark are in sync',()=>{
  assert.equal(pkg.version,'4.5.6');
  assert.match(html,/v4\.5\.6/);assert.match(js,/4\.5\.6-cf/);assert.match(api,/4\.5\.6-cf/);
  assert.match(sw,/v4-5-6-group-ui/);
- assert.match(html,/app-update\.js\?v=455/);assert.match(html,/day-pdf\.js\?v=455/);
+ assert.match(html,/app-update\.js\?v=456/);assert.match(html,/day-pdf\.js\?v=456/);
  assert.match(pdf,/globalAlpha=0\.12/);
 });

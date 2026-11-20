@@ -40,10 +40,10 @@ test('each break defaults 30 but can be changed or switched off separately',()=>
 });
 test('new logo exists and ServiceWorker does not reference files that are absent',()=>{
  const baseUrl=new URL('../',import.meta.url);
- for(const path of ['public/icons/skije-logo-v454.svg','public/icons/icon-192-v43.png','public/icons/icon-512-v43.png','public/pano-restaurants.js']){
+ for(const path of ['public/icons/skije-logo-v455.svg','public/icons/icon-192-v455.png','public/icons/icon-512-v455.png','public/pano-restaurants.js']){
   assert.ok(existsSync(new URL(path,baseUrl)),path);
  }
- const icon=readFileSync(new URL('public/icons/skije-logo-v454.svg',baseUrl),'utf8');
+ const icon=readFileSync(new URL('public/icons/skije-logo-v455.svg',baseUrl),'utf8');
  assert.match(icon,/data:image\/webp;base64/); // The image inside the icon is our existing original SKI-je artwork.
  const sw=readFileSync(new URL('public/sw.js',baseUrl),'utf8');
  const core=sw.match(/const CORE=\[([^\]]+)\]/)?.[1]||'';

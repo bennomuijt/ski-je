@@ -1,0 +1,24 @@
+/* A single compact flag opens the language list without taking over the ski UI. */
+.skije-language-select {
+ display:inline-block;
+ box-sizing:border-box;
+ position:relative;
+ z-index:5;
+ width:48px;min-width:48px;max-width:48px;
+ min-height:42px;
+ padding:4px 5px;
+ border-radius:12px;
+ border:1px solid #b9ddf0;
+ background:#fff;
+ color:#12466a;
+ font:700 18px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;
+ cursor:pointer;
+ overflow:hidden;
+ text-overflow:clip;
+}
+.skije-language-select:focus-visible{outline:3px solid #ffad4e;outline-offset:3px}
+.skije-language-label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}
+.skije-language-inline{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0 8px}
+.ski-hero .brand{gap:7px;flex-wrap:wrap}
+.ski-hero .brand .skije-language-select{margin-left:auto}
+@media(max-width:380px){.ski-hero .brand .brand-update-btn{font-size:11px;padding:7px 6px}.ski-hero .brand .brand-meta small{font-size:9px}}

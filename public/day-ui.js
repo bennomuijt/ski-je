@@ -132,8 +132,10 @@
   const pdf=el('button','btn',t('Download mijn skidag als PDF'));pdf.id='download-day-pdf';pdf.type='button';
   const share=el('button','btn secondary',t('Deel skidag via telefoon'));share.id='share-day-plan';share.type='button';
   const sharePdf=el('button','btn secondary',t('Deel PDF'));sharePdf.id='share-day-pdf';sharePdf.type='button';
+  const mapRoute=el('button','btn secondary',t('🗺️ Bekijk routegebieden op kaart'));mapRoute.id='show-day-panorama';mapRoute.type='button';
+  mapRoute.addEventListener('click',()=>{if(window.SKIMapRoute?.show)window.SKIMapRoute.show(current);else $('pano-open')?.click();});
   const status=el('p','hint');status.id='day-export-status';status.setAttribute('role','status');
-  actions.append(pdf,share,sharePdf);output.append(actions,status);
+  actions.append(pdf,share,sharePdf,mapRoute);output.append(actions,status);
   async function getPdf(){
    if(readyPdf)return readyPdf;
    if(!window.SKIPdf){throw Error('PDF-module nog niet beschikbaar');}

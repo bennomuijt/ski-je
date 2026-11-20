@@ -1,0 +1,100 @@
+/* SKI-je 2026/27 - accessibility, add-on features and power-aware visuals */
+:root{--hit:48px}
+*{-webkit-tap-highlight-color:transparent}
+button,select,input,textarea{touch-action:manipulation}
+button:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #fe9b36;outline-offset:2px}
+.main{padding-bottom:26px}
+.hero-actions{display:flex;position:relative;z-index:2;align-items:center;gap:8px;flex-wrap:wrap;margin-top:13px}
+.hero-mini{background:#ffffff25;border:1px solid #ffffff75;color:white;border-radius:13px;min-height:43px;padding:7px 11px;font-size:13px;font-weight:800}
+.hero-mini:first-child{background:#d83c3c;border-color:#ffd4d4}
+.hero-connection{font-size:11px;font-weight:600;opacity:.92;margin-left:auto}
+body.eco-mode .ski-hero .hero-scene img{display:none!important}
+body.eco-mode .ski-hero{background:linear-gradient(120deg,#07538c,#107da9)}
+body.eco-mode .ski-hero::before{background:linear-gradient(100deg,#07538c,#107da9)}
+body.eco-mode *{scroll-behavior:auto!important}
+body.no-motion .hero-scene img,body.eco-mode .hero-scene img{animation:none!important}
+body.no-motion .ski-intro-photo{animation:none!important}
+.bottom{padding-left:5px;padding-right:5px;gap:2px}
+.bottom button{font-size:10px;min-height:61px;line-height:1.1;padding:6px 1px}
+.bottom button span{font-size:21px;margin-bottom:3px}
+.btn-checkpoint{background:#0b7699;color:white}
+.track-controls .btn{flex:1}
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.stat-grid .metric{min-height:99px}
+.stat-grid .metric strong{font-size:28px;font-variant-numeric:tabular-nums}
+.stat-grid .metric small{line-height:1.2;display:block}
+.plan-shortcuts .btn{font-size:12px;min-height:43px}
+.feature-fold{background:#fff;margin:0 0 13px;padding:10px 14px;box-shadow:var(--shadow);border:1px solid #dbeaf3;border-radius:19px}
+.feature-fold>summary{padding:9px 0;font-size:15px}
+.feature-fold[open]{padding-bottom:14px}
+.field textarea,.field input[type=file]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #bed5e5;min-height:48px;background:#fff;color:#163d58;font:inherit}
+.field textarea{resize:vertical;line-height:1.4}
+.verify{display:flex;align-items:center;gap:10px;line-height:1.4;font-size:13px;margin:15px 0;cursor:pointer;color:#28526d}
+.verify input{width:22px;height:22px;accent-color:#f58221;flex-shrink:0}
+.compact-list{margin-top:10px;display:grid;gap:9px}
+.compact-item{border:1px solid #e2edf3;border-radius:13px;background:#f8fcff;padding:11px 12px;line-height:1.4}
+.compact-item strong{font-size:13px}.compact-item small{font-size:11px;color:#617f93;display:block;margin-top:3px}
+.compact-item .toolbar{margin:7px 0 0}.compact-item button{font-size:12px;min-height:40px;padding:6px 10px}
+.route-steps{margin:12px 0;display:grid;gap:5px}
+.route-step{display:flex;gap:11px;padding:9px 8px;border-left:3px solid #158ec2;background:#fff;border-radius:8px;font-size:12px}
+.route-step b{white-space:nowrap;min-width:43px;font-variant-numeric:tabular-nums}
+.route-step.step-lift{border-left-color:#48586b}
+.route-step.step-red{border-left-color:#cc3d45}
+.route-step.step-black{border-left-color:#1e2630}
+.route-step.step-blue{border-left-color:#368cdf}
+.route-errors{color:#8e3e0c;font-size:13px}
+.compare-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.compare-grid p{grid-column:1/-1}
+.compare-panel{border:1px solid #d2e6f2;background:#f2f9fe;border-radius:13px;padding:12px}
+.compare-panel b{display:block;font-size:13px;margin-bottom:8px}
+.compare-panel strong{font-size:24px;color:#07568e;display:block}
+.compare-panel small{display:block;font-size:11px;color:#617b8f;margin-top:5px}
+.compare-panel.warningwind{border-color:#edbe9b;background:#fff6ef}
+body.pwa-offline #online-label{color:#ffdb91}
+.btn.danger{background:#c02b37;color:#fff}
+.utility-modal[hidden]{display:none!important}
+.utility-modal{position:fixed;inset:0;background:#061e30cb;z-index:30000;display:flex;align-items:center;justify-content:center;padding:12px}
+.utility-panel{width:min(100%,650px);max-height:95dvh;background:white;box-shadow:0 15px 70px #062d4fc0;border-radius:19px;overflow:hidden;display:flex;flex-direction:column}
+.utility-head{background:#07568e;color:white;display:flex;align-items:center;gap:12px;justify-content:space-between;padding:12px 15px;flex:0 0 auto}
+.utility-head.emergency{background:#c52f36}
+.utility-head strong{font-size:18px}
+.modal-close{width:48px;height:48px;min-width:48px;background:#ffffff25;color:white;border:1px solid #ffffff77;border-radius:12px;font-size:28px}
+.utility-content{padding:15px;overflow-y:auto;overscroll-behavior:contain}
+.utility-content .field{margin:9px 0}
+body.utility-open{overflow:hidden}
+.sos-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0}
+.sos-grid .btn{font-size:13px}
+.pano-panel{width:min(100%,1100px);height:min(94dvh,900px)}
+.pano-tools{display:flex;align-items:center;gap:8px;padding:9px 10px;background:#f4fafe;flex:none}
+.pano-tools .btn{min-width:45px;min-height:43px;padding:7px 12px}
+.pano-viewport{flex:1;min-height:0;position:relative;background:#f0f5f8;overflow:hidden;touch-action:none;cursor:grab}
+.pano-viewport:active{cursor:grabbing}
+.pano-viewport img{width:100%;height:100%;object-fit:contain;transform-origin:center center;user-select:none;pointer-events:none;will-change:transform}
+.pano-bottom{padding:9px 13px;background:white;font-size:11px;color:#678095}
+#tracking-badge.active{background:#e8f7ef;color:#146e40}
+#tracking-badge.paused{background:#fff0df;color:#926018}
+#tracking-status{min-height:20px}
+#plan-output .btn{margin-top:11px}
+#group-status,#network-result{min-height:18px}
+@media(max-width:440px){
+  .bottom button{font-size:9px;min-height:62px}
+  .bottom button span{font-size:20px}
+  .hero-actions{gap:5px}.hero-mini{padding:7px 9px;font-size:12px}
+  .hero-connection{width:100%;margin-left:0}
+  .stat-grid .metric strong{font-size:25px}
+  .track-controls{display:grid;grid-template-columns:1fr 1fr}
+  #tracking-stop{grid-column:1/-1}
+}
+@media(max-width:365px){.bottom button span{font-size:18px}.bottom button{font-size:8px}}
+@media(max-width:760px){html.netlify-host .utility-panel{max-height:calc(100dvh - var(--host-toolbar-clearance,94px))}}
+@media(prefers-reduced-motion:reduce){.hero-scene img,.ski-intro-photo{animation:none!important}}
+@media print{
+ .bottom,.hero-actions,.ski-intro,.webcam-modal,.utility-modal,.toolbar,.plan-shortcuts,#page-plan,#page-map,#page-weather,#page-webcams,#page-more{display:none!important}
+ .wrap{max-width:none;min-height:0;padding:0;background:#fff}.main{padding:0}
+ .ski-hero{height:auto;min-height:62px;border-radius:0;background:#07538c!important;print-color-adjust:exact}
+ .ski-hero .hero-scene{display:none}.ski-hero::before{display:none}
+ #page-day{display:block!important}.card{box-shadow:none;border:1px solid #e4e4e4;break-inside:avoid}
+ .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+.lift-thumb{display:block;object-fit:cover;width:112px;height:76px;border-radius:9px;margin-top:7px;border:1px solid #d0e3ee}.photo-item{display:flex;align-items:center;gap:13px}.photo-item .lift-thumb{flex-shrink:0}.skije-toast{position:fixed;z-index:31000;bottom:calc(95px + var(--host-toolbar-clearance,0px));left:50%;transform:translateX(-50%);max-width:calc(100vw - 26px);width:max-content;color:#fff;background:#145a82;border-radius:13px;padding:8px 12px;font-size:12px;box-shadow:0 4px 20px #0003}.skije-toast:empty{display:none}

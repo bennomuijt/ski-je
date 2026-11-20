@@ -1,0 +1,15 @@
+Alternatief voor Windows scripts: op macOS, Linux of in de terminal
+
+1. Installeer Node.js LTS en maak een gratis Cloudflare-account.
+2. Open de uitgepakte projectmap in een terminal.
+3. npm install --no-audit --no-fund
+4. npx wrangler login
+5. npm run check
+6. npx wrangler deploy
+7. npx wrangler secret put GROUP_CREATE_SECRET
+8. Open de echte Cloudflare-URL die bij stap 6 is weergegeven.
+9. Bezoek /api/health en controleer "createConfigured":true.
+
+Na een update van de app: npx wrangler deploy
+
+Dit pakket is nog niet gepubliceerd naar een gebruikersaccount.

@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07538c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<script>
+// Netlify injects its own badge/toolbar outside the app. Reserve a touch-safe
+// area on Netlify-hosted mobile pages instead of trying to manipulate the badge.
+if (navigator.connection?.saveData === true) document.documentElement.classList.add('data-saver');
+if ((location.hostname === 'netlify.app' || location.hostname.endsWith('.netlify.app')) && !window.matchMedia('(display-mode: standalone)').matches) {
+  document.documentElement.classList.add('netlify-host');
+}
+</script>
+<title>SKI-je | SkiWelt routeplanner 2026/27</title>
+<style>
+:root{--blue:#07568e;--deep:#0e3553;--sky:#eaf6ff;--orange:#ff821c;--ink:#102d49;--muted:#59768c;--green:#166344;--red:#bc3f3f;--line:#d5e6ee;--shadow:0 7px 30px #073b6820;color-scheme:light;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:#edf6fb}button,input,select,summary{font:inherit}button{cursor:pointer}.wrap{max-width:1000px;margin:auto;min-height:100vh;background:#f8fcff;padding-bottom:calc(98px + var(--host-toolbar-clearance, 0px) + env(safe-area-inset-bottom, 0px))}
+header{padding:20px 18px 27px;color:#fff;background:radial-gradient(circle at 80% 15%,#78d5fa8c 0 40px,transparent 41px),linear-gradient(115deg,#07538c,#0287c9 62%,#5cc7e6);border-radius:0 0 28px 28px;position:relative;overflow:hidden}header:before{content:'✳  ❄  ✳  ❄  ✳';position:absolute;right:2%;bottom:0;color:#ffffff60;font-size:35px;letter-spacing:10px;transform:rotate(-10deg)}.brand{display:flex;align-items:center;gap:10px;position:relative}.logo{background:#ffffff27;border-radius:15px;width:53px;height:53px;display:flex;align-items:center;justify-content:center;font-size:29px}.brand strong{font-size:29px;letter-spacing:-1px}.brand small{font-size:11px;display:block;letter-spacing:.35px;opacity:.93}header p{margin:14px 0 0;font-size:14px;position:relative}.main{padding:15px}.muted{color:var(--muted)}.small{font-size:12px}.notice{border:1px solid #f2d798;background:#fff9ec;color:#75520a;border-radius:13px;padding:11px 12px;font-size:12px;line-height:1.5;margin:10px 0}.notice.good{background:#eefaf2;border-color:#c7e2d0;color:#175c38}.card{background:#fff;border:1px solid #e4eff5;box-shadow:var(--shadow);border-radius:19px;padding:16px;margin-bottom:13px}.card h2{font-size:20px;margin:0 0 7px}.card h3{font-size:15px;margin:5px 0 9px}.row{display:flex;gap:10px;align-items:center;justify-content:space-between}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid.three{grid-template-columns:repeat(3,1fr)}.field{min-width:0}.field label{display:block;margin:8px 0 6px;font-size:13px;font-weight:750}.field input,.field select{display:block;width:100%;min-height:49px;border:1px solid #bed5e5;border-radius:12px;padding:10px 11px;background:white;color:var(--ink)}.field input:focus,.field select:focus{outline:3px solid #7ed3ff82;border-color:#2a9fca}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:48px;background:var(--orange);color:#fff;border:0;border-radius:13px;font-weight:800;padding:10px 14px;text-decoration:none}.btn.secondary{background:#eaf6ff;color:#116497;border:1px solid #c5e2f3}.btn.clear{background:#f4f7f9;color:#285773;border:1px solid #d2dfe8}.btn.full{width:100%}.btn.small-btn{min-height:43px;font-size:13px;padding:8px 11px}.btn:disabled{opacity:.45;cursor:not-allowed}.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice button{background:#eff7fd;border:1px solid #cfe4f3;border-radius:13px;min-height:52px;padding:10px;font-weight:800;color:#2c5b7b}.choice button[aria-pressed="true"]{background:#075d98;color:#fff;border-color:#075d98}.pill{background:#e7f5ff;color:#116497;border-radius:99px;padding:7px 11px;font-weight:800;font-size:11px;white-space:nowrap}.hint{font-size:12px;color:#657d92;line-height:1.5;margin:7px 0}.route-summary{border-radius:14px;background:linear-gradient(120deg,#edf8ff,#fff);border:1px solid #c5e3f7;padding:14px;margin-top:10px}.route-summary strong{font-size:17px}.route-summary p{margin:7px 0}.accent{color:#d5650c}.mode{display:none}.mode.active{display:block}details{background:#f6faff;border-radius:14px;border:1px solid #dfecf4;padding:9px 12px;margin:12px 0}summary{font-weight:800;color:#14618c;padding:6px 0;cursor:pointer}details[open] summary{margin-bottom:8px}.switchrow{display:flex;justify-content:space-between;align-items:center;gap:9px;font-size:13px;margin:8px 0}.switchrow input{width:24px;height:24px;accent-color:#fa801d}.tiny{font-size:11px;color:#647b90;line-height:1.4}.banner{font-weight:800;font-size:22px;margin:6px 0 12px}.subhead{font-size:13px;margin:2px 0 12px;color:var(--muted)}.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:1000px;display:flex;gap:4px;background:#fff;box-shadow:0 -4px 30px #073b6826;padding:6px 10px max(8px,env(safe-area-inset-bottom));z-index:2000}.bottom button{border:0;background:transparent;flex:1;min-width:0;color:#55738a;min-height:59px;border-radius:14px;font-size:12px;font-weight:800}.bottom button span{display:block;font-size:23px;margin-bottom:1px}.bottom button[aria-selected="true"]{background:#e4f5ff;color:#0b6ca8}.map{height:min(58vh,510px);min-height:340px;border-radius:15px;background:linear-gradient(140deg,#e1f0f7,#c7e7f2);overflow:hidden}.map.radar{height:330px;min-height:300px}.leaflet-control-attribution{font-size:10px!important}.map-overlay{position:relative}.gps-status{font-size:12px;color:#526e82;margin:7px 0}.weather{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.metric{background:#eef8fe;border-radius:14px;padding:12px;min-height:90px}.metric strong{font-size:26px;color:#074e84;display:block;margin:4px 0}.metric small{font-size:12px;color:#53718c}.forecasthours{display:flex;gap:10px;overflow-x:auto;padding:7px 0}.hour{flex:0 0 118px;background:#f0f8fd;border:1px solid #d3e5ed;border-radius:13px;padding:10px}.hour b{display:block;font-size:14px}.hour span{display:block;font-size:12px;margin-top:6px}.radar-slider{width:100%;accent-color:#008bd0}.sources a{color:#0a76aa}.loading{color:#355e78;font-weight:700}.gps-dot{width:18px;height:18px;border:3px solid white;border-radius:50%;background:#0077f7;box-shadow:0 0 0 2px #126cc3,0 2px 9px #052c46a0}.preview{position:relative}.preview img{display:block;width:100%;max-height:260px;object-fit:contain;background:#eff5f8;border-radius:12px}.count{font-size:12px;color:#5b7890}.warningwind{color:var(--red);font-weight:800}.static-fallback{display:none;background:#f7fbfe;border:1px dashed #cddfea;padding:35px 15px;text-align:center;border-radius:14px}.caution{color:#80612b;font-size:11px}.toast{padding:8px 12px;border-radius:12px;background:#e9f5fc;color:#125f92;font-size:12px;margin-top:10px;min-height:20px}.hidden{display:none!important}
+/* Netlify's floating badge is inserted at the network edge and cannot
+   reliably be hidden with app CSS. On small Netlify-hosted screens, park the
+   entire navigation bar ABOVE its bottom overlay area instead. */
+@media (max-width:760px){
+  html.netlify-host{--host-toolbar-clearance:94px}
+  html.netlify-host .bottom{
+    bottom:calc(var(--host-toolbar-clearance) + env(safe-area-inset-bottom, 0px));
+    width:calc(100% - 20px);
+    border:1px solid #cde4f0;
+    border-radius:19px;
+    box-shadow:0 4px 22px #073b6829;
+    padding:6px;
+  }
+  html.netlify-host .bottom button{min-height:55px}
+}
+@media (max-width:470px){.grid.three{grid-template-columns:1fr 1fr}.main{padding:11px}.card{padding:13px}.banner{font-size:20px}.grid{gap:8px}.field input,.field select{font-size:14px}.weather{gap:8px}.metric strong{font-size:23px}}
+
+/* Camera-overzicht: geen verticale zoektocht; geselecteerde livecam opent bovenop de app. */
+.camera-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.camera-tile{min-width:0;min-height:113px;padding:13px;text-align:left;border-radius:16px;border:1px solid #cde4f2;background:linear-gradient(140deg,#e8f5ff,#ffffff);color:#10496d;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:7px;box-shadow:0 3px 12px #073b680c}
+.camera-tile strong{font-size:14px;line-height:1.2}.camera-tile small{font-size:11px;color:#5b778d}.camera-tile .camera-icon{font-size:27px}.camera-tile:focus-visible,.cam-switch:focus-visible,.cam-close:focus-visible{outline:3px solid #ff9b37;outline-offset:2px}
+.webcam-modal[hidden]{display:none!important}.webcam-modal{position:fixed;inset:0;background:#041c2bc9;z-index:10000;display:flex;align-items:center;justify-content:center;padding:10px}
+body.cam-open{overflow:hidden}.webcam-panel{background:white;border-radius:21px;box-shadow:0 20px 70px #041c2bcc;width:min(100%,980px);height:min(92vh,790px);height:min(92dvh,790px);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.cam-head{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#075c93;color:white;padding:11px 13px;flex-shrink:0}
+.cam-head-text{min-width:0}.cam-head strong{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cam-head small{font-size:11px;opacity:.87}
+.cam-close{border:1px solid #ffffff70;border-radius:11px;background:#ffffff22;color:white;font-size:24px;font-weight:900;min-width:49px;min-height:49px;flex-shrink:0}
+.cam-picks{display:flex;gap:8px;overflow-x:auto;white-space:nowrap;padding:9px 11px;background:#f0f8fe;flex-shrink:0;scrollbar-width:thin}
+.cam-switch{border:1px solid #b5d4e8;border-radius:11px;background:white;color:#145a83;padding:9px 12px;min-height:43px;font-weight:750;font-size:12px;flex-shrink:0}
+.cam-switch[aria-pressed="true"]{background:#ff8a1f;border-color:#ff8a1f;color:white}
+.cam-frame-wrap{flex:1;min-height:0;position:relative;background:#dcecf6;display:flex;align-items:stretch}
+.cam-frame-wrap iframe{display:block;border:0;width:100%;height:100%;background:#eff5fa}
+.cam-error{padding:8px 11px;background:#fff7e9;font-size:11px;color:#664b1f;flex-shrink:0;line-height:1.35}
+.cam-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;padding:8px 11px;background:white}
+.cam-footer .btn{min-height:43px;font-size:12px;padding:8px 10px}.cam-footer span{font-size:11px;color:#57758b}
+@media(max-width:760px){.webcam-modal{padding:0}.webcam-panel{width:100%;height:100vh;height:100dvh;border-radius:0}.cam-head{padding:9px 12px}.cam-footer{padding:8px 10px calc(9px + env(safe-area-inset-bottom,0px))}.cam-frame-wrap{min-height:185px}}
+@media(max-width:760px){html.netlify-host .webcam-panel{padding-bottom:var(--host-toolbar-clearance,0px)}html.netlify-host .cam-footer{padding-bottom:8px}}
+@media(max-width:410px){.camera-tile{min-height:106px;padding:11px}.cam-head strong{font-size:14px}.cam-footer span{font-size:10px}.cam-error{font-size:10px}}
+
+
+/* Energiezuinig: geen extra animation, data of CPU zodra de app wordt verborgen. */
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.power-chip{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;flex:none;border:1px solid #ffffff6a;border-radius:99px;background:#03558299;padding:6px 9px;font-size:11px;font-weight:750;white-space:nowrap}
+.map.radar[data-loaded="false"]{display:none}
+#radar-play:disabled{opacity:.5;cursor:not-allowed}
+/* Alle aanvullende keuzes blijven standaard verborgen in de ingeklapte opties. */
+.option-section{margin:12px 0 16px;padding:12px;background:white;border:1px solid #d8e8f2;border-radius:13px}
+.option-section h3{color:#145776;font-size:15px;margin:0 0 8px}
+.options-count{display:inline-block;font-size:11px;font-weight:600;color:#617d92;margin-left:5px}
+.field input[type="range"]{padding:0;min-height:39px;accent-color:#f18021;border:0;cursor:pointer}
+.range-ends{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#637d91;margin-top:-2px}
+.wishes-list{display:grid;gap:9px}
+.wish-row{display:flex;align-items:end;gap:8px;min-width:0}
+.wish-row .field{flex:1;min-width:0}
+.wish-row .field select{min-width:0;font-size:14px}
+.wish-row .wish-remove{min-height:49px;min-width:48px;border-radius:12px;background:#fff3ed;border:1px solid #f3cfbb;color:#a24413;font-size:23px;font-weight:800;cursor:pointer}
+.wish-row .wish-remove:focus-visible{outline:3px solid #ffbd6e;outline-offset:2px}
+.wish-row.blank .field select{border-style:dashed;background:#f6fbff;border-color:#80bedf}
+#extra-options:not([open]) .options-count{max-width:120px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;vertical-align:middle}
+
+/* SKI-je sfeermoment: lokale foto met eenmalige Ken Burns-beweging.
+   Geen streamingvideo, geen geluid en geen doorlopende animatie. */
+.ski-hero{background:#07538c;isolation:isolate;min-height:122px}
+.ski-hero .hero-scene{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.ski-hero .hero-scene img{width:100%;height:100%;object-fit:cover;object-position:68% 52%;filter:saturate(1.1);transform:scale(1.02);animation:skije-hero-drift 4.0s ease-out both}
+.ski-hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(92deg,rgba(2,43,78,.94) 0%,rgba(2,62,101,.83) 40%,rgba(5,72,110,.18) 100%);transform:none;letter-spacing:normal}
+.ski-hero::after{content:"";position:absolute;inset:auto 0 0;height:3px;background:linear-gradient(90deg,transparent,#e5f7ffaf,transparent);z-index:1;opacity:.6}
+.ski-hero .brand,.ski-hero p{z-index:2;position:relative;text-shadow:0 1px 8px #001d3766}
+.ski-hero .logo{background:#ffffff33;border:1px solid #ffffff45;}
+@keyframes skije-hero-drift{from{transform:scale(1.14) translate3d(3%,0,0)}to{transform:scale(1.02) translate3d(0,0,0)}}
+/* Alleen gedurende de eerste paar seconden van deze sessie. */
+.data-saver .hero-scene img{display:none!important}.data-saver .ski-hero{background:linear-gradient(110deg,#07538c,#1789ba)}
+.ski-intro[hidden]{display:none!important}
+.ski-intro{position:fixed;inset:0;z-index:20000;color:#fff;background:#06436d;overflow:hidden;isolation:isolate;display:flex;align-items:center;justify-content:center}
+.ski-intro-photo{position:absolute;inset:-3%;width:106%;height:106%;object-fit:cover;object-position:72% center;z-index:-2;animation:skije-intro-photo 3.6s cubic-bezier(.2,.48,.2,1) both}
+.ski-intro::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,35,65,.85),rgba(4,55,88,.36) 57%,rgba(0,45,75,.12));z-index:-1}
+.ski-intro-content{width:min(89vw,560px);max-width:560px;margin-right:auto;margin-left:max(6vw,calc((100vw - 900px)/2));text-shadow:0 3px 17px #05253888}
+.ski-intro-kicker{font-size:13px;font-weight:750;text-transform:uppercase;letter-spacing:.18em;opacity:.92;animation:skije-title-in .65s ease-out both}
+.ski-intro-title{font-size:clamp(52px,11vw,94px);line-height:1.05;margin:10px 0 6px;font-weight:900;letter-spacing:-.06em;animation:skije-title-in .75s ease-out .18s both}
+.ski-intro-line{display:block;width:0;height:5px;max-width:320px;border-radius:5px;background:#ff9b34;box-shadow:0 0 12px #ff9b3499;animation:skije-line-in .8s ease-out .55s both}
+.ski-intro-sub{font-size:clamp(15px,3.4vw,21px);font-weight:650;margin:19px 0 0;animation:skije-title-in .75s ease-out .5s both}
+.ski-intro-note{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:20px;font-size:10px;opacity:.83;letter-spacing:.025em}
+.ski-intro-skip{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:15px;padding:12px 16px;min-height:46px;border-radius:99px;border:1px solid #ffffff90;background:#0a427ea8;color:#fff;font-weight:800;cursor:pointer;}
+.ski-intro-skip:focus-visible{outline:3px solid #ffaf44;outline-offset:3px}
+.ski-intro.leaving{opacity:0;transition:opacity .65s ease-out;pointer-events:none}
+@keyframes skije-intro-photo{from{transform:scale(1.21) translate3d(5.5%,-1%,0)}to{transform:scale(1.025) translate3d(-1.5%,0,0)}}
+@keyframes skije-title-in{from{transform:translateY(13px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes skije-line-in{from{width:0}to{width:min(62vw,310px)}}
+@media (max-width:480px){
+ .ski-intro-content{margin-left:8vw;width:84vw;align-self:center;margin-top:15vh}
+ .ski-intro-photo{object-position:70% center}
+ .ski-hero .hero-scene img{object-position:64% center}
+}
+@media (prefers-reduced-motion:reduce){
+ .ski-hero .hero-scene img,.ski-intro-photo,.ski-intro-kicker,.ski-intro-title,.ski-intro-line,.ski-intro-sub{animation:none!important;transform:none!important;opacity:1!important}
+ .ski-intro.leaving{transition:none!important}
+}
+body.ski-paused .ski-hero .hero-scene img,body.ski-paused .ski-intro-photo{animation-play-state:paused}
+
+
+/* Herstel van het oorspronkelijke SKI-je-beeldmerk: ski, skibril en zon. */
+.brand-lockup{display:flex;align-items:center;gap:9px;min-width:0}
+.ski-hero .brand-lockup .logo{width:78px;height:58px;flex:none;padding:3px}
+.ski-hero .brand-lockup .skije-mark{display:block;width:100%;height:100%;overflow:visible}
+.ski-hero .brand-lockup strong{display:block;font-weight:950;line-height:1.05}
+.ski-hero .brand-lockup small{max-width:225px;line-height:1.3}
+.ski-intro-sign{display:flex;align-items:center;gap:11px;max-width:100%;width:max-content;white-space:nowrap;transform-origin:top left;position:relative;z-index:3;will-change:transform}
+.ski-intro-sign .logo{width:clamp(72px,20vw,116px);height:clamp(66px,17vw,94px);border:1px solid #ffffff60;border-radius:18px;background:#ffffff25;display:flex;align-items:center;justify-content:center;padding:5px;flex:none;box-shadow:0 5px 25px #01273f55}
+.ski-intro-sign .skije-mark{display:block;width:100%;height:100%}
+.ski-intro-word{font-size:clamp(48px,10vw,90px);line-height:1.03;letter-spacing:-.06em;font-weight:950}
+.ski-intro-word span{display:inline-block;animation:skije-letter-pop .45s cubic-bezier(.2,.85,.25,1) both;animation-delay:calc(.23s + var(--i) * .085s)}
+.ski-intro-kicker{margin-bottom:13px}
+.ski-intro-line{margin-top:13px}
+@keyframes skije-letter-pop{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.ski-intro.leaving{background:transparent!important;opacity:1!important;transition:none!important}
+.ski-intro.leaving::before,.ski-intro.leaving .ski-intro-photo{opacity:0;transition:opacity .52s ease-out}
+.ski-intro.leaving .ski-intro-kicker,.ski-intro.leaving .ski-intro-sub,.ski-intro.leaving .ski-intro-line,.ski-intro.leaving .ski-intro-note,.ski-intro.leaving .ski-intro-skip{opacity:0;transition:opacity .18s ease-out}
+body.brand-arriving .ski-hero .brand-lockup{visibility:hidden}
+@media(max-width:480px){.ski-hero .brand-lockup .logo{width:69px;height:53px}.ski-hero .brand-lockup strong{font-size:26px}.ski-hero .brand-lockup small{font-size:10px}.ski-intro-sign{gap:7px}.ski-intro-word{font-size:clamp(45px,11vw,64px)}}
+@media(prefers-reduced-motion:reduce){.ski-intro-word span{animation:none!important;opacity:1!important;transform:none!important}}
+
+</style>
+<link rel="stylesheet" href="extra.css">
+<link rel="stylesheet" href="group-cloudflare.css">
+</head>
+<body>
+<div class="ski-intro" id="ski-intro" role="region" aria-label="Korte SKI-je openingsanimatie" hidden>
+  <img class="ski-intro-photo" data-src="ski-sfeer.webp" alt="" width="1536" height="864">
+  <div class="ski-intro-content">
+    <div class="ski-intro-kicker">Wintersport in de bergen</div>
+    <div class="ski-intro-sign" id="skije-intro-sign"><div class="logo"><svg class="skije-mark" viewBox="0 0 100 70" role="img" aria-label="Origineel SKI-je-logo met ski, skibril en zon"><path d="M9 56 Q43 64 89 42" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M9 56 Q43 64 89 42" fill="none" stroke="#ff8a13" stroke-width="4" stroke-linecap="round"/><path d="M11 39 L33 14 L46 28 L62 6 L89 34" fill="none" stroke="white" stroke-width="6" stroke-linejoin="round"/><rect x="29" y="24" width="47" height="24" rx="11" fill="#ff8a13" stroke="white" stroke-width="4"/><path d="M35 30 Q51 23 69 30 L65 40 Q51 44 38 39Z" fill="#07538c"/><path d="M39 33 Q49 28 57 30" fill="none" stroke="#b8edff" stroke-width="3"/><circle cx="79" cy="10" r="8" fill="#ffcb33"/></svg></div><div class="ski-intro-word" aria-label="SKI-je"><span style="--i:0">S</span><span style="--i:1">K</span><span style="--i:2">I</span><span style="--i:3">-</span><span style="--i:4">j</span><span style="--i:5">e</span></div></div>
+    <span class="ski-intro-line" aria-hidden="true"></span><p class="ski-intro-sub">Jouw skidag. Jouw route. Samen.</p>
+  </div>
+  <button type="button" class="ski-intro-skip" id="ski-intro-skip" aria-label="Intro overslaan">Overslaan ✕</button>
+  <div class="ski-intro-note">Sfeerbeeld · illustratief • Geen geluid</div>
+</div>
+<div class="wrap">
+<header class="ski-hero">
+  <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><div class="logo"><svg class="skije-mark" viewBox="0 0 100 70" role="img" aria-label="Origineel SKI-je-logo met ski, skibril en zon"><path d="M9 56 Q43 64 89 42" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M9 56 Q43 64 89 42" fill="none" stroke="#ff8a13" stroke-width="4" stroke-linecap="round"/><path d="M11 39 L33 14 L46 28 L62 6 L89 34" fill="none" stroke="white" stroke-width="6" stroke-linejoin="round"/><rect x="29" y="24" width="47" height="24" rx="11" fill="#ff8a13" stroke="white" stroke-width="4"/><path d="M35 30 Q51 23 69 30 L65 40 Q51 44 38 39Z" fill="#07538c"/><path d="M39 33 Q49 28 57 30" fill="none" stroke="#b8edff" stroke-width="3"/><circle cx="79" cy="10" r="8" fill="#ffcb33"/></svg></div><div><strong>SKI-je</strong><small>By BenMu Development</small></div></div></div>
+  <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
+<div class="hero-actions" id="skije-hero-actions">
+  <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
+  <button class="hero-mini" type="button" id="group-quick">👥 Groep</button>
+  <button class="hero-mini" type="button" id="power-quick" aria-label="Open energie-instellingen">&#9889; Zuinig</button>
+  <span class="hero-connection" id="online-label" role="status">Verbinding controleren</span>
+</div>
+</header>
+<main class="main">
+  <section class="mode active" id="page-plan" aria-label="Routeplanner">
+    <h1 class="banner">🧭 Mijn skiroute</h1><div class="subhead">Zo weinig mogelijk invullen. Meer opties alleen als je ze nodig hebt.</div>
+    <div class="card">
+      <div class="row"><h2>Waar ga je skiën?</h2><span class="pill">Startpunt kiezen is genoeg</span></div>
+      <div class="grid">
+        <div class="field"><label for="start">Startpunt</label><select id="start"></select></div>
+        <div class="field"><label for="finish">Eindpunt</label><select id="finish"></select></div>
+      </div>
+      <div class="switchrow"><label for="same-end">Terug naar mijn startpunt</label><input id="same-end" type="checkbox" checked></div>
+      <div class="grid"><div class="field"><label for="departure">Vertrek</label><input id="departure" type="time" lang="nl-NL" value="09:00"></div><div class="field"><label for="return-time">Uiterlijk terug</label><input id="return-time" type="time" lang="nl-NL" value="16:00"></div></div>
+      <h3 style="margin-top:16px">Wat voor route wil je?</h3>
+      <div class="choice" id="style-group" role="group" aria-label="Routestijl">
+        <button type="button" data-style="relaxed" aria-pressed="true">🌞 Lekker skiën<br><small>Afwisseling & uitzicht</small></button>
+        <button type="button" data-style="fast" aria-pressed="false">⚡ Snelste route<br><small>Zo efficiënt mogelijk</small></button>
+      </div>
+      <details id="extra-options">
+        <summary>⚙️ Opties <span id="options-count" class="options-count">Lunch, pistes en tussenstops</span></summary>
+        <div class="option-section">
+          <h3>Lunchpauze</h3>
+          <div class="switchrow"><label for="use-lunch">Lunch inplannen</label><input id="use-lunch" type="checkbox" checked></div>
+          <div id="lunch-settings">
+            <div class="field"><label for="lunch-restaurant">Lunchrestaurant</label><select id="lunch-restaurant"><option value="">Geen voorkeur, laat SKI-je kiezen</option></select></div>
+            <div class="grid">
+              <div class="field"><label for="lunch-time">Gewenste lunchtijd</label><select id="lunch-time"><option>11:45</option><option>12:00</option><option selected>12:30</option><option>13:15</option></select></div>
+              <div class="field"><label for="lunch-duration">Duur: <output id="lunch-duration-value" for="lunch-duration">60 min</output></label><input type="range" id="lunch-duration" min="30" max="120" step="15" value="60" aria-label="Duur van de lunch in minuten"><div class="range-ends"><span>30 min</span><span>120 min</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="option-section">
+          <h3>Pistes, bergtoppen en uitzichtpunten</h3>
+          <p class="hint">Kies een plek of piste. Zodra je iets hebt gekozen, verschijnt automatisch een extra vakje.</p>
+          <div id="wishes-list" class="wishes-list" aria-label="Gewenste tussenstops"></div>
+          <p id="wish-hint" class="tiny" role="status" aria-live="polite">Pistenummers zijn apart van liftnummers weergegeven.</p>
+        </div>
+        <div class="option-section">
+          <h3>Overige voorkeuren</h3>
+          <div class="grid"><div class="field"><label for="day">Skidatum</label><input id="day" type="date"></div><div class="field"><label for="skill">Niveau</label><select id="skill"><option value="blue">Blauw</option><option value="red" selected>Blauw &amp; rood</option><option value="black">Ook zwart</option></select></div></div>
+          <div class="field"><label for="speed">Skisnelheid</label><select id="speed"><option value="easy">Rustig</option><option value="normal" selected>Gemiddeld</option><option value="sporty">Sportief</option></select></div>
+          <div class="switchrow"><label for="early-break">Ochtendpauze (30 min)</label><input id="early-break" type="checkbox"></div>
+          <div class="switchrow"><label for="late-break">Middagpauze (30 min)</label><input id="late-break" type="checkbox"></div>
+        </div>
+        <p class="hint">Dit zijn routewensen, geen bevestigde piste- of liftverbindingen. Controleer actuele status en sluitingstijden voor vertrek.</p>
+      </details>
+      <div class="toolbar plan-shortcuts"><button class="btn secondary" id="quick-return" type="button">&#8634; Terug naar start</button><button class="btn secondary" id="share-intent" type="button">&#128279; Deel routewensen</button></div>
+      <button class="btn full" id="create">🧭 Stel mijn skidag samen</button>
+      <p class="hint">Je keuzes worden op dit apparaat onthouden. Terugrekenen houdt standaard 30 minuten veiligheidsmarge aan.</p>
+      <div id="plan-output" class="route-summary" aria-live="polite"><strong>Jouw dag, eenvoudig gepland</strong><p class="muted">Vul alleen je startpunt en terugkeertijd in. De rest staat al goed.</p></div>
+    </div>
+    <div class="notice">Dit is een <strong>ontwerp- en interfaceproef</strong>, niet de volledige routeberekening. Liften, pistes, reistijden en overstappen worden pas als route getoond wanneer ze geografisch gecontroleerd zijn. Gebruik dit niet als veiligheidsnavigatie.</div>
+  </section>
+  <section class="mode" id="page-map" aria-label="GPS-kaart">
+    <h1 class="banner">📍 Mijn locatie & pistes</h1>
+    <div class="card">
+      <div class="row"><h2>Waar ben ik?</h2><span class="pill" id="inside-state">SkiWelt</span></div>
+      <div class="toolbar"><button class="btn" id="locate">◎ Toon mijn GPS</button><button class="btn secondary" id="follow-location" aria-pressed="false">▶ Live volgen</button><button class="btn secondary" id="cf-group-map" type="button">👥 Mijn groep</button><button class="btn secondary" id="copy-location" disabled>📋 Kopieer GPS</button><button class="btn secondary" id="reset-map">🏔️ SkiWelt</button><button class="btn secondary" id="toggle-pistes" aria-pressed="true">⛷️ Pistes aan</button></div>
+      <div class="toolbar checkpoint-quick"><button class="btn btn-checkpoint" type="button" id="checkpoint-map">&#128205; IJkpunt opslaan</button><button class="btn secondary" type="button" id="pano-open">&#127956; Panoramakaart groot</button></div>
+      <div class="map" id="piste-map" role="region" aria-label="Geografische SkiWelt-kaart met pistes"></div><div class="static-fallback" id="map-fallback">Kaartbibliotheek niet geladen. Internet is nodig om kaartlagen op te halen.</div>
+      <p class="gps-status" id="gps-status" role="status">GPS is uit om de batterij te sparen. Tik voor een eenmalige meting of start bewust live volgen.</p>
+      <p class="hint">De pistekaartlaag komt uit OpenStreetMap / OpenSnowMap. Je GPS-positie verschijnt op een <strong>geografische kaart</strong>, inclusief de door de telefoon gemelde nauwkeurigheid. Dit is niet de officiële SkiWelt-panoramakaart.</p>
+      <div class="notice">De GPS is niet altijd nauwkeurig genoeg voor pisteherkenning. Blijf op borden en officiële aanwijzingen vertrouwen; meetfouten komen vaak voor bij liften, bos en steile hellingen.</div>
+    </div>
+    <div class="card"><div class="row"><h2>🏔️ SkiWelt panoramakaart</h2><span class="pill">Referentie</span></div>
+      <div class="preview"><img data-src="Kaart%202026-2027.png" alt="Uitsnede van de SkiWelt kaart 2026-2027 met pistes en liften" loading="lazy" decoding="async"></div>
+      <p class="hint">Deze aangeleverde uitsnede is een getekende panoramakaart. Daarom plaatsen we er <strong>geen GPS-punt op alsof de afbeelding geografisch exact is</strong>. De GPS-kaart hierboven doet dat wél.</p>
+    </div>
+  </section>
+  <section class="mode" id="page-weather" aria-label="Weer en buienradar">
+    <h1 class="banner">🌨️ Buien, sneeuw & wind</h1>
+    <div class="subhead">Weer rond jouw locatie of rond SkiWelt, zonder extra klikken.</div>
+    <div class="toolbar" style="margin-top:0"><button class="btn secondary" id="weather-webcams">📷 Bekijk webcams direct</button></div>
+    <div class="card"><div class="row"><h2>Weer voor SkiWelt</h2><span class="pill" id="weather-label">SkiWelt</span></div>
+      <div class="toolbar"><button class="btn" id="load-weather">↻ Ververs weer</button><button class="btn secondary" id="weather-gps">◎ Mijn locatie (delen met weerbron)</button><button class="btn clear" id="weather-area">SkiWelt-weer</button></div>
+      <div id="weather-status" class="gps-status" aria-live="polite">Ververs de voorspelling om actuele gegevens op te halen.</div>
+      <div class="weather">
+        <div class="metric"><small>Temperatuur (model)</small><strong id="temp-value">—</strong><small id="temp-time">Niet geladen</small></div>
+        <div class="metric"><small>Neerslag (mm)</small><strong id="precip-value">—</strong><small id="snow-value">Sneeuw: —</small></div>
+        <div class="metric"><small>Wind (km/u)</small><strong id="wind-value">—</strong><small id="wind-dir">Richting: —</small></div>
+        <div class="metric"><small>Windstoten (km/u)</small><strong id="gust-value">—</strong><small id="gust-warning">Modelverwachting</small></div>
+      </div>
+      <h3 style="margin-top:17px">Komende uren</h3><div class="forecasthours" id="forecast-hours"><span class="muted small">Nog geen gegevens.</span></div>
+      <p class="tiny">Weer wordt maximaal eens per 30 minuten automatisch opgehaald; handmatig verversen blijft mogelijk. Modelgegevens Open-Meteo. Berg- en dalcondities kunnen aanzienlijk verschillen. Hoge windwaarden betekenen niet automatisch dat een lift gesloten is; controleer altijd de officiële liftstatus.</p>
+    </div>
+    <div class="card"><div class="row"><h2>🌧️ Buienradar</h2><span class="pill">Historische radar</span></div>
+      <div class="map radar" id="radar-map" data-loaded="false" role="region" aria-label="Radarkaart neerslag rond SkiWelt"></div>
+      <div class="toolbar"><button class="btn" id="radar-load">🛰️ Toon radar</button><button class="btn secondary small-btn" id="radar-play" disabled>▶ Korte animatie</button><button class="btn secondary small-btn" id="radar-refresh">↻ Radar verversen</button></div>
+      <label for="radar-timeline" class="small">Radarbeeld: <strong id="radar-time">nog niet geladen</strong></label>
+      <input id="radar-timeline" class="radar-slider" type="range" min="0" max="0" value="0" disabled>
+      <div id="radar-status" class="gps-status">Radar wordt alleen geladen wanneer je op “Toon radar” tikt. Het zijn historische waarnemingen, geen voorspelling.</div>
+      <p class="tiny sources">Radar: <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a>. Geen garantie voor dekking op alle berglocaties.</p>
+    </div>
+    <div class="card" id="mountain-weather"><div class="row"><h2>&#127956; Wind op berg en in dal</h2><span class="pill">Op aanvraag</span></div>
+      <div class="field"><label for="compare-area">Vergelijk gebieden</label><select id="compare-area"><option value="salve">Hohe Salve / S&ouml;ll</option><option value="hartkaiser">Hartkaiser / Ellmau</option></select></div>
+      <button class="btn secondary full" id="compare-wind" type="button">&#127744; Vergelijk wind &amp; neerslag</button>
+      <div class="compare-grid" id="wind-comparison" role="status"><p class="hint">Laad alleen wanneer je de verschillen wilt zien. Condities zijn voorspellingen, geen liftstatus.</p></div>
+    </div>
+  </section>
+  <section class="mode" id="page-webcams" aria-label="Webcams SkiWelt">
+    <h1 class="banner">📷 Live webcams SkiWelt</h1>
+    <p class="subhead">Tik één keer op een camera. Het beeld opent meteen groot in dit scherm, zonder te scrollen.</p>
+    <div class="card">
+      <div class="row"><h2>Kies je uitzicht</h2><span class="pill">Direct bekijken</span></div>
+      <div id="camera-tiles" class="camera-tiles" aria-label="Selecteer een webcam"></div>
+      <p class="hint">Livebeelden worden rechtstreeks bij de webcam-aanbieder geladen. Soms staat die geen weergave binnen een andere app toe; gebruik dan de knop naar de officiële livecam.</p>
+    </div>
+    <div class="notice">De webcams zijn beelden van externe aanbieders, geen garantie voor pistecondities of liftopenstelling. Gebruik de officiële SkiWelt-liftstatus voor actuele beslissingen.</div>
+  </section>
+
+  <section class="mode" id="page-day" aria-label="Mijn skidag">
+    <h1 class="banner">&#9975; Mijn skidag</h1>
+    <p class="subhead">E&eacute;n knop om te starten. GPS en scherm blijven zo zuinig mogelijk.</p>
+    <div class="card">
+      <div class="row"><h2>&#9201; Mijn tracking</h2><span class="pill" id="tracking-badge">Uit</span></div>
+      <div class="stat-grid"><div class="metric"><small>Afstand via GPS</small><strong id="track-distance">0,00</strong><small>km, inclusief eventuele liften</small></div>
+        <div class="metric"><small>Actuele snelheid</small><strong id="track-speed">&#8212;</strong><small>km/u</small></div>
+        <div class="metric"><small>Hoogste snelheid</small><strong id="track-max">&#8212;</strong><small>km/u</small></div>
+        <div class="metric"><small>Opnameduur</small><strong id="track-elapsed">00:00</strong><small>uur:min</small></div>
+      </div>
+      <div class="toolbar track-controls"><button class="btn" type="button" id="tracking-start">&#9654; Start tracking</button><button class="btn secondary" type="button" id="tracking-pause" disabled>&#10074;&#10074; Pauze</button><button class="btn clear" type="button" id="tracking-stop" disabled>&#9632; Stop &amp; bewaar</button></div>
+      <div id="tracking-status" class="gps-status" role="status" aria-live="polite">Tracking is uit. GPS wordt pas gestart wanneer jij dat kiest.</div>
+      <p class="hint">Meet alleen tussen 08:00 en 17:00. Tracking werkt <b>alleen terwijl de webapp op de voorgrond actief is</b>; bij verbergen pauzeert de registratie automatisch. Liften tellen mogelijk mee.</p>
+      <div class="switchrow"><label for="track-gpx">Mijn volledige spoor tijdelijk bewaren (GPX-export)</label><input type="checkbox" id="track-gpx"></div>
+      <div class="notice" id="lunch-detect" hidden>Mogelijke lunchstop herkend; bevestig zelf waar je hebt gegeten.</div>
+    </div>
+    <div class="card"><div class="row"><h2>&#128466; Opgeslagen skidagen</h2><span class="pill" id="day-count">0</span></div>
+      <div id="saved-days"><p class="hint">Nog geen skidagen vastgelegd.</p></div>
+      <div class="toolbar"><button type="button" class="btn secondary" id="export-days">&#128190; Exporteer daggegevens</button><button type="button" class="btn secondary" id="print-days">&#128438; Print / bewaar als PDF</button></div>
+      <p class="tiny">PDF via de printoptie van de browser. Snelheid en GPS-afstand zijn schattingen. Een lunchlocatie wordt nooit automatisch als feit vastgelegd.</p>
+    </div>
+    <div class="card"><h2>&#127919; Onderweg</h2><div id="travel-note" class="route-summary">Begin bij de routeplanner om je eindpunt en terugkeertijd vast te leggen.</div>
+      <div class="toolbar"><button class="btn secondary" type="button" id="day-to-route">&#129517; Mijn route openen</button><button class="btn secondary" type="button" id="day-to-checkpoint">&#128205; IJkpunt opslaan</button></div>
+    </div>
+  </section>
+  <section class="mode" id="page-more" aria-label="Extra functies en instellingen">
+    <h1 class="banner">&#9881; Meer &amp; instellingen</h1>
+    <p class="subhead">Alle extra functies op &eacute;&eacute;n plek; de routeplanner blijft rustig.</p><div class="notice" id="storage-alert" hidden>Lokale opslag is niet beschikbaar. Wijzigingen verdwijnen bij het sluiten; exporteer belangrijke gegevens.</div>
+    <div class="card"><div class="row"><h2>&#128205; GPS-ijkpunten</h2><span class="pill" id="checkpoint-count">0 opgeslagen</span></div>
+      <p class="hint">Meet pistekruisingen, liften, restaurants en bergpunten. Meerdere GPS-metingen worden gewogen gemiddeld. Alles blijft op jouw telefoon totdat jij het exporteert.</p>
+      <button class="btn btn-checkpoint full" id="checkpoint-main" type="button">&#128205; IJkpunt opslaan</button>
+      <div class="toolbar"><button class="btn secondary small-btn" type="button" id="checkpoints-csv">CSV export</button><button class="btn secondary small-btn" type="button" id="checkpoints-geo">GeoJSON export</button></div>
+      <div id="checkpoint-list" class="compact-list" aria-live="polite"></div>
+    </div>
+    <details class="feature-fold" id="network-section"><summary>&#128642; Gecontroleerde piste- en liftverbindingen</summary>
+      <div class="notice">Routeberekening gebruikt alleen verbindingen die je zelf hebt gecontroleerd of die uit een gecontroleerd bestand zijn ge&iuml;mporteerd. Niet gecontroleerd = geen navigatieroute.</div>
+      <div class="field"><label for="network-json">Gecontroleerd netwerk importeren (JSON)</label><input id="network-json" type="file" accept=".json,application/json"></div>
+      <div class="toolbar"><button class="btn secondary small-btn" type="button" id="network-export">&#128190; Netwerk exporteren</button><button class="btn secondary small-btn" type="button" id="network-template">&#128196; Sjabloon</button></div>
+      <p class="hint" id="network-count">0 gecontroleerde verbindingen</p>
+      <details class="feature-fold"><summary>+ Handmatig gecontroleerde verbinding toevoegen</summary>
+        <div class="grid"><div class="field"><label for="edge-from">Vanaf</label><select id="edge-from"></select></div><div class="field"><label for="edge-to">Naar</label><select id="edge-to"></select></div></div>
+        <div class="grid"><div class="field"><label for="edge-name">Lift/piste naam</label><input id="edge-name" maxlength="80" placeholder="Piste of liftnummer"></div><div class="field"><label for="edge-code">Code</label><input id="edge-code" maxlength="32" placeholder="Bijv. lift:80"></div></div>
+        <div class="grid"><div class="field"><label for="edge-type">Type</label><select id="edge-type"><option value="piste">Piste</option><option value="lift">Lift</option><option value="overstap">Overstap</option></select></div><div class="field"><label for="edge-level">Pistekleur</label><select id="edge-level"><option value="blue">Blauw</option><option value="red">Rood</option><option value="black">Zwart</option></select></div></div>
+        <div class="grid"><div class="field"><label for="edge-length">Lengte (km)</label><input id="edge-length" type="number" min="0.01" step="0.1" max="30" value="1"></div><div class="field"><label for="edge-minutes">Minuten (0 = schatting)</label><input id="edge-minutes" type="number" min="0" max="180" value="0"></div></div>
+        <div class="grid"><div class="field"><label for="edge-wait">Wachttijd lift (min)</label><input id="edge-wait" type="number" min="0" max="60" value="5"></div><div class="field"><label for="edge-close">Laatste toegang (optioneel)</label><input id="edge-close" type="time"></div></div>
+        <div class="field"><label for="edge-status">Status</label><select id="edge-status"><option value="unknown">Onbekend</option><option value="open">Gecontroleerd open (tijdelijk)</option><option value="closed">Gesloten</option></select></div>
+        <label class="verify"><input id="edge-verified" type="checkbox"> Ik heb de richting en verbinding zelf gecontroleerd</label>
+        <button class="btn full" type="button" id="network-add">+ Verbinding opslaan</button>
+      </details>
+      <div class="field"><label for="edge-node-new">Nieuw controlepunt / kruising aanmaken</label><input id="edge-node-new" maxlength="90" placeholder="Bijv. Kruising piste 60 en 62"></div>
+      <button class="btn secondary full" id="edge-node-add" type="button">+ Controlepunt toevoegen aan keuzelijst</button>
+      <div class="toolbar"><button class="btn clear small-btn" id="network-demo" type="button">Toon rekenvoorbeeld</button><button class="btn clear small-btn" id="network-clear" type="button">Netwerk wissen</button></div>
+      <div id="network-result" role="status" class="hint"></div><div id="network-list" class="compact-list"></div>
+    </details>
+    <details class="feature-fold" id="photos-section"><summary>&#128247; Liftfoto's herkennen</summary>
+  <p class="hint">Voeg je eigen foto toe van een lift. SKI-je bewaart een kleine foto zonder GPS-/EXIF-gegevens op je apparaat en toont hem bij een berekende lift. Foto's worden niet verzonden.</p>
+  <div class="field"><label for="photo-code">Liftnummer</label><select id="photo-code"><option value="lift:80">80 - Hartkaiserbahn</option><option value="lift:61">61 - Brandstadl I</option><option value="lift:62">62 - Brandstadl II</option><option value="lift:67">67 - Eiberg</option><option value="lift:42">42 - Hohe Salve</option><option value="lift:20">20 - Salvenbahn I</option><option value="lift:22">22 - Salvenbahn II</option></select></div>
+  <div class="field"><label for="photo-file">Kies een foto of maak er eentje</label><input type="file" id="photo-file" accept="image/jpeg,image/png,image/webp" capture="environment"></div>
+  <button class="btn full" type="button" id="photo-save">&#128247; Liftfoto lokaal bewaren</button>
+  <p class="hint" id="photo-status" role="status">Beelden worden verkleind voor batterij- en opslagbesparing.</p>
+  <div id="photo-list" class="compact-list"></div>
+</details>
+<details class="feature-fold" id="group-section"><summary>&#128101; Skigroep &amp; afspreken</summary>
+      <p class="hint">Via Cloudflare kun je met maximaal 50 skiërs een afgeschermde skigroep vormen. Alleen leden met de uitnodigingslink kunnen aanmelden. <strong>GPS-delen staat altijd standaard uit.</strong> Posities worden niet blijvend op de server bewaard.</p>
+      <div class="cf-panel" id="cf-group-before">
+        <h3>Live skigroep</h3>
+        <div class="field"><label for="cf-display-name">Jouw naam in de groep</label><input id="cf-display-name" maxlength="24" placeholder="Bijv. Ben"></div>
+        <div class="field"><label for="cf-room-invite">Uitnodigingslink of groepscode</label><input id="cf-room-invite" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Plak de link van de groepsbeheerder"></div>
+        <button id="cf-group-join" class="btn full" type="button">👥 Deelnemen aan skigroep</button>
+        <details><summary>+ Nieuwe groep aanmaken (beheerder)</summary>
+          <div class="field"><label for="cf-new-name">Groepsnaam</label><input id="cf-new-name" maxlength="60" placeholder="Wintersport SkiWelt 2026"></div>
+          <div class="field"><label for="cf-admin-code">Cloudflare-beheerderscode</label><input id="cf-admin-code" type="password" autocomplete="off" placeholder="De bij Cloudflare ingestelde geheime code"></div>
+          <p class="cf-small">De beheerdercode stel je één keer in op Cloudflare. Andere skiërs hebben hem niet nodig.</p>
+          <button id="cf-group-create" class="btn secondary full" type="button">+ Maak nieuwe skigroep</button>
+        </details>
+      </div>
+      <div class="cf-panel" id="cf-group-active" hidden>
+        <div class="row"><h3 id="cf-active-title">Mijn skigroep</h3><span class="pill" id="cf-group-count">0 online</span></div>
+        <p class="cf-small" id="cf-active-name"></p>
+        <div class="cf-actions"><button class="btn secondary" type="button" id="cf-group-invite">🔗 Deel uitnodiging</button><button class="btn clear" type="button" id="cf-group-copy">📋 Kopieer link</button></div>
+        <label class="cf-label" for="cf-share-position">📍 Mijn GPS-locatie delen met groepsleden <input id="cf-share-position" type="checkbox"></label>
+        <p id="cf-share-info" class="cf-small" role="status">Uit. Je positie wordt niet gedeeld.</p>
+        <h3>Groepsleden</h3><div class="cf-members" id="cf-members" aria-live="polite"></div>
+        <p class="cf-small">Geen continue achtergrondtracking: bij vergrendelen of verlaten van de app stopt de GPS-deling. Oude GPS-punten verdwijnen na 2 minuten van de kaart. Deel de uitnodigingslink alleen met vertrouwde mensen.</p>
+        <div class="cf-actions"><button class="btn clear cf-danger" type="button" id="cf-group-leave">Groep verlaten</button><button class="btn clear cf-danger" type="button" id="cf-close" hidden>Hele groep sluiten</button></div>
+      </div>
+      <p id="cf-group-status" class="cf-group-status" role="status" aria-live="polite">Maak een groep of plak een uitnodigingslink.</p>
+      <hr style="border:0;border-top:1px solid #d7e7f0;margin:16px 0"><h3>Afspraak delen</h3>
+      <div class="field"><label for="group-name">Groepsnaam</label><input id="group-name" maxlength="60" placeholder="Bijv. Wintersport 2026"></div>
+      <div class="field"><label for="meet-name">Ontmoetingsplek</label><input id="meet-name" maxlength="90" placeholder="Bijv. Hartkaiser bergstation"></div>
+      <div class="field"><label for="meet-time">Tijd</label><input id="meet-time" type="time" value="12:30"></div>
+      <button class="btn full" id="group-share" type="button">&#128279; Deel groepsafspraak</button>
+      <p class="hint" id="group-status" role="status"></p>
+    </details>
+    <details class="feature-fold" id="diagnostics-section"><summary>&#128736; Praktijktest &amp; correcties</summary>
+      <p class="hint">Meld een afwijking op de piste. Bewaar gegevens offline en exporteer ze wanneer je wilt.</p>
+      <div class="field"><label for="issue-type">Soort controle</label><select id="issue-type"><option>Verkeerde pisteverbinding</option><option>Verkeerd liftnummer</option><option>GPS-afwijking</option><option>Restaurantgegevens</option><option>Routeplanner</option><option>Overig</option></select></div>
+      <div class="field"><label for="issue-text">Wat klopt niet?</label><textarea id="issue-text" rows="3" maxlength="500" placeholder="Bijv. piste 62 komt niet uit bij lift 67"></textarea></div>
+      <label class="verify"><input type="checkbox" id="issue-gps"> Huidige GPS-co&ouml;rdinaten toevoegen</label>
+      <button class="btn full" id="issue-add" type="button">&#128190; Controle offline bewaren</button>
+      <div class="toolbar"><button class="btn secondary small-btn" id="issues-export" type="button">Controles exporteren</button></div>
+      <div id="issue-list" class="compact-list" aria-live="polite"></div>
+    </details>
+    <details class="feature-fold" id="settings-section"><summary>&#9889; Zuinigheid, opslag &amp; privacy</summary>
+      <div class="field"><label for="power-setting">Verbruik</label><select id="power-setting"><option value="auto">Automatisch (aanbevolen)</option><option value="eco">Extra zuinig</option><option value="full">Normaal</option></select></div>
+      <p class="hint" id="power-explanation">Kaart, radar en webcams laden alleen wanneer nodig.</p>
+      <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
+      <label class="verify"><input id="motion-setting" type="checkbox" checked> Logoanimatie bij iedere nieuwe start tonen (niet bij verminderde beweging)</label>
+      <div class="toolbar"><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">Controleer nieuwe versie</button></div>
+      <p class="hint" id="install-help">Android: Chrome-menu &rarr; App installeren of Toevoegen aan startscherm. iPhone: Safari &rarr; Deel &rarr; Zet op beginscherm.</p>
+      <div class="toolbar"><button class="btn secondary small-btn" id="export-all" type="button">&#128190; Mijn data exporteren</button><button class="btn clear small-btn" id="clear-private" type="button">Lokale data wissen</button></div>
+      <details><summary>🔄 Back-up van Netlify importeren</summary>
+      <p class="hint">Open op Netlify eerst Meer → Mijn data exporteren. Kies hier dat JSON-bestand om je lokaal opgeslagen SKI-je v4-gegevens over te zetten. De back-up wordt <strong>niet geüpload</strong> naar Cloudflare; je telefoon leest het bestand zelf.</p>
+      <div class="field"><label for="backup-import-file">SKI-je v4-back-up (.json)</label><input id="backup-import-file" type="file" accept="application/json,.json"></div>
+      <button class="btn secondary full" id="backup-import-button" type="button">Back-up terugzetten</button>
+      <p class="hint" id="backup-import-status" role="status"></p>
+      </details>
+      <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
+      <p class="tiny">SKI-je v4.2.0-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. Geen vervanging voor pistemarkeringen, skipatrouille of liftaanwijzingen.</p>
+      <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
+    </details>
+  </section>
+</main>
+<footer class="bottom" aria-label="Navigatie"><button data-page="plan" aria-selected="true"><span>&#129517;</span>Route</button><button data-page="map" aria-selected="false"><span>&#128506;</span>Kaart</button><button data-page="weather" aria-selected="false"><span>&#127782;</span>Weer</button><button data-page="webcams" aria-selected="false"><span>&#128247;</span>Webcams</button><button data-page="day" aria-selected="false"><span>&#9975;</span>Mijn dag</button><button data-page="more" aria-selected="false"><span>&#9881;</span>Meer</button></footer>
+</div>
+
+<div class="utility-modal" id="checkpoint-modal" hidden role="dialog" aria-modal="true" aria-labelledby="checkpoint-title"><div class="utility-panel">
+ <div class="utility-head"><strong id="checkpoint-title">&#128205; IJkpunt opslaan</strong><button type="button" class="modal-close" data-close="checkpoint-modal" aria-label="Sluiten">&times;</button></div>
+ <div class="utility-content"><div class="field"><label for="cp-type">Wat meet je?</label><select id="cp-type"><option value="liftstation">Liftstation</option><option value="piste">Piste</option><option value="kruising">Pistekruising</option><option value="restaurant">Restaurant / berghut</option><option value="uitzichtpunt">Bergtop / uitzichtpunt</option><option value="overig">Overig</option></select></div>
+ <div class="field"><label for="cp-note">Naam of nummer (optioneel)</label><input id="cp-note" maxlength="90" placeholder="Bijv. lift 80, bergstation"></div>
+ <div class="field"><label for="cp-measurements">Aantal metingen</label><select id="cp-measurements"><option value="1">1 meting (snelst)</option><option value="3" selected>3 metingen (aanbevolen)</option><option value="5">5 metingen (extra controle)</option></select></div>
+ <p class="hint">Sta stil op een veilige plek. Meer metingen kunnen GPS-ruis helpen inschatten maar garanderen geen hogere nauwkeurigheid.</p>
+ <button type="button" class="btn full" id="cp-save">&#128205; Meet &amp; bewaar ijkpunt</button>
+ <div id="cp-status" class="gps-status" role="status" aria-live="polite">Je locatie wordt pas opgevraagd na de knop.</div></div></div></div>
+<div class="utility-modal" id="sos-modal" hidden role="dialog" aria-modal="true" aria-labelledby="sos-title"><div class="utility-panel">
+ <div class="utility-head emergency"><strong id="sos-title">&#128680; Noodhulp Oostenrijk</strong><button type="button" class="modal-close" data-close="sos-modal" aria-label="Sluiten">&times;</button></div>
+ <div class="utility-content"><p>Bij levensgevaar direct bellen. Noem het pistenummer, de locatie en het aantal gewonden.</p>
+ <div class="sos-grid"><a class="btn danger" href="tel:140">Bergredding 140</a><a class="btn danger" href="tel:112">Alarmnummer 112</a><a class="btn secondary" href="tel:144">Ambulance 144</a><a class="btn secondary" href="tel:133">Politie 133</a></div>
+ <button type="button" class="btn secondary full" id="sos-coordinate">&#128205; GPS voor hulpdiensten tonen</button><p id="sos-position" role="status" class="gps-status">Wacht bij nood niet op GPS; bellen werkt ook zonder app.</p>
+ <button type="button" class="btn secondary full" id="sos-copy">&#128203; Co&ouml;rdinaten kopi&euml;ren</button>
+ </div></div></div>
+<div class="utility-modal" id="pano-modal" hidden role="dialog" aria-modal="true" aria-labelledby="pano-title"><div class="utility-panel pano-panel">
+ <div class="utility-head"><strong id="pano-title">&#127956; SkiWelt panoramakaart 2026/27</strong><button type="button" class="modal-close" data-close="pano-modal" aria-label="Sluiten">&times;</button></div>
+ <div class="pano-tools"><button class="btn secondary" id="pano-minus" type="button">-</button><span id="pano-zoom">100%</span><button class="btn secondary" id="pano-plus" type="button">+</button><button class="btn clear" id="pano-reset" type="button">Herstel</button></div>
+ <div class="pano-viewport" id="pano-viewport"><img id="pano-img" alt="Aangeleverde SkiWelt panoramakaart met pistes en liften" data-src="Kaart%202026-2027.png" draggable="false"></div>
+ <div class="pano-bottom">Panoramakaart is illustratief, GPS staat op de geografische kaart.</div>
+ </div></div>
+<div class="webcam-modal" id="camera-modal" role="dialog" aria-modal="true" aria-labelledby="camera-name" aria-describedby="camera-info" hidden>
+  <div class="webcam-panel">
+    <div class="cam-head"><div class="cam-head-text"><strong id="camera-name">Live webcam</strong><small>SKI-je · SkiWelt</small></div><button type="button" class="cam-close" id="camera-close" aria-label="Webcam sluiten">×</button></div>
+    <div class="cam-picks" id="camera-picks" aria-label="Andere camera selecteren"></div>
+    <div class="cam-frame-wrap"><iframe id="camera-frame" title="Geselecteerde SkiWelt live webcam" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="cam-error" id="camera-info">Een externe livecam kan het insluiten blokkeren. Blijft het beeld leeg? Gebruik de officiële cameraknop hieronder.</div>
+    <div class="cam-footer"><a class="btn secondary" id="camera-source" href="https://www.skiwelt.at/en/webcams-in-winter.html" target="_blank" rel="noopener noreferrer">↗ Officiële livecam</a><span id="camera-location">SkiWelt · Tirol</span></div>
+  </div>
+</div>
+</div>
+<script>
+'use strict';
+(() => {
+const $ = (id) => document.getElementById(id);
+const dataSaver = navigator.connection?.saveData === true;
+if (!dataSaver) document.querySelectorAll('.hero-scene img[data-src], .ski-intro-photo[data-src]').forEach(img=>{img.src=img.dataset.src;});
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}), {once:true});
+}
+const SKIWELT=[47.470,12.245];
+const BOUNDS = {south:47.35,north:47.57,west:12.08,east:12.55};
+const inSkiWelt=(lat,lng)=>lat>=BOUNDS.south&&lat<=BOUNDS.north&&lng>=BOUNDS.west&&lng<=BOUNDS.east;
+const stations=[
+ ['Ellmau dalstation','Ellmau · dalstation'],['Going dalstation','Going · dalstation'],['Scheffau dalstation','Scheffau · dalstation'],['Söll dalstation','Söll · dalstation'],
+ ['Brixen dalstation','Brixen im Thale · dalstation'],['Westendorf dalstation','Westendorf · dalstation'],['Hopfgarten dalstation','Hopfgarten · dalstation'],['Itter dalstation','Itter · dalstation'],
+ ['Hopfgarten tussenstation','Hopfgarten · tussenstation'],['Hartkaiser bergstation','Ellmau · Hartkaiser bergstation'],['Brandstadl bergstation','Scheffau · Brandstadl bergstation'],['Hohe Salve','Hohe Salve · bergtop']
+];
+function makeOptions(){for(const id of ['start','finish']){$(id).innerHTML=stations.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');}}
+makeOptions();
+let state={style:'relaxed'};try{state={...state,...JSON.parse(localStorage.getItem('skije-preview-v1')||'{}')}}catch{}
+const saved=state.form||{};
+for(const [k,v] of Object.entries(saved)){let el=$(k);if(el){if(el.type==='checkbox')el.checked=!!v;else el.value=v;}}
+if(!saved.start)$('start').value='Ellmau dalstation';
+if(!saved.finish)$('finish').value='Ellmau dalstation';
+if(!('same-end' in saved))$('same-end').checked=true;
+function applySame(){if($('same-end').checked){$('finish').value=$('start').value;$('finish').disabled=true;}else{$('finish').disabled=false;}}
+applySame();
+$('start').addEventListener('change',()=>{if($('same-end').checked)$('finish').value=$('start').value;save()});
+$('same-end').addEventListener('change',()=>{applySame();save()});
+/* Opties: een aparte restaurantkeuze en een automatisch groeiende lijst wensen.
+   Pistenummers en hutnummers komen uit de openbare SkiWelt-overzichten.
+   Geselecteerde wensen zijn nog GEEN geverifieerde routeverbindingen. */
+const restaurantChoices=[
+ ['30','Bergrestaurant Brandstadl','Scheffau'],
+ ['31','Tanzbodenalm','Scheffau'],
+ ['27','Gipfelalm Hohe Salve','S\u00f6ll / Hopfgarten'],
+ ['56','Kaiserlounge','Ellmau'],
+ ['33','Kummereralm','Scheffau'],
+ ['34','Skih\u00fctte Au Alm','Scheffau'],
+ ['42','Bergrestaurant Jochstubn','Scheffau'],
+ ['46','Alpengasthof Hochs\u00f6ll','S\u00f6ll'],
+ ['47','Gr\u00fcndlalm','S\u00f6ll'],
+ ['48','St\u00f6cklalm','S\u00f6ll'],
+ ['23','KRAFTalm','Itter'],
+ ['69','Bergrestaurant Talkaser','Westendorf'],
+ ['67','Panorama Restaurant Choralpe','Westendorf']
+];
+$('lunch-restaurant').innerHTML='<option value="">Geen voorkeur, laat SKI-je kiezen</option>'+restaurantChoices.map(r=>`<option value="${r[0]}:${r[1]}">Hut ${r[0]} - ${r[1]} (${r[2]})</option>`).join('');
+if(saved['lunch-restaurant'])$('lunch-restaurant').value=saved['lunch-restaurant'];
+const wishGroups=[
+ ['Bergtoppen en uitzichtpunten',[
+ ['top:salve','Bergtop / uitzichtpunt - Hohe Salve'],
+ ['top:hartkaiser','Bergtop / uitzichtpunt - Hartkaiser'],
+ ['top:brandstadl','Uitzichtpunt - Brandstadl'],
+ ['top:kleine-salve','Bergtop / uitzichtpunt - Kleine Salve'],
+ ['top:choralpe','Uitzichtpunt - Choralpe'],
+ ['top:talkaser','Uitzichtpunt - Talkaser'],
+ ['top:eiberg','Gebied / uitzichtpunt - Eiberg']
+ ]],
+ ['Blauwe pistes',[
+ ['piste:80','Piste 80 - Hartkaiserbahn (Ellmau)'],
+ ['piste:91','Piste 91 - Ellmis 6er (Ellmau)'],
+ ['piste:96','Piste 96 - Kaiserexpress (Ellmau)'],
+ ['piste:96b','Piste 96b - Kaiserexpress (Ellmau)'],
+ ['piste:97b','Piste 97b - K\u00f6glbahn (Ellmau)'],
+ ['piste:98','Piste 98 - Almbahn (Ellmau)'],
+ ['piste:64','Piste 64 - Osthang (Scheffau)'],
+ ['piste:64a','Piste 64a - verbinding Tanzboden-Osthang (Scheffau)'],
+ ['piste:71a','Piste 71a - Eiberg-Aualm (Scheffau)'],
+ ['piste:43a','Piste 43a - Keat-Siller-Hochs\u00f6ll (S\u00f6ll)'],
+ ['piste:25a','Piste 25a - Foisching (Hopfgarten)'],
+ ['piste:31a','Piste 31a - KRAFTalm-Kasbichl (Itter)']
+ ]],
+ ['Rode pistes',[
+ ['piste:80a','Piste 80a - Hartkaiser (Ellmau)'],
+ ['piste:96a','Piste 96a - Kaiserexpress (Ellmau)'],
+ ['piste:97','Piste 97 - K\u00f6glbahn (Ellmau)'],
+ ['piste:98a','Piste 98a - Almbahn (Ellmau)'],
+ ['piste:67','Piste 67 - Eiberg (Scheffau)'],
+ ['piste:70','Piste 70 - Mulden (Scheffau)'],
+ ['piste:71','Piste 71 - Aualm (Scheffau)'],
+ ['piste:43','Piste 43 - Keat (S\u00f6ll)'],
+ ['piste:45','Piste 45 - Hexen6er (S\u00f6ll)'],
+ ['piste:30','Piste 30 - Itter dalafdaling']
+ ]],
+ ['Zwarte pistes',[
+ ['piste:42','Piste 42 - Black Eagle / Hohe Salve (S\u00f6ll)'],
+ ['piste:80b','Piste 80b - Hartkaiser (Ellmau)']
+ ]],
+ ['Liften',[
+ ['lift:80','Lift 80 - Hartkaiserbahn (Ellmau)'],
+ ['lift:61','Lift 61 - Brandstadl I (Scheffau)'],
+ ['lift:62','Lift 62 - Brandstadl II (Scheffau)'],
+ ['lift:67','Lift 67 - Eiberg (Scheffau)'],
+ ['lift:42','Lift 42 - Hohe Salve (S\u00f6ll)'],
+ ['lift:20','Lift 20 - Salvenbahn I (Hopfgarten)'],
+ ['lift:22','Lift 22 - Salvenbahn II (Hopfgarten)']
+ ]]
+];
+const wishesById=new Map(wishGroups.flatMap(group=>group[1]).map(pair=>pair));
+let wishes=Array.isArray(saved.wishes)?saved.wishes.filter(v=>wishesById.has(v)):[];
+wishes=[...new Set(wishes)];
+function renderWishes(){
+ const list=$('wishes-list');list.replaceChildren();
+ const choicesMarkup=wishGroups.map(([group,items])=>'<optgroup label="'+escapeHtml(group)+'">'+items.map(([key,label])=>'<option value="'+escapeHtml(key)+'">'+escapeHtml(label)+'</option>').join('')+'</optgroup>').join('');
+ [...wishes,''].forEach((value,index)=>{
+   const row=document.createElement('div');row.className='wish-row'+(value?'':' blank');
+   const field=document.createElement('div');field.className='field';
+   const label=document.createElement('label');label.htmlFor='wish-choice-'+index;label.textContent=value?'Wens '+(index+1):'Nog een wens toevoegen';
+   const sel=document.createElement('select');sel.id='wish-choice-'+index;sel.setAttribute('aria-label',label.textContent);
+   sel.innerHTML='<option value="">+ Kies een piste, bergtop, uitzichtpunt of lift</option>'+choicesMarkup;
+   sel.value=value;
+   sel.addEventListener('change',()=>{
+      const val=sel.value;if(!val){if(value)wishes.splice(index,1);}
+      else if(wishes.includes(val)&&val!==value){$('wish-hint').textContent='Deze keuze staat al op je lijst.';sel.value=value;return;}
+      else if(value){wishes[index]=val;}else{wishes.push(val);}
+      $('wish-hint').textContent=val?'Keuze toegevoegd. Je kunt hieronder meteen nog een plek kiezen.':'Pistenummers zijn apart van liftnummers weergegeven.';
+      renderWishes();save();
+   });
+   field.append(label,sel);row.appendChild(field);
+   if(value){const remove=document.createElement('button');remove.type='button';remove.className='wish-remove';remove.textContent='\u00d7';remove.setAttribute('aria-label','Verwijder '+(wishesById.get(value)||'wens'));remove.addEventListener('click',()=>{wishes.splice(index,1);renderWishes();save();});row.appendChild(remove);}
+   list.appendChild(row);
+ });
+ $('options-count').textContent=wishes.length?`${wishes.length} geselecteerde ${wishes.length===1?'wens':'wensen'}`:'Lunch, pistes en tussenstops';
+}
+function updateLunch(){
+ $('lunch-settings').classList.toggle('hidden',!$('use-lunch').checked);
+ $('lunch-duration-value').textContent=$('lunch-duration').value+' min';
+}
+renderWishes();updateLunch();
+const editable=['start','finish','same-end','departure','return-time','day','skill','speed','use-lunch','lunch-time','lunch-duration','lunch-restaurant','early-break','late-break'];
+function save(){const f={};for(const id of editable){let e=$(id);f[id]=e.type==='checkbox'?e.checked:e.value;}
+  f.wishes=wishes.slice();state.form=f;try{localStorage.setItem('skije-preview-v1',JSON.stringify(state));}catch{}
+}
+editable.forEach(id=>$(id).addEventListener('change',()=>{updateLunch();save();}));
+$('lunch-duration').addEventListener('input',()=>{updateLunch();save();});
+function setStyle(style){state.style=style;document.querySelectorAll('[data-style]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.style===style)));save();}
+document.querySelectorAll('[data-style]').forEach(b=>b.addEventListener('click',()=>setStyle(b.dataset.style)));
+setStyle(state.style);
+function minutes(hhmm){const [h,m]=(hhmm||'00:00').split(':').map(Number);return h*60+m;}
+function toHhmm(m){return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;}
+function renderPlan(){save();const begin=minutes($('departure').value),end=minutes($('return-time').value);if(!(end>begin+90)){$('plan-output').innerHTML='<strong>Controleer de tijden</strong><p>De eindtijd moet minimaal 90 minuten na vertrek liggen.</p>';return;}
+const safeEnd=end-30,lunch=$('use-lunch').checked,duration=Number($('lunch-duration').value),rest=$('lunch-restaurant').selectedOptions[0].textContent;
+const lunchText=lunch?`Lunch rond ${$('lunch-time').value} (${duration} min)`+($('lunch-restaurant').value?` bij ${rest}`:'; restaurant naar keuze'):'Geen lunchpauze';const destination=$('finish').value;
+const notes=[`Start: ${$('start').value} om ${$('departure').value}`,`Eindpunt: ${destination}`,`Wens: ${state.style==='fast'?'effici\u00ebntste route':'veel afwisseling en uitzicht'}`,lunchText,`Streefaankomst uiterlijk ${toHhmm(safeEnd)} (30 min marge voor ${$('return-time').value})`];
+if(wishes.length)notes.push('Gewenste plekken/pistes: '+wishes.map(k=>wishesById.get(k)).join('; '));
+if($('early-break').checked)notes.push('Ochtendpauze: 30 min');if($('late-break').checked)notes.push('Middagpauze: 30 min');
+$('plan-output').innerHTML='<strong>Jouw skidag is ingesteld</strong>'+notes.map(t=>`<p>&bull; ${escapeHtml(t)}</p>`).join('')+'<p class="hint"><b>Let op:</b> dit bewaart je instellingen en toont je dagwensen; er is nog geen gecontroleerde lift-piste-lift-route berekend. Het vertrekpunt van je terugweg hangt af van de echte route en lift-sluitingen.</p>';
+}
+function escapeHtml(x){return String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+$('create').addEventListener('click',renderPlan);
+let map=null,radarMap=null,pistes=null,gpsDot=null,gpsCircle=null,watchId=null,hasCentered=false,radar=null,radarFrames=[],radarTimer=null,radarIndex=-1;
+let leafletPromise=null,requestedMap=false,requestedRadar=false,radarFramesPlayed=0,lastPosition=null,lastStoredPositionAt=0;
+const mediaCanLoad=()=>!document.hidden && navigator.onLine!==false;
+function ensureLeaflet(){
+  if(typeof L!=='undefined') return Promise.resolve();
+  if(leafletPromise)return leafletPromise;
+  leafletPromise=new Promise((resolve,reject)=>{
+    const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';css.crossOrigin='anonymous';css.integrity='sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';document.head.appendChild(css);
+    const script=document.createElement('script');script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';script.crossOrigin='anonymous';script.integrity='sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+    script.onload=resolve;script.onerror=()=>{leafletPromise=null;reject(new Error('Kaartbibliotheek niet bereikbaar'));};document.head.appendChild(script);
+  });return leafletPromise;
+}
+function layerBase(){return L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,detectRetina:false,updateWhenIdle:true,keepBuffer:1,attribution:'© OpenStreetMap contributors',crossOrigin:true});}
+async function showPisteMap(){
+  if(map){setTimeout(()=>map.invalidateSize(),80);return;}
+  if(requestedMap)return;
+  requestedMap=true;$('map-fallback').style.display='block';$('map-fallback').textContent='Kaart wordt geladen wanneer je dit scherm gebruikt…';
+  try{await ensureLeaflet();map=L.map('piste-map',{zoomControl:true,fadeAnimation:false}).setView(SKIWELT,12);layerBase().addTo(map);
+    pistes=L.tileLayer('https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png',{maxZoom:18,maxNativeZoom:16,opacity:.85,detectRetina:false,updateWhenIdle:true,keepBuffer:1,attribution:'Pistes © OpenSnowMap · OSM/ODbL',bounds:L.latLngBounds([BOUNDS.south,BOUNDS.west],[BOUNDS.north,BOUNDS.east])}).addTo(map);
+    $('map-fallback').style.display='none';window.dispatchEvent(new CustomEvent('skije:mapready',{detail:{map}}));setTimeout(()=>map.invalidateSize(),70);
+    if(lastPosition)renderPosition(lastPosition);}
+  catch(e){$('map-fallback').textContent='Kaart kan niet worden geladen. Controleer internet en probeer opnieuw.';}
+  finally{requestedMap=false;}
+}
+async function showRadar(){
+ if(radarMap){setTimeout(()=>radarMap.invalidateSize(),70);return fetchRadar();}
+ if(requestedRadar)return;
+ requestedRadar=true;$('radar-status').textContent='Radar wordt geladen…';
+ try{await ensureLeaflet();$('radar-map').dataset.loaded='true';radarMap=L.map('radar-map',{zoomControl:true,maxZoom:10,fadeAnimation:false}).setView(SKIWELT,7);layerBase().addTo(radarMap);setTimeout(()=>radarMap.invalidateSize(),70);await fetchRadar();}
+ catch(e){$('radar-status').textContent='Radar niet bereikbaar: '+e.message;}
+ finally{requestedRadar=false;}
+}
+function stopRadar(){if(radarTimer){clearInterval(radarTimer);radarTimer=null;}$('radar-play').textContent='▶ Korte animatie';}
+function stopGps(reason=''){if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}$('follow-location').textContent='▶ Live volgen';$('follow-location').setAttribute('aria-pressed','false');if(reason)$('gps-status').textContent=reason;}
+function goPage(page){
+ if(page!=='map')stopGps();if(page!=='weather')stopRadar();if(!$('camera-modal').hidden)closeCamera();
+ document.querySelectorAll('.mode').forEach(el=>el.classList.toggle('active',el.id==='page-'+page));
+ document.querySelectorAll('.bottom button').forEach(el=>el.setAttribute('aria-selected',String(el.dataset.page===page)));
+ if(page==='map'){showPisteMap();const pano=$('page-map').querySelector('.preview img[data-src]');if(pano){pano.src=pano.dataset.src;pano.removeAttribute('data-src');}}
+ window.dispatchEvent(new CustomEvent('skije:page',{detail:{page}}));
+ if(page==='weather'){if(radarMap)setTimeout(()=>radarMap.invalidateSize(),70);fetchWeather(false);}
+ window.scrollTo({top:0,left:0,behavior:'instant'});
+}
+document.querySelectorAll('.bottom button').forEach(b=>b.addEventListener('click',()=>goPage(b.dataset.page)));
+function renderPosition(pos){
+ const c=pos.coords;const lat=c.latitude,lng=c.longitude,acc=Math.max(0,c.accuracy||0);
+ const inside=inSkiWelt(lat,lng);$('inside-state').textContent=inside?'In SkiWelt':'Buiten SkiWelt';
+ $('gps-status').textContent=`GPS: ${lat.toFixed(6)}, ${lng.toFixed(6)} • toestelnauwkeurigheid ±${Math.round(acc)} m${acc>35?' • te onnauwkeurig voor pisteherkenning':''}`;
+ $('copy-location').disabled=false;
+ if(map){const loc=[lat,lng];if(!gpsDot){gpsDot=L.marker(loc,{icon:L.divIcon({className:'',html:'<div class="gps-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map);
+ gpsCircle=L.circle(loc,{radius:Math.max(acc,5),color:'#1776dc',fillColor:'#72b5fe',fillOpacity:.14,weight:1}).addTo(map);}else{gpsDot.setLatLng(loc);gpsCircle.setLatLng(loc).setRadius(Math.max(acc,5));}
+ if(!hasCentered){map.setView(loc,Math.max(map.getZoom(),15));hasCentered=true;}}
+}
+function onPosition(pos){lastPosition=pos;renderPosition(pos);window.dispatchEvent(new CustomEvent('skije:gpsfix',{detail:{position:pos,source:'map'}}));if(Date.now()-lastStoredPositionAt>60000){state.lastLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};lastStoredPositionAt=Date.now();save();}}
+function onError(e){$('gps-status').textContent='GPS niet beschikbaar: '+(e?.message||'toegang geweigerd of verbinding ontbreekt')+'. Controleer HTTPS en locatietoestemming.';}
+function gpsAvailable(){if(!navigator.geolocation){$('gps-status').textContent='Dit apparaat ondersteunt geen locatiebepaling.';return false;}if(!window.isSecureContext){$('gps-status').textContent='GPS vereist HTTPS. Open deze proef via een beveiligd webadres.';return false;}return true;}
+$('locate').addEventListener('click',()=>{if(!gpsAvailable())return;hasCentered=false;$('gps-status').textContent='Eenmalige GPS-positie wordt opgehaald…';
+  navigator.geolocation.getCurrentPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:10000,timeout:16000});});
+$('follow-location').addEventListener('click',()=>{
+ if(watchId!==null){stopGps('Live volgen uitgeschakeld. De laatste locatie blijft zichtbaar.');return;}
+ if(!gpsAvailable())return;
+ watchId=navigator.geolocation.watchPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:15000,timeout:18000});
+ $('follow-location').textContent='⏹ Stop volgen';$('follow-location').setAttribute('aria-pressed','true');
+ $('gps-status').textContent='Live volgen ingeschakeld; dit kost meer batterij. Sluiten van kaart stopt GPS automatisch.';
+});
+$('copy-location').addEventListener('click',async()=>{
+ if(!lastPosition)return;const text=`${lastPosition.coords.latitude.toFixed(6)}, ${lastPosition.coords.longitude.toFixed(6)}`;
+ try{await navigator.clipboard.writeText(text);$('gps-status').textContent='GPS-coördinaten gekopieerd: '+text;}catch{$('gps-status').textContent='Kopiëren niet beschikbaar. Coördinaten: '+text;}
+});
+$('reset-map').addEventListener('click',()=>{if(map){map.setView(SKIWELT,12);hasCentered=false;}});
+$('toggle-pistes').addEventListener('click',()=>{if(!map||!pistes)return;const enabled=map.hasLayer(pistes);if(enabled)map.removeLayer(pistes);else pistes.addTo(map);$('toggle-pistes').setAttribute('aria-pressed',String(!enabled));$('toggle-pistes').textContent=enabled?'⛷️ Pistes uit':'⛷️ Pistes aan';});
+function selectedCoords(){return state.weatherGpsSelected&&state.lastLocation?[state.lastLocation.lat,state.lastLocation.lng]:SKIWELT;}
+const fmt=(v,d=0)=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v).toFixed(d):'—';
+function compass(deg){if(!Number.isFinite(Number(deg)))return '—';let d=['N','NO','O','ZO','Z','ZW','W','NW'];return d[Math.round((Number(deg)%360)/45)%8];}
+function forecastField(x,key,i){return x&&Array.isArray(x[key])?x[key][i]:null;}
+function showWeather(data,note){
+ const c=data.current||{};
+ $('temp-value').textContent=fmt(c.temperature_2m,0)+'°';$('temp-time').textContent=(c.time||'')+' • lokaal';
+ $('precip-value').textContent=fmt(c.precipitation,1);$('snow-value').textContent='Sneeuw: '+fmt(c.snowfall,1)+' cm';
+ $('wind-value').textContent=fmt(c.wind_speed_10m,0);$('wind-dir').textContent='Uit '+compass(c.wind_direction_10m)+' ('+fmt(c.wind_direction_10m)+'°)';
+ $('gust-value').textContent=fmt(c.wind_gusts_10m,0);
+ const g=Number(c.wind_gusts_10m);$('gust-warning').textContent=g>=60?'Sterke windstoten mogelijk; check liften':g>=40?'Verhoogde windstoten':'Modelverwachting';$('gust-warning').classList.toggle('warningwind',g>=60);
+ const times=data.hourly?.time||[],start=times.findIndex(t=>t>=(c.time||''));const s=Math.max(start,0),forecast=[];
+ for(let i=s;i<Math.min(s+8,times.length);i++){forecast.push(`<div class="hour"><b>${times[i].slice(11,16)}</b><span>🌨️ ${fmt(forecastField(data.hourly,'precipitation',i),1)} mm</span><span>❄️ ${fmt(forecastField(data.hourly,'snowfall',i),1)} cm</span><span>💨 ${fmt(forecastField(data.hourly,'wind_speed_10m',i))} km/u</span><span>🌬️ ${fmt(forecastField(data.hourly,'wind_gusts_10m',i))} km/u stoot</span></div>`);}
+ $('forecast-hours').innerHTML=forecast.join('')||'Geen uurverwachting beschikbaar.';
+ $('weather-label').textContent=state.weatherGpsSelected&&state.lastLocation?'Mijn GPS':'SkiWelt (gebied)';$('weather-status').textContent=note;
+ $('weather-status').dataset.loaded='true';
+}
+let weatherPromise=null;
+async function fetchWeather(force=false){
+ const coords=selectedCoords(),cached=state.weatherCache;
+ const same= cached && Math.abs(cached.coords[0]-coords[0])<0.005 && Math.abs(cached.coords[1]-coords[1])<0.005;
+ const fresh=same && Date.now()-cached.savedAt<30*60000;
+ if(same && cached.data){showWeather(cached.data,`Bewaarde verwachting • ${new Date(cached.savedAt).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}${fresh?'':' • mogelijk verouderd'}`);}
+ if(!force && fresh)return;
+ if(!navigator.onLine){$('weather-status').textContent=same?'Offline • laatste opgeslagen verwachting (mogelijk verouderd)':'Offline • geen opgeslagen voorspelling beschikbaar';return;}
+ if(weatherPromise)return weatherPromise;
+ $('weather-status').textContent='Nieuwe verwachting wordt opgehaald…';
+ weatherPromise=(async()=>{
+ try{
+ const q=new URLSearchParams({latitude:String(coords[0]),longitude:String(coords[1]),timezone:'Europe/Vienna',forecast_days:'1',current:'temperature_2m,precipitation,snowfall,wind_speed_10m,wind_direction_10m,wind_gusts_10m',hourly:'precipitation,snowfall,wind_speed_10m,wind_gusts_10m'});
+ const resp=await fetch('https://api.open-meteo.com/v1/forecast?'+q);
+ if(!resp.ok)throw new Error('HTTP '+resp.status);const data=await resp.json();
+ state.weatherCache={data,coords,savedAt:Date.now()};save();showWeather(data,'Open-Meteo modelgegevens • bijgewerkt '+new Date().toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}));
+ }catch(e){$('weather-status').textContent=same?'Nieuwe gegevens niet beschikbaar; oudere voorspelling getoond.':'Weer niet beschikbaar: '+e.message;}
+ finally{weatherPromise=null;}
+ })();return weatherPromise;
+}
+$('load-weather').addEventListener('click',()=>fetchWeather(true));
+$('weather-gps').addEventListener('click',()=>{if(!navigator.geolocation){$('weather-status').textContent='Geen GPS mogelijk.';return;}navigator.geolocation.getCurrentPosition(p=>{state.lastLocation={lat:p.coords.latitude,lng:p.coords.longitude};state.weatherGpsSelected=true;save();fetchWeather(true);},e=>$('weather-status').textContent='Locatie niet beschikbaar: '+e.message,{enableHighAccuracy:false,maximumAge:600000,timeout:9000});});
+$('weather-area').addEventListener('click',()=>{state.weatherGpsSelected=false;save();fetchWeather(true);});
+async function fetchRadar(){if(!radarMap){$('radar-status').textContent='Radarkaart niet beschikbaar.';return;}try{const resp=await fetch('https://api.rainviewer.com/public/weather-maps.json');if(!resp.ok)throw new Error('HTTP '+resp.status);const data=await resp.json();radarFrames=data.radar?.past||[];if(!radarFrames.length)throw new Error('geen radarbeelden');radar={host:data.host};$('radar-timeline').disabled=false;$('radar-timeline').max=String(radarFrames.length-1);setRadarFrame(radarFrames.length-1);$('radar-play').disabled=false;$('radar-status').textContent='Waargenomen radar van circa afgelopen 2 uur • geen voorspelling. Korte animatie speelt maximaal één keer af.';}catch(e){$('radar-status').textContent='Radar nu niet beschikbaar: '+e.message;}}
+function setRadarFrame(i){if(!radarMap||!radarFrames.length||!radar)return;i=Math.min(Math.max(0,i),radarFrames.length-1);radarIndex=i;const frame=radarFrames[i];if(radar.layer){radarMap.removeLayer(radar.layer);}
+const host=String(radar.host||'');if(!host.startsWith('https://'))return;const url=host+frame.path+'/256/{z}/{x}/{y}/2/1_1.png';radar.layer=L.tileLayer(url,{opacity:.72,maxNativeZoom:7,maxZoom:10,attribution:'Radar © RainViewer'}).addTo(radarMap);
+$('radar-time').textContent=new Date(frame.time*1000).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Vienna'});$('radar-timeline').value=String(i);}
+$('radar-timeline').addEventListener('input',e=>{if(radarTimer){clearInterval(radarTimer);radarTimer=null;$('radar-play').textContent='▶ Afspelen';}setRadarFrame(Number(e.target.value));});
+$('radar-load').addEventListener('click',showRadar);
+$('radar-play').addEventListener('click',()=>{
+ if(radarTimer){stopRadar();return;}if(!radarFrames.length)return;
+ radarFramesPlayed=0;radarTimer=setInterval(()=>{if(!mediaCanLoad()){stopRadar();return;}
+   setRadarFrame((radarIndex+1)%radarFrames.length);radarFramesPlayed++;
+   if(radarFramesPlayed>=Math.min(5,radarFrames.length))stopRadar();},5500);
+ $('radar-play').textContent='⏸ Stop animatie';
+});
+$('radar-refresh').addEventListener('click',()=>{if(!radarMap)showRadar();else fetchRadar();});
+
+/* Camera's gekozen uit de officiële SkiWelt-webcamverwijzingen.
+   Live stream/video wordt pas op expliciete klik op afstand geladen.
+   Productie-integratie van Feratel vereist toestemming/partner-embedcode. */
+const webcamSources=[
+  {id:'hartkaiser',name:'Hartkaiser · Ellmau',place:'Ellmau / Going',meters:'1.555 m',url:'https://webtv.feratel.com/webtv/?cam=5525&design=v5'},
+  {id:'brandstadl',name:'Brandstadl · Scheffau',place:'Scheffau',meters:'1.650 m',url:'https://webtv.feratel.com/webtv/?cam=5665&design=v5'},
+  {id:'salve',name:'Hohe Salve',place:'Söll / Hopfgarten',meters:'1.853 m',url:'https://webtv.feratel.com/webtv/?cam=5687&design=v5'},
+  {id:'hochbrixen',name:'Hochbrixen',place:'Brixen im Thale',meters:'1.300 m',url:'https://webtv.feratel.com/webtv/?cam=5520&design=v5'},
+  {id:'talkaser',name:'Talkaser · Westendorf',place:'Westendorf',meters:'1.800 m',url:'https://webtv.feratel.com/webtv/?cam=5725&design=v5'},
+  {id:'choralpe',name:'Choralpe · Westendorf',place:'Westendorf',meters:'1.810 m',url:'https://webtv.feratel.com/webtv/?cam=5726&design=v5'}
+];
+const cameraTiles=$('camera-tiles');
+cameraTiles.innerHTML=webcamSources.map(c=>`<button class="camera-tile" type="button" data-cam="${c.id}" aria-label="Bekijk live webcam ${escapeHtml(c.name)}"><span class="camera-icon">📹</span><strong>${escapeHtml(c.name)}</strong><small>🏔️ ${escapeHtml(c.meters)} · Tik om te bekijken</small></button>`).join('');
+$('camera-picks').innerHTML=webcamSources.map(c=>`<button class="cam-switch" type="button" data-cam="${c.id}" aria-pressed="false">${escapeHtml(c.name)}</button>`).join('');
+let focusBeforeCam=null;
+function selectCamera(id){
+  const c=webcamSources.find(w=>w.id===id);if(!c)return;
+  $('camera-name').textContent=c.name;
+  $('camera-location').textContent=c.place+' · '+c.meters;
+  $('camera-source').href=c.url;
+  $('camera-frame').title='Live webcam '+c.name+' (Feratel, externe aanbieder)';
+  $('camera-info').textContent='Externe webcam van Feratel. Blijft het scherm leeg? De aanbieder kan insluiten blokkeren. Tik dan op “Officiële livecam”.';
+  document.querySelectorAll('.cam-switch').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cam===c.id)));
+  // Bied de player zonder extra klik/scroll direct binnen het volledige scherm aan.
+  $('camera-frame').src=c.url;
+}
+function openCamera(id){focusBeforeCam=document.activeElement;
+  $('camera-modal').hidden=false;document.body.classList.add('cam-open');
+  selectCamera(id);$('camera-close').focus({preventScroll:true});
+}
+function closeCamera(){
+  if($('camera-modal').hidden)return;
+  $('camera-modal').hidden=true;document.body.classList.remove('cam-open');
+  $('camera-frame').src='about:blank'; // Video niet in de achtergrond laten doorlopen.
+  if(focusBeforeCam && focusBeforeCam.isConnected)focusBeforeCam.focus({preventScroll:true});
+}
+cameraTiles.addEventListener('click',e=>{const b=e.target.closest('[data-cam]');if(b)openCamera(b.dataset.cam);});
+$('camera-picks').addEventListener('click',e=>{const b=e.target.closest('[data-cam]');if(b)selectCamera(b.dataset.cam);});
+$('camera-close').addEventListener('click',closeCamera);
+$('camera-modal').addEventListener('click',e=>{if(e.target===$('camera-modal'))closeCamera();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCamera();
+  if(e.key==='Tab'&&!$('camera-modal').hidden){const focusables=[...$('camera-modal').querySelectorAll('button,a')];const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+$('weather-webcams').addEventListener('click',()=>goPage('webcams'));
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){stopGps();stopRadar();closeCamera();}
+});
+
+window.SKIApi={getLastPosition:()=>lastPosition,stopMapGps:()=>stopGps('Tracking gebruikt nu GPS; kaartvolgen gepauzeerd.'),acceptPosition:(p)=>{lastPosition=p;renderPosition(p);},goPage};
+window.addEventListener('beforeunload',()=>{stopGps();stopRadar();closeCamera();});
+})();
+</script>
+
+<script>
+/* SKI-je 4.2: iedere nieuwe appstart opnieuw de originele SVG-logoanimatie.
+   Geen sessionStorage-blokkade; korte GPU-fotoanimatie stopt na de intro.
+   Systeeminstelling 'verminder beweging' en de eigen uit-schakelaar blijven gelden. */
+(()=>{
+  const intro=document.getElementById('ski-intro');
+  const skip=document.getElementById('ski-intro-skip');
+  const sign=document.getElementById('skije-intro-sign');
+  const header=document.getElementById('skije-header-lockup');
+  const replay=document.getElementById('intro-replay');
+  if(!intro||!skip||!sign||!header)return;
+  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches===true;
+  let showByPreference=true;
+  try {
+    const saved=JSON.parse(localStorage.getItem('skije-extended-2026-v1')||'null');
+    showByPreference=saved?.preferences?.motion!==false;
+  } catch {}
+  let timer=null,cleanupTimer=null,travel=null;
+  let remaining=3250,startedAt=0,finished=true,visible=false;
+  const animated=[...intro.querySelectorAll('.ski-intro-photo,.ski-intro-kicker,.ski-intro-word span,.ski-intro-line,.ski-intro-sub')];
+  const clearTimers=()=>{clearTimeout(timer);clearTimeout(cleanupTimer);timer=cleanupTimer=null;};
+  function hide(){
+    clearTimers();travel?.cancel();travel=null;
+    intro.hidden=true;intro.classList.remove('leaving');
+    document.body.classList.remove('brand-arriving');finished=true;visible=false;
+  }
+  function finish(instant=false){
+    if(finished)return;
+    finished=true;clearTimeout(timer);
+    if(instant||reduced){hide();return;}
+    const from=sign.getBoundingClientRect(),to=header.getBoundingClientRect();
+    intro.classList.add('leaving');intro.setAttribute('aria-hidden','true');
+    if(sign.animate&&from.width>0&&to.width>0){
+      const ratio=Math.min(to.width/from.width,to.height/from.height);
+      const tx=to.left-from.left,ty=to.top-from.top;
+      travel=sign.animate([
+        {transform:'translate3d(0,0,0) scale(1)'},
+        {transform:`translate3d(${tx}px,${ty}px,0) scale(${ratio})`}
+      ],{duration:660,easing:'cubic-bezier(.22,.8,.25,1)',fill:'forwards'});
+    }
+    cleanupTimer=window.setTimeout(hide,690);
+  }
+  function beginCountdown(){
+    if(finished||document.hidden)return;
+    startedAt=Date.now();timer=window.setTimeout(()=>finish(),remaining);
+  }
+  function play(force=false){
+    if(!force&&(!showByPreference||reduced))return;
+    hide();
+    finished=false;visible=true;remaining=reduced?1800:3250;
+    intro.hidden=false;intro.classList.remove('leaving');intro.removeAttribute('aria-hidden');
+    document.body.classList.add('brand-arriving');
+    // Replays reset letter pop, underline, and photo keyframes without extra downloads.
+    for(const el of animated)el.style.animation='none';
+    void intro.offsetWidth;
+    for(const el of animated)el.style.animation='';
+    if(!document.hidden)beginCountdown();
+  }
+  skip.addEventListener('click',()=>finish(true));
+  replay?.addEventListener('click',()=>play(true));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&visible)finish(true);});
+  document.addEventListener('visibilitychange',()=>{
+    document.body.classList.toggle('ski-paused',document.hidden);
+    if(finished)return;
+    if(document.hidden){
+      clearTimeout(timer);remaining=Math.max(0,remaining-(Date.now()-startedAt));
+    } else if(remaining===0){finish();}else beginCountdown();
+  });
+  play();
+})();
+</script>
+<script src="route-engine.js" defer></script>
+<script src="extra.js" defer></script>
+<script src="group-cloudflare.js" defer></script>
+<script src="backup-migration.js" defer></script>
+</body>
+</html>

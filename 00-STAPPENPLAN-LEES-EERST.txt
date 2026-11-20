@@ -1,0 +1,37 @@
+SKI-je - CLOUDFlARE ONLINE ZETTEN - WINDOWS (GRATIS START)
+=============================================================
+
+LET OP: Gebruik DIT pakket. De Worker is alvast ingesteld met de naam ski-je.
+Je gratis adres wordt: https://ski-je.<jouw-cloudflare-subdomein>.workers.dev
+Het gedeelte <jouw-cloudflare-subdomein> bepaalt Cloudflare voor jouw account.
+De echte domeinnaam ski-je.nl moet je eerst bezitten/registreren (meestal jaarlijks betaald).
+
+1. Maak of open een gratis account op https://dash.cloudflare.com/
+2. Installeer Node.js LTS via https://nodejs.org/en/download en sluit je browser/installatievenster.
+3. Download deze ZIP op de Windows-PC. Rechtsklik > Alles uitpakken.
+4. Open de map SKI-je-Cloudflare-compleet. Er horen vier .cmd bestanden in te staan.
+5. Dubbelklik 01-INSTALLATIE-EN-INLOGGEN.cmd; bevestig in browser dat Wrangler mag inloggen.
+6. Dubbelklik 02-PUBLICEREN-NAAR-CLOUDFLARE.cmd; als alles goed gaat verschijnt je HTTPS-adres.
+   Kies bij een vraag over subdomein / workers.dev voor activeren/gebruiken.
+7. Dubbelklik 03-GROEPSCODE-INSTELLEN.cmd; kies en typ een geheime code >= 16 tekens.
+   Deel die code met niemand, ook niet in ChatGPT of via een screenshot.
+8. Open https://ski-je.<jouw-accountsubdomein>.workers.dev/api/health (echt adres uit stap 6)
+   Controleer: ok true, groups true, createConfigured true.
+9. Test in Chrome/Safari op je telefoon. Groep aanmaken, groepsuitnodiging delen,
+   GPS alleen met toestemming; test met 2 personen en dan 6 / 20.
+10. Laat de bestaande Netlify-app staan totdat de nieuwe versie is getest.
+11. Bij latere updates: gebruik 04-LATERE-UPDATE.cmd uit de nieuwe pakketmap,
+    maar behoud dezelfde Worker-naam ski-je en hetzelfde Cloudflare-account.
+
+EIGEN DOMEIN (OPTIONEEL, BETAALD VOOR REGISTRATIE):
+A. Koop of bezit ski-je.nl als de naam beschikbaar is.
+B. Laat de DNS-zone van het domein in Cloudflare beheren (zone Active).
+C. Cloudflare > Workers & Pages > ski-je > Settings > Domains & Routes > Add > Custom Domain.
+D. Vul ski-je.nl in, bevestig en controleer het HTTPS-adres.
+E. Gebruik voor PWA-installatie bij voorkeur alleen het uiteindelijke adres.
+
+BASISSTAPPEN GEVEN GEEN VOLLEDIGE 100% BESCHIKBAARHEID: gratis quota, externe
+kaart-/weer-/webcambronnen en smartphone-GPS-beperkingen blijven van toepassing.
+De routeplanner is geen geverifieerde piste-navigatie.
+
+Meer details in START-HIER-CLOUDFLARE.md en CLOUDFLARE-TESTPLAN.md.

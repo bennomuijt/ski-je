@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07538c">
-<link rel="manifest" href="manifest.webmanifest?v=454">
+<link rel="manifest" href="manifest.webmanifest?v=455">
 <link rel="icon" type="image/svg+xml" href="icons/skije-logo-v454.svg">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192-v43.png">
 <link rel="apple-touch-icon" href="icons/icon-192-v43.png">
@@ -195,7 +195,7 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.4</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.5</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -289,7 +289,7 @@ body.legal-open{overflow:hidden}
     <div class="card">
       <div class="row"><h2>Waar ben ik?</h2><span class="pill" id="inside-state">SkiWelt</span></div>
       <div class="toolbar"><button class="btn" id="locate">◎ Toon mijn GPS</button><button class="btn secondary" id="follow-location" aria-pressed="false">▶ Live volgen</button><button class="btn secondary" id="cf-group-map" type="button">👥 Mijn groep</button><button class="btn secondary" id="copy-location" disabled>📋 Kopieer GPS</button><button class="btn" type="button" id="share-location-map">📤 Deel mijn locatie</button><button class="btn secondary" type="button" id="return-home-map">🏠 Terug naar eindpunt</button><button class="btn secondary" id="reset-map">🏔️ SkiWelt</button><button class="btn secondary" id="toggle-pistes" aria-pressed="true">⛷️ Pistes aan</button></div>
-      <div class="toolbar checkpoint-quick"><button class="btn btn-checkpoint" type="button" id="checkpoint-map">&#128205; IJkpunt opslaan</button><button class="btn secondary" type="button" id="pano-open">&#127956; Panoramakaart groot</button></div>
+      <div class="toolbar checkpoint-quick"><button class="btn btn-checkpoint" type="button" id="checkpoint-map">&#128205; IJkpunt opslaan</button><button class="btn secondary" type="button" id="pano-open">&#127956; Panoramakaart groot</button><button class="btn secondary" type="button" id="community-photo-open">📸 Foto lift/hut</button></div>
       <div class="map" id="piste-map" role="region" aria-label="Geografische SkiWelt-kaart met pistes"></div><div class="static-fallback" id="map-fallback">Kaartbibliotheek niet geladen. Internet is nodig om kaartlagen op te halen.</div>
       <p class="gps-status" id="gps-status" role="status">GPS is uit om de batterij te sparen. Tik voor een eenmalige meting of start bewust live volgen.</p>
       <p class="hint">De pistekaartlaag komt uit OpenStreetMap / OpenSnowMap. Je GPS-positie verschijnt op een <strong>geografische kaart</strong>, inclusief de door de telefoon gemelde nauwkeurigheid. Dit is niet de officiële SkiWelt-panoramakaart.</p>
@@ -407,6 +407,30 @@ body.legal-open{overflow:hidden}
   <p class="hint" id="photo-status" role="status">Beelden worden verkleind voor batterij- en opslagbesparing.</p>
   <div id="photo-list" class="compact-list"></div>
 </details>
+<details class="feature-fold" id="community-photos-section"><summary>📸 Foto's van liften en restaurants delen</summary>
+ <p class="hint">Maak een foto of kies er een uit je galerij. Koppel deze aan de juiste lift of hut. De foto wordt klein gemaakt zonder originele GPS/EXIF-metadata. Alleen na goedkeuring door de beheerder kan iedereen de foto zien.</p>
+ <div class="grid"><div class="field"><label for="community-photo-type">Wat staat op de foto?</label>
+  <select id="community-photo-type"><option value="lift">🚡 Lift</option><option value="restaurant">🍽️ Restaurant / hut</option></select></div>
+  <div class="field"><label for="community-photo-target">Koppel aan</label><select id="community-photo-target"></select></div></div>
+ <div class="toolbar"><button id="community-photo-camera" type="button" class="btn">📷 Maak foto</button><button id="community-photo-gallery" type="button" class="btn secondary">🖼️ Kies uit galerij</button></div>
+ <input type="file" id="community-photo-camera-input" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+ <input type="file" id="community-photo-gallery-input" accept="image/jpeg,image/png,image/webp" hidden>
+ <img id="community-photo-preview" class="community-photo-preview" alt="Voorbeeld voor inzending" hidden>
+ <div class="field"><label for="community-photo-note">Opmerking (optioneel)</label><input id="community-photo-note" maxlength="160" placeholder="Bijv. ingang lift of binnenruimte"></div>
+ <button class="btn secondary full" type="button" id="community-photo-gps">📍 Controleer GPS op deze locatie</button>
+ <div id="community-photo-gps-status" class="gps-status" role="status">Locatie nog niet opgevraagd. GPS wordt alleen meegestuurd als je de foto indient.</div>
+ <label class="verify"><input type="checkbox" id="community-photo-consent"> Ik heb toestemming om deze foto te delen en zorg dat personen niet herkenbaar in beeld zijn zonder hun toestemming.</label>
+ <button class="btn full" type="button" id="community-photo-send">📤 Ter goedkeuring insturen</button>
+ <p id="community-photo-status" class="gps-status" role="status">Ingestuurde foto's zijn pas zichtbaar na handmatige goedkeuring.</p>
+ <div id="community-photo-public" class="community-photo-gallery"></div>
+ <details class="feature-fold" id="community-photo-admin-section"><summary>🔒 Foto's beoordelen (beheerder)</summary>
+  <p class="hint">Gebruik dezelfde Cloudflare-beheerderscode als bij Groep aanmaken. Deze wordt niet op je toestel bewaard of in het fotobestand gezet.</p>
+  <div class="field"><label for="community-photo-admin-code">Beheerderscode</label><input type="password" id="community-photo-admin-code" autocomplete="off" placeholder="Cloudflare beheerderscode"></div>
+  <button class="btn secondary full" type="button" id="community-photo-admin-load">🔎 Inzendingen controleren</button>
+  <p id="community-photo-admin-status" role="status" class="hint"></p>
+  <div id="community-photo-admin-list" class="community-photo-gallery"></div>
+ </details>
+</details>
 <details class="feature-fold" id="group-section"><summary>&#128101; Skigroep &amp; afspreken</summary>
       <p class="hint">Via Cloudflare kun je met maximaal 50 skiërs een afgeschermde skigroep vormen. Alleen leden met de uitnodigingslink kunnen aanmelden. <strong>GPS-delen staat altijd standaard uit.</strong> Posities worden niet blijvend op de server bewaard.</p>
       <div class="cf-panel" id="cf-group-before">
@@ -491,7 +515,7 @@ body.legal-open{overflow:hidden}
       <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
       <label class="verify"><input id="motion-setting" type="checkbox" checked> Logoanimatie bij iedere nieuwe start tonen (niet bij verminderde beweging)</label>
       <div class="toolbar"><a class="btn secondary small-btn" href="install.html">📲 Installeren / deel installatielink</a><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">&#8635; Update app naar nieuwste versie</button></div>
-      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.4 · Controleer online op nieuwe updates.</p>
+      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.5 · Controleer online op nieuwe updates.</p>
       <p class="hint" id="install-help">Android: Chrome-menu &rarr; App installeren of Toevoegen aan startscherm. iPhone: Safari &rarr; Deel &rarr; Zet op beginscherm.</p>
       <div class="toolbar"><button class="btn secondary small-btn" id="export-all" type="button">&#128190; Mijn data exporteren</button><button class="btn clear small-btn" id="clear-private" type="button">Lokale data wissen</button></div>
       <details><summary>🔄 Back-up van Netlify importeren</summary>
@@ -501,7 +525,7 @@ body.legal-open{overflow:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.5.4-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
+      <p class="tiny">SKI-je v4.5.5-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
@@ -1093,15 +1117,16 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 
 <script src="i18n-data.js" defer></script>
 <script src="i18n.js" defer></script>
-<script src="app-update.js?v=454" defer></script>
+<script src="app-update.js?v=455" defer></script>
 <script src="route-engine.js" defer></script>
 <script src="day-planner.js" defer></script>
 <script src="skiwelt-corridors.js" defer></script>
 <script src="route-detail.js" defer></script>
-<script src="day-pdf.js?v=454" defer></script>
+<script src="day-pdf.js?v=455" defer></script>
 <script src="extra.js" defer></script>
 <script src="panorama-tools.js" defer></script>
-<script src="pano-restaurants.js?v=454" defer></script>
+<script src="pano-restaurants.js?v=455" defer></script>
+<script src="photo-community.js?v=455" defer></script>
 <script src="day-ui.js" defer></script>
 <script src="return-home-ui.js" defer></script>
 <script src="lunch-minute.js" defer></script>

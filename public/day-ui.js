@@ -3,8 +3,8 @@
 (()=>{
  'use strict';
  const $=id=>document.getElementById(id);
- const planner=window.SKI_DayPlanner,network=window.SKIWeltCorridors;
- if(!planner||!network||!$('create')||!$('plan-output'))return;
+ const planner=window.SKI_DayPlanner,network=window.SKIWeltCorridors,detail=window.SKIRouteDetail;
+ if(!planner||!network||!detail||!$('create')||!$('plan-output'))return;
  const KEY='skije-local-closures-2026-v1';
  let current=null,readyPdf=null;
  const t=source=>window.SKI_I18N_DATA?.translations?.[window.SKILanguage?.get?.()||'nl']?.[source]||source;
@@ -26,12 +26,12 @@
    morningBreak:checked('early-break'),afternoonBreak:checked('late-break')};
  }
  function composeMessage(data){
-  const p=data.plan,n=data.route;
+  const p=data.plan,n=data.route,it=data.itinerary;
   return [
    'SKI-je · '+t('Voorlopige skidagplanning'),
    p.date||'',p.startPoint+' → '+p.endPoint,
    p.departure+' – '+p.returnTime+'  ('+t('Streefaankomst')+': '+p.safeArrival+')',
-   ...p.sections.map(s=>s.start+'–'+s.end+'  '+s.label),
+   ...it.steps.map(s=>s.start+'–'+s.end+'  '+(s.type==='lift'?'🚡 ':s.type==='piste'?'⛷️ ':'')+s.label),
    n.steps.length?t('Voorgestelde gebiedsverbindingen')+':':'',
    ...n.steps.map(s=>'⚠ '+s.from+' → '+s.to+': '+s.via),
    ...n.notes.slice(0,4),
@@ -54,14 +54,14 @@
   }
  }
  function render(){
-  const options=inputs(),plan=planner.compute(options),output=$('plan-output');output.replaceChildren();readyPdf=null;
+  const options=inputs(),route=network.build(options,getClosures()),plan=planner.compute({...options,returnEstimate:route.returnEstimate}),output=$('plan-output');output.replaceChildren();readyPdf=null;
   if(!plan.ok){
    output.append(el('strong','',t('Controleer je planning')));
    output.append(el('p','route-errors',plan.reason));
    output.append(el('p','hint',t('Kies haalbare tijden; de officiële veiligheid en liftstatus blijven leidend.')));
    current=null;return;
   }
-  const route=network.build(options,getClosures());current={plan,route,options};
+  const itinerary=detail.buildTimeline(plan,route);current={plan,route,options,itinerary};
   output.append(el('strong','plan-heading',t('Jouw volledige skidag')));
   const intro=el('div','day-intro');
   intro.append(el('span','day-pill',plan.departure+' – '+plan.returnTime));
@@ -78,20 +78,56 @@
   }
   output.append(timeline);
   const routeWrap=el('section','plan-regions');
-  routeWrap.append(el('h3','',t('Voorgestelde gebiedsroute')+' · ⚠'));
+  routeWrap.append(el('h3','',t('Lift-piste-route met richttijden')+' · ⚠'));
+  const guidance=el('p','hint',t('De tijden zijn schattingen vanaf vertrek. Controleer bij elke lift of je voor of achter op schema ligt. Onbekende verbindingen zijn geen exacte GPS-navigatie.'));
+  routeWrap.append(guidance);
+  const legend=el('div','ski-route-legend');
+  for(const [kind,title] of [['lift','🚡 '+t('Lift')],['piste','⛷️ '+t('Piste')],['transfer','⇄ '+t('Overstap')],['lunch','🍽️ '+t('Lunchpauze')],['return','🏠 '+t('Terugweg')]]){
+   legend.append(el('span','ski-route-tag '+kind,title));
+  }
+  routeWrap.append(legend);
+  const detailed=el('div','ski-route-steps');
+  for(const [i,step] of itinerary.steps.entries()){
+   const row=el('div','ski-route-step '+step.type);
+   row.setAttribute('data-step-index',String(i));
+   const when=el('span','ski-route-clock',step.start+' → '+step.end);
+   const info=el('div','ski-route-description');
+   info.append(el('strong','',(step.type==='lift'?'🚡 ':step.type==='piste'?'⛷️ ':step.type==='lunch'?'🍽️ ':step.type==='buffer'?'✓ ':step.type==='break'?'☕ ':step.type==='return'?'🏠 ':step.type==='transfer'?'⇄ ':'⛷️ ')+step.label));
+   info.append(el('small','',step.minutes+' '+t('minuten indicatief')+' · '+(step.phase||'planning')));
+   if(step.detail)info.append(el('p','',step.detail));
+   row.append(when,info);detailed.append(row);
+  }
+  routeWrap.append(detailed);
+  const checkpoints=el('p','hint','⚠️ '+t('Richttijden zijn geen garantie. Liftwachttijd, pauzes en weer kunnen het schema veranderen.'));
+  routeWrap.append(checkpoints);
+  const toilets=el('details','ski-route-wc');
+  toilets.append(el('summary','',t('🚻 WC-opties langs de route')+' ('+itinerary.pois.length+')'));
+  if(!itinerary.pois.length)toilets.append(el('p','hint',t('Voor deze route zijn nog geen betrouwbare WC-locaties vastgelegd.')));
+  for(const poi of itinerary.pois){
+   const item=el('div','ski-wc-point');
+   item.append(el('strong','','🚻 '+poi.title));
+   item.append(el('p','',poi.location+' · '+poi.status+' · '+t('Eventuele omweg, niet standaard ingepland')));
+   const link=el('a','legal-inline-link',t('Officiële bron controleren'));link.href=poi.source;link.target='_blank';link.rel='noopener noreferrer';item.append(link);
+   toilets.append(item);
+  }
+  routeWrap.append(toilets);
+  const regional=el('details','ski-route-regions');
+  regional.append(el('summary','',t('Gebiedsverbindingen volgens SkiWelt')+' (⚠)'));
+  const regionalList=el('div','region-chain');
   if(route.steps.length){
-   const chain=el('div','region-chain');
-   for(const s of route.steps){
+   for(const leg of route.steps){
     const line=el('div','region-leg');
-    line.append(el('b','',s.from+' → '+s.to));
-    line.append(el('p','',s.via));
-    line.append(el('small','',t('Niet live gecontroleerd')+' · '+s.minutes+' '+t('minuten indicatief')));
-    chain.append(line);
-   }routeWrap.append(chain);
-  }else routeWrap.append(el('p','hint',route.ok?t('Blijf in het gekozen gebied; gebruik de officiële kaart voor de pistes.') :t('Geen bevestigde gebiedsverbinding beschikbaar. Er is wel een dagplanning gemaakt.')));
-  const src=el('a','legal-inline-link',t('Officiële SkiWelt-verbindingen'));src.href=network.SOURCE;src.target='_blank';src.rel='noopener noreferrer';routeWrap.append(src);
+    line.append(el('b','',leg.from+' → '+leg.to));
+    line.append(el('p','',leg.via));
+    line.append(el('small','',t('Niet live gecontroleerd')+' · '+leg.minutes+' '+t('minuten indicatief')));
+    regionalList.append(line);
+   }
+  }else regionalList.append(el('p','hint',t('Geen bevestigde gebiedsverbinding beschikbaar. Er is wel een dagplanning gemaakt.')));
+  regional.append(regionalList);
+  const src=el('a','legal-inline-link',t('Officiële SkiWelt-verbindingen'));src.href=network.SOURCE;src.target='_blank';src.rel='noopener noreferrer';regional.append(src);
+  routeWrap.append(regional);
   output.append(routeWrap);
-  addNotes(output,[...plan.notes,...route.notes]);
+  addNotes(output,[...plan.notes,...route.notes,...itinerary.warnings]);
   const actions=el('div','day-plan-actions');
   const pdf=el('button','btn',t('Download mijn skidag als PDF'));pdf.id='download-day-pdf';pdf.type='button';
   const share=el('button','btn secondary',t('Deel skidag via telefoon'));share.id='share-day-plan';share.type='button';
@@ -106,7 +142,7 @@
   }
   pdf.addEventListener('click',async()=>{
    pdf.disabled=true;status.textContent=t('PDF maken…');
-   try{const blob=await getPdf();window.SKIPdf.save(blob,'SKI-je-'+(plan.date||'skidag')+'.pdf');
+   try{const blob=await getPdf();window.SKIPdf.save(blob,detail.fileName(plan));
     status.textContent=t('PDF gereed. Ook delen via je telefoon is mogelijk.');
    }catch(err){status.textContent=t('PDF kon niet worden gemaakt. Gebruik de deelknop voor het tekstschema.');console.error(err);}
    finally{pdf.disabled=false;}
@@ -119,7 +155,7 @@
   });
   sharePdf.addEventListener('click',async()=>{
    try{
-    const blob=await getPdf();const file=new File([blob],'SKI-je-skidag.pdf',{type:'application/pdf'});
+    const blob=await getPdf();const file=new File([blob],detail.fileName(plan),{type:'application/pdf'});
     if(navigator.share&&navigator.canShare?.({files:[file]})){
      await navigator.share({files:[file],title:'SKI-je skidag'});return;
     }

@@ -154,3 +154,47 @@ body.utility-open{overflow:hidden}
 .pano-hint{font-size:12px;font-weight:700;margin:4px 12px 9px;color:#135a81;text-align:center}
 .pano-viewport{touch-action:none;overscroll-behavior:contain;user-select:none}
 .pano-viewport img{touch-action:none;-webkit-user-drag:none}
+
+/* v4.6 · calm route-planner layout with clearly separate lift, piste, transfer,
+   lunch, return, toilets and estimated pass-times; large glove-friendly targets. */
+#lunch-time{width:100%;min-height:48px;font-weight:800;font-size:17px}
+#lunch-time-slider{width:100%;min-height:31px;accent-color:#0c83b4;touch-action:auto}
+#lunch-time-display{font-weight:850;color:#0b628b}
+#lunch-time-help{font-size:11px;margin-top:3px;line-height:1.35}
+#return-home-planner,#return-home-map{min-height:55px}
+.ski-route-legend{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 13px}
+.ski-route-tag{display:inline-flex;align-items:center;padding:5px 9px;border-radius:99px;
+ font-size:11px;font-weight:850;color:#244256;background:#e9f5fd;border:1px solid #b9dcec}
+.ski-route-tag.lift{color:#6137a7;background:#f3edff;border-color:#cbb9eb}
+.ski-route-tag.piste{color:#075f9b;background:#e7f4fc;border-color:#a6d8f4}
+.ski-route-tag.transfer{background:#edf0f3;color:#425f6a}
+.ski-route-tag.lunch{background:#fff1dc;color:#9b6118}
+.ski-route-tag.return{background:#ffecdf;color:#a34b2d}
+.ski-route-steps{display:grid;gap:7px;margin:7px 0 14px}
+.ski-route-step{display:grid;grid-template-columns:105px minmax(0,1fr);border-radius:12px;
+ overflow:hidden;background:#fff;border:1px solid #d9e9f0;border-left:5px solid #5585a2}
+.ski-route-clock{display:flex;align-items:center;justify-content:center;min-height:69px;
+ padding:9px 4px;background:#eef5fa;font-size:12px;font-weight:900;color:#164b69;text-align:center}
+.ski-route-description{padding:9px 11px;min-width:0}
+.ski-route-description strong{display:block;font-size:13px;font-weight:850;overflow-wrap:anywhere}
+.ski-route-description small{display:block;font-size:11px;color:#627f8e;font-weight:700;margin:3px 0}
+.ski-route-description p{font-size:11px;line-height:1.45;color:#6b7c87;margin:5px 0 0}
+.ski-route-step.lift{border-left-color:#7557b4}.ski-route-step.lift .ski-route-clock{background:#f2eefd;color:#59399c}
+.ski-route-step.piste{border-left-color:#177ec5}.ski-route-step.piste .ski-route-clock{background:#e8f5ff;color:#0e68a6}
+.ski-route-step.piste.level-red{border-left-color:#d34346}.ski-route-step.piste.level-red .ski-route-clock{background:#ffebeb;color:#a82c36}
+.ski-route-step.piste.level-black{border-left-color:#282b30}.ski-route-step.piste.level-black .ski-route-clock{background:#eceff0;color:#23262a}
+.ski-route-step.transfer{border-left-color:#8598a5}.ski-route-step.transfer .ski-route-clock{background:#edf2f5}
+.ski-route-step.lunch{border-left-color:#f29a31}.ski-route-step.lunch .ski-route-clock{background:#fff3e2;color:#91550f}
+.ski-route-step.return{border-left-color:#e05c49}.ski-route-step.return .ski-route-clock{background:#ffebe5;color:#9c492c}
+.ski-route-step.buffer{border-left-color:#178969}.ski-route-step.buffer .ski-route-clock{background:#e6f7f0;color:#166f55}
+.ski-route-step.free{border-left-color:#49a4b3}.ski-route-step.free .ski-route-clock{background:#eaf7fa}
+.ski-route-wc,.ski-route-regions{margin:12px 0}
+.ski-route-wc summary,.ski-route-regions summary{min-height:45px;display:flex;align-items:center;font-weight:800;cursor:pointer}
+.ski-wc-point{background:#f1faf8;border:1px solid #cee9e0;border-left:4px solid #1b9c79;border-radius:9px;
+ padding:11px 12px;margin:8px 0;font-size:12px}
+.ski-wc-point strong{display:block;font-size:13px}
+.ski-wc-point p{margin:7px 0;line-height:1.45}
+#return-home-output .region-leg{margin:9px 0}
+#return-home-output .day-pill{margin:8px 0}
+#return-home-modal .utility-content{max-height:75vh;overflow-y:auto}
+@media(max-width:360px){.ski-route-step{grid-template-columns:87px minmax(0,1fr)}.ski-route-clock{font-size:10px}.ski-route-description strong{font-size:12px}}

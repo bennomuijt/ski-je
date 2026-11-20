@@ -1,6 +1,7 @@
 // Recreate Android/iOS icons from the ORIGINAL SKI-je wordmark embedded in
 // brand-skije.svg. No invented logo; produces installable 192/512 PNG icons.
-import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {readFile,mkdir} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
 import sharp from 'sharp';
 const xml=await readFile(new URL('../public/brand-skije.svg',import.meta.url),'utf8');
 const match=xml.match(/href="data:image\/webp;base64,([^"]+)"/);
@@ -9,7 +10,7 @@ const logo=Buffer.from(match[1],'base64');
 const dir=new URL('../public/icons/',import.meta.url);
 await mkdir(dir,{recursive:true});
 for(const size of [192,512]){
-  const pad=Math.round(size*.11),logoWidth=Math.round(size*.78);
+  const logoWidth=Math.round(size*.78);
   const logoData=await sharp(logo).resize({width:logoWidth,fit:'inside'}).png().toBuffer();
   const {width,height}=await sharp(logoData).metadata();
   const background=Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 512 512">
@@ -20,5 +21,5 @@ for(const size of [192,512]){
    <path d="M0 431 152 283 271 405 370 298 512 438 512 512 0 512Z" fill="#eafaff" opacity=".22"/>
    </svg>`);
   const left=Math.round((size-width)/2),top=Math.round((size-height)/2);
-  await sharp(background).composite([{input:logoData,left,top}]).png().toFile(new URL(`icon-${size}-v454.png`,dir));
+  await sharp(background).composite([{input:logoData,left,top}]).png().toFile(fileURLToPath(new URL(`icon-${size}-v454.png`,dir)));
 }

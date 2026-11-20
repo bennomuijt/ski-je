@@ -194,7 +194,7 @@
    box(ctx,58,y,1120,185,'#ebf7f8');box(ctx,58,y,10,185,COL.green);
    label(ctx,'WC · '+p.title,85,y+39,24,COL.navy,true);
    lines(ctx,p.location,85,y+73,1050,19,2,COL.ink);
-   lines(ctx,'Status: '+p.status+'  ·  +'+p.extraTimeMinutes+' min (niet ingepland)',85,y+122,1050,17,2,COL.gray);
+   lines(ctx,(p.estimatedNearTime?'Mogelijk rond '+p.estimatedNearTime+' · ':'')+'Status: '+p.status+'  ·  +'+p.extraTimeMinutes+' min (niet ingepland)',85,y+122,1050,17,2,COL.gray);
    lines(ctx,'Bron: '+p.source,85,y+157,1060,14,2,COL.gray);
    y+=202;
   }

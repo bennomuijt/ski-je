@@ -86,6 +86,22 @@
    extraTimeMinutes:10}));
  }
  function estimate(legs){return (legs||[]).reduce((sum,leg)=>sum+Number(leg.minutes||0),0);}
+ function routeDistances(itinerary){
+   const steps=Array.isArray(itinerary?.steps)?itinerary.steps:[];
+   const totals={pisteKm:0,liftKm:0,pisteComplete:true,liftComplete:true};
+   let pisteCount=0,liftCount=0;
+   for(const step of steps){
+     if(step.type!=='piste'&&step.type!=='lift')continue;
+     const piste=step.type==='piste',key=piste?'pisteKm':'liftKm',flag=piste?'pisteComplete':'liftComplete',count=piste?'pisteCount':'liftCount';
+     if(piste)pisteCount++;else liftCount++;
+     const km=Number(step.lengthKm);
+     if(!Number.isFinite(km)||km<=0)totals[flag]=false;
+     else totals[key]+=km;
+   }
+   if(!pisteCount)totals.pisteComplete=false;
+   if(!liftCount)totals.liftComplete=false;
+   return totals;
+ }
  function buildTimeline(plan,route){
   if(!plan?.ok)return {steps:[],warnings:['Ongeldige dagplanning'],pois:[]};
   const phases=route?.phases||{preLunch:route?.steps||[],postLunch:[],return:[]};
@@ -193,5 +209,5 @@
   const begin=safe((plan?.departure||'09:00').replace(':','-')),end=safe((plan?.returnTime||'16:00').replace(':','-'));
   return 'SKI-je_'+day+'_'+begin+'_tot_'+end+'.pdf';
  }
- return {SOURCE,catalog,POIS,regionAnchors,split,buildSegments,buildTimeline,nearestAreas,homeSuggestion,fileName,placesFor};
+ return {SOURCE,catalog,POIS,regionAnchors,split,buildSegments,buildTimeline,routeDistances,nearestAreas,homeSuggestion,fileName,placesFor};
 });

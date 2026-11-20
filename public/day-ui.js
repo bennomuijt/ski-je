@@ -61,7 +61,7 @@
    output.append(el('p','hint',t('Kies haalbare tijden; de officiële veiligheid en liftstatus blijven leidend.')));
    current=null;return;
   }
-  const itinerary=detail.buildTimeline(plan,route);current={plan,route,options,itinerary};
+  const itinerary=detail.buildTimeline(plan,route,options);current={plan,route,options,itinerary};
   output.append(el('strong','plan-heading',t('Jouw volledige skidag')));
   const intro=el('div','day-intro');
   intro.append(el('span','day-pill',plan.departure+' – '+plan.returnTime));

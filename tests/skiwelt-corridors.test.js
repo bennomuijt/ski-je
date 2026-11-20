@@ -26,3 +26,19 @@ test('input closure data is sanitized and local only',()=>{
  assert.equal(reports.length,2);
  assert.ok(reports.every(x=>/^[a-z0-9_-]{1,20}$/.test(x.code)));
 });
+test('stress: all 64 pairs of listed resorts have a provisional path',()=>{
+ let count=0;
+ for(const start of graph.areas)for(const finish of graph.areas){
+  const route=graph.build({start,finish,departure:'09:00',returnTime:'16:00',useLunch:false},[]);
+  assert.equal(route.ok,true,start+' -> '+finish);
+  if(start!==finish)assert.ok(route.steps.length>0);
+  count++;
+ }
+ assert.equal(count,64);
+});
+test('reported closure for connection 99a excludes corridor but not all day schedules',()=>{
+ const rows=[{kind:'piste',code:'99a',note:'Sneeuwtekort'}];
+ const route=graph.build({start:'Ellmau dalstation',finish:'Scheffau dalstation',useLunch:true},rows);
+ assert.equal(route.ok,false);
+ assert.ok(route.notes.some(n=>n.includes('verbinding')||n.includes('sluiting')));
+});

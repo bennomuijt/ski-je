@@ -850,6 +850,24 @@ const host=String(radar.host||'');if(!host.startsWith('https://'))return;const u
 $('radar-time').textContent=new Date(frame.time*1000).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Vienna'});$('radar-timeline').value=String(i);}
 $('radar-timeline').addEventListener('input',e=>{if(radarTimer){clearInterval(radarTimer);radarTimer=null;$('radar-play').textContent='▶ Afspelen';}setRadarFrame(Number(e.target.value));});
 $('radar-load').addEventListener('click',showRadar);
+$('radar-gps').addEventListener('click',()=>{
+ if(!window.isSecureContext||!navigator.geolocation){
+  $('radar-status').textContent='GPS niet beschikbaar. Controleer locatietoestemming en HTTPS.';return;
+ }
+ const b=$('radar-gps');b.disabled=true;
+ $('radar-status').textContent='GPS opvragen voor buienradar…';
+ navigator.geolocation.getCurrentPosition(async pos=>{
+  b.disabled=false;
+  const lat=pos.coords.latitude,lng=pos.coords.longitude;
+  if(!Number.isFinite(lat)||!Number.isFinite(lng)){$('radar-status').textContent='GPS-positie ongeldig.';return;}
+  state.lastLocation={lat,lng};state.weatherGpsSelected=true;save();
+  if(!radarMap)await showRadar();
+  if(radarMap){radarMap.setView([lat,lng],8);
+   $('radar-status').textContent='📍 Radar afgestemd op jouw GPS. Het zijn historische neerslagbeelden, geen voorspelling.';
+  }
+ },()=>{b.disabled=false;$('radar-status').textContent='GPS niet beschikbaar. Controleer je locatietoestemming.';},
+ {enableHighAccuracy:false,maximumAge:60000,timeout:12000});
+});
 $('radar-play').addEventListener('click',()=>{
  if(radarTimer){stopRadar();return;}if(!radarFrames.length)return;
  radarFramesPlayed=0;radarTimer=setInterval(()=>{if(!mediaCanLoad()){stopRadar();return;}
@@ -898,6 +916,7 @@ function closeCamera(){
 cameraTiles.addEventListener('click',e=>{const b=e.target.closest('[data-cam]');if(b)openCamera(b.dataset.cam);});
 $('camera-picks').addEventListener('click',e=>{const b=e.target.closest('[data-cam]');if(b)selectCamera(b.dataset.cam);});
 $('camera-close').addEventListener('click',closeCamera);
+$('camera-back-bottom').addEventListener('click',closeCamera);
 $('camera-modal').addEventListener('click',e=>{if(e.target===$('camera-modal'))closeCamera();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCamera();
   if(e.key==='Tab'&&!$('camera-modal').hidden){const focusables=[...$('camera-modal').querySelectorAll('button,a')];const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});

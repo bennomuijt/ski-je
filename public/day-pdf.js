@@ -53,7 +53,7 @@
  }
  async function loadLogo(){
   if(typeof Image==='undefined')return null;
-  const image=new Image();image.src='brand-skije.svg';
+  const image=new Image();image.src='icons/icon-512-v43.png'; // Original brand-skije.svg artwork rendered to a reliable PNG icon.
   try{await image.decode();return image;}catch{return null;}
  }
  function pageStart(ctx,logo,page,total){
@@ -85,12 +85,12 @@
   let y=591;
   for(const row of plan.sections){
    if(y>H-245)break;
-   box(ctx,58,y,1120,113,'#ffffff');
-   box(ctx,58,y,9,113,{ski:'#1585bd',lunch:'#f18b2a',break:'#8aa7b7',return:'#d85b4f',buffer:'#178d6c'}[row.type]||COL.blue);
+   box(ctx,58,y,1120,95,'#ffffff');
+   box(ctx,58,y,9,95,{ski:'#1585bd',lunch:'#f18b2a',break:'#8aa7b7',return:'#d85b4f',buffer:'#178d6c'}[row.type]||COL.blue);
    label(ctx,row.start+'–'+row.end,88,y+40,28,COL.navy,true);
    label(ctx,row.minutes+' min',88,y+80,20,COL.gray);
    label(ctx,row.label,402,y+37,24,COL.ink,true);
-   lines(ctx,row.detail,403,y+75,735,18,2,COL.gray);y+=125;
+   lines(ctx,row.detail,403,y+75,735,18,1,COL.gray);y+=103;
   }
  }
  function regionPage(ctx,legs,notes){

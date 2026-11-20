@@ -7,7 +7,7 @@ test('visible header version, manual update button and safe version-check route'
   assert.match(html,/v4\.5\.0/);assert.match(html,/id="app-update-now"/);assert.match(html,/id="check-update"/);
   assert.match(html,/app-update\.js/);assert.match(js,/\/api\/health\?versioncheck=/);assert.match(js,/cache:'no-store'/);
   assert.match(js,/reg\.update\(\)/);assert.match(js,/location\.replace\(url\.href\)/);
-  assert.doesNotMatch(js,/localStorage\.(clear|removeItem)/);
+  assert.doesNotMatch(js,/localStorage\.(clear|removeItem)/);assert.match(js,/setState\('is-updating'\)/);assert.match(js,/setState\('is-current'\)/);assert.match(js,/setState\('is-failed'\)/);
 });
 test('original image on intro, header and fresh app icons',()=>{
   assert.ok(existsSync(new URL('../public/brand-skije.svg',import.meta.url)));

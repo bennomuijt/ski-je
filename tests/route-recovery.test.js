@@ -16,7 +16,7 @@ test('restore route planner full day, PDF and share with uncertainty label',()=>
  assert.match(ui,/navigator\.share/);
  assert.match(ui,/localStorage/);
  assert.match(ui,/Geen bevestigde gebiedsverbinding/);
- assert.match(pdf,/brand-skije\.svg/);
+ assert.match(pdf,/icon-512-v43\.png/);
  assert.match(pdf,/application\/pdf/);
  assert.match(model,/safeArrival/);
 });
@@ -31,14 +31,14 @@ test('full SkiWelt panorama is embedded in-app, has villages and offline fallbac
 test('radar uses requested GPS, wind has more than two points, webcam has visible back',()=>{
  assert.match(html,/id="radar-gps"/);
  assert.match(html,/id="camera-back-bottom"/);
- assert.match(html,/← Terug/);
+ assert.match(html,/← Terug/);assert.match(html,/camera-back-bottom'\)\.addEventListener\('click',closeCamera\)/);
  for(const key of ['salve','hartkaiser','brixen','westendorf','scheffau','going','itter','hopfgarten']){
-  assert.match(extra,new RegExp(key+':\\\\['),key);
+  assert.ok(extra.includes(key+':['),key);
  }
- assert.match(html,/GPS voor radar/);
+ assert.match(html,/GPS voor radar/);assert.match(html,/radarMap\.setView\(\[lat,lng\],8\)/);
 });
 test('update button changes colour when clicked, without clearing local settings',()=>{
  assert.match(css,/is-updating/);assert.match(css,/is-current/);assert.match(css,/is-failed/);
- assert.match(load('public/app-update.js'),/classList\.add\('is-updating'\)/);
+ assert.match(load('public/app-update.js'),/b\.classList\.add\(state\)/);
  assert.doesNotMatch(load('public/app-update.js'),/localStorage\.clear/);
 });

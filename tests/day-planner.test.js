@@ -23,10 +23,10 @@ test('no imaginary piste or lift travel claims appear in the schedule',()=>{
  assert.equal(p.sections.filter(x=>x.type==='return').length,1);
 });
 
-test('matrix of 72 combinations never produces gaps, and rejects impossible lunch',()=>{
+test('matrix of 120 combinations never produces gaps, and rejects impossible lunch',()=>{
  let accepted=0,rejected=0;
- for(const departure of ['08:00','09:00','10:00','11:00']){
-  for(const returnTime of ['14:30','16:00','17:00']){
+ for(const departure of ['08:00','09:00','10:00','11:00','12:00']){
+  for(const returnTime of ['13:30','14:30','16:00','17:00']){
    for(const lunchTime of ['11:45','12:00','12:30']){
     for(const lunchDuration of [45,60]){
      const p=planner.compute({...base,departure,returnTime,lunchTime,lunchDuration,lunchRestaurantLabel:'Brandstadl'});

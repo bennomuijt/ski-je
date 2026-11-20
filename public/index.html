@@ -288,7 +288,7 @@ body.legal-open{overflow:hidden}
 <option value="overview">Hele SkiWelt</option><option value="going">Going</option><option value="ellmau">Ellmau</option><option value="scheffau">Scheffau</option><option value="soll">Söll</option><option value="itter">Itter</option><option value="hopfgarten">Hopfgarten</option><option value="brixen">Brixen im Thale</option><option value="westendorf">Westendorf</option></select></div>
 <button id="pano-focus-open" type="button" class="btn full">🏔️ Toon volledige kaart en zoom in</button>
 <div class="preview"><img data-src="/api/skimap.jpg" alt="Volledige officiële SkiWelt-panorama 2026-2027 met pistes en liften" loading="lazy" decoding="async"></div>
-<p class="hint" id="pano-download-note">Volledige officiële SkiWelt-panorama uit 2026–2027, getoond binnen SKI-je. Bij slechte verbinding kan tijdelijk alleen de oude uitsnede geladen worden.</p>
+<p class="hint" id="pano-download-note">SkiWelt-panorama 2026–2027: rechtstreeks binnen SKI-je. Bij slecht bereik kan de lokale voorbeeldkaart verschijnen; deze is niet scherp genoeg voor exacte pistenummers.</p>
       <p class="hint">Op de panoramakaart zoom je naar een skidorp; dit is een illustratie en geen exacte GPS-ondergrond. De GPS-kaart hierboven toont je werkelijke locatie.</p>
     </div>
   </section>
@@ -566,6 +566,7 @@ body.legal-open{overflow:hidden}
 <option value="overview">Hele SkiWelt</option><option value="going">Going</option><option value="ellmau">Ellmau</option><option value="scheffau">Scheffau</option><option value="soll">Söll</option><option value="itter">Itter</option><option value="hopfgarten">Hopfgarten</option><option value="brixen">Brixen im Thale</option><option value="westendorf">Westendorf</option></select>
 <button class="btn secondary" id="pano-minus" type="button">−</button><span id="pano-zoom">100%</span><button class="btn secondary" id="pano-plus" type="button">+</button><button class="btn clear" id="pano-reset" type="button">Hele kaart</button></div>
  <p class="pano-hint">🤏 Knijp met twee vingers · schuif met één vinger · dubbel tik om te vergroten</p>
+ <div class="pano-route-box" id="pano-route-box" hidden><div class="pano-route-label">🧭 Route door deelgebieden (indicatief, géén exacte piste/GPS-navigatie)</div><div class="pano-route-list" id="pano-route-list" aria-label="Deelgebieden langs de berekende route"></div></div>
  <div class="pano-viewport" id="pano-viewport"><img id="pano-img" alt="Aangeleverde SkiWelt panoramakaart met pistes en liften" data-src="/api/skimap.jpg" draggable="false"></div>
  <div class="pano-bottom" id="pano-map-status">Officiële SkiWelt kaart · 2026/27. Bron: SkiWelt Wilder Kaiser-Brixental. De illustratie is niet geografisch gekalibreerd.</div>
  </div></div>
@@ -1066,6 +1067,7 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 <script src="route-detail.js" defer></script>
 <script src="day-pdf.js" defer></script>
 <script src="extra.js" defer></script>
+<script src="panorama-tools.js" defer></script>
 <script src="day-ui.js" defer></script>
 <script src="return-home-ui.js" defer></script>
 <script src="lunch-minute.js" defer></script>

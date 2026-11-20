@@ -66,7 +66,7 @@
  function pageStart(ctx,logo,page,total,watermark){
   ctx.fillStyle='#f6fbfe';ctx.fillRect(0,0,W,H);
   if(watermark){
-   ctx.save();ctx.globalAlpha=0.055;
+   ctx.save();ctx.globalAlpha=0.12; // Watermerk blijft licht, maar is beter zichtbaar in de PDF.
    const w=930,h=1430;
    const scale=Math.min(w/watermark.naturalWidth,h/watermark.naturalHeight);
    const width=watermark.naturalWidth*scale,height=watermark.naturalHeight*scale;

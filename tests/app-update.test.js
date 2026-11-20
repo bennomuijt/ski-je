@@ -4,7 +4,7 @@ import {readFileSync,existsSync} from 'node:fs';
 const read=(file)=>readFileSync(new URL('../'+file,import.meta.url),'utf8');
 const js=read('public/app-update.js'),html=read('public/index.html'),sw=read('public/sw.js'),manifest=read('public/manifest.webmanifest');
 test('visible header version, manual update button and safe version-check route',()=>{
-  assert.match(html,/v4\.3\.0/);assert.match(html,/id="app-update-now"/);assert.match(html,/id="check-update"/);
+  assert.match(html,/v4\.4\.1/);assert.match(html,/id="app-update-now"/);assert.match(html,/id="check-update"/);
   assert.match(html,/app-update\.js/);assert.match(js,/\/api\/health\?versioncheck=/);assert.match(js,/cache:'no-store'/);
   assert.match(js,/reg\.update\(\)/);assert.match(js,/location\.replace\(url\.href\)/);
   assert.doesNotMatch(js,/localStorage\.(clear|removeItem)/);

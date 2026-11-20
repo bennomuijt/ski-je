@@ -98,3 +98,13 @@ body.utility-open{overflow:hidden}
 }
 
 .lift-thumb{display:block;object-fit:cover;width:112px;height:76px;border-radius:9px;margin-top:7px;border:1px solid #d0e3ee}.photo-item{display:flex;align-items:center;gap:13px}.photo-item .lift-thumb{flex-shrink:0}.skije-toast{position:fixed;z-index:31000;bottom:calc(95px + var(--host-toolbar-clearance,0px));left:50%;transform:translateX(-50%);max-width:calc(100vw - 26px);width:max-content;color:#fff;background:#145a82;border-radius:13px;padding:8px 12px;font-size:12px;box-shadow:0 4px 20px #0003}.skije-toast:empty{display:none}
+
+/* Glove-friendly, explicit location sharing on the map and beside SOS. */
+.gps-share-preview{display:block;width:100%;min-height:128px;background:#f7fbff;border:1px solid #aacfe5;border-radius:13px;padding:11px;font-size:13px;line-height:1.55;color:#173b58;resize:vertical;overflow-wrap:anywhere}
+.gps-share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:13px 0 9px}
+.gps-share-actions .btn{min-height:54px;white-space:normal;text-align:center}
+#share-location-native{grid-column:1/-1;min-height:60px;font-size:16px}
+.gps-share-fallback{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gps-share-fallback .btn{min-height:52px}
+#share-location-whatsapp[hidden],#share-location-sms[hidden]{display:none!important}
+@media(max-width:380px){.gps-share-actions,.gps-share-fallback{grid-template-columns:1fr}#share-location-native{grid-column:auto}}

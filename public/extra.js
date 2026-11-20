@@ -77,7 +77,7 @@
  });}
  $('sos-coordinate').addEventListener('click',async()=>{
   $('sos-position').textContent='GPS wordt opgevraagd; wacht bij nood niet op GPS.';
-  try{const pos=await oneGPS({accuracy:true,timeout:12000});latestPos=pos; $('sos-position').textContent='Positie: '+pos.coords.latitude.toFixed(6)+', '+pos.coords.longitude.toFixed(6)+' (toestel meldt +/- '+Math.round(pos.coords.accuracy)+' m)';}
+  try{const pos=await oneGPS({accuracy:true,timeout:12000});latestPos=pos; window.dispatchEvent(new CustomEvent('skije:gpsfix',{detail:{position:pos,source:'sos'}})); $('sos-position').textContent='Positie: '+pos.coords.latitude.toFixed(6)+', '+pos.coords.longitude.toFixed(6)+' (toestel meldt +/- '+Math.round(pos.coords.accuracy)+' m)';}
   catch(e){$('sos-position').textContent='GPS niet beschikbaar: '+(e.message||'controleer toestemming')+'. Bel de hulpdiensten.';}
  });
  $('sos-copy').addEventListener('click',()=>{if(!latestPos){showToast('Vraag eerst je GPS-positie op.');return;}copyText(latestPos.coords.latitude.toFixed(6)+', '+latestPos.coords.longitude.toFixed(6));});
@@ -497,5 +497,5 @@
  });
  window.addEventListener('appinstalled',()=>{$('install-app').hidden=true;$('install-help').textContent='SKI-je staat op je beginscherm.';});
  // Be transparent about what this installation does and does not do.
- window.SKIFeatures={version:'4.4.0-cf',routeAvailable:()=>store.network.some(e=>e.verified),getCounts:()=>({checkpoints:store.checkpoints.length,issues:store.issues.length,days:store.days.length,edges:store.network.length}),isTracking:()=>!!session&&!session.paused};
+ window.SKIFeatures={version:'4.4.1-cf',routeAvailable:()=>store.network.some(e=>e.verified),getCounts:()=>({checkpoints:store.checkpoints.length,issues:store.issues.length,days:store.days.length,edges:store.network.length}),isTracking:()=>!!session&&!session.paused};
 })();

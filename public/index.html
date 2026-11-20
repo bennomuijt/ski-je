@@ -195,10 +195,11 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.4.0</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.4.1</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
+  <button class="hero-mini" type="button" id="share-location-hero">📤 Deel mijn locatie</button>
   <button class="hero-mini" type="button" id="group-quick">👥 Groep</button>
   <button class="hero-mini" type="button" id="power-quick" aria-label="Open energie-instellingen">&#9889; Zuinig</button>
   <span class="hero-connection" id="online-label" role="status">Verbinding controleren</span>
@@ -259,7 +260,7 @@ body.legal-open{overflow:hidden}
     <h1 class="banner">📍 Mijn locatie & pistes</h1>
     <div class="card">
       <div class="row"><h2>Waar ben ik?</h2><span class="pill" id="inside-state">SkiWelt</span></div>
-      <div class="toolbar"><button class="btn" id="locate">◎ Toon mijn GPS</button><button class="btn secondary" id="follow-location" aria-pressed="false">▶ Live volgen</button><button class="btn secondary" id="cf-group-map" type="button">👥 Mijn groep</button><button class="btn secondary" id="copy-location" disabled>📋 Kopieer GPS</button><button class="btn secondary" id="reset-map">🏔️ SkiWelt</button><button class="btn secondary" id="toggle-pistes" aria-pressed="true">⛷️ Pistes aan</button></div>
+      <div class="toolbar"><button class="btn" id="locate">◎ Toon mijn GPS</button><button class="btn secondary" id="follow-location" aria-pressed="false">▶ Live volgen</button><button class="btn secondary" id="cf-group-map" type="button">👥 Mijn groep</button><button class="btn secondary" id="copy-location" disabled>📋 Kopieer GPS</button><button class="btn" type="button" id="share-location-map">📤 Deel mijn locatie</button><button class="btn secondary" id="reset-map">🏔️ SkiWelt</button><button class="btn secondary" id="toggle-pistes" aria-pressed="true">⛷️ Pistes aan</button></div>
       <div class="toolbar checkpoint-quick"><button class="btn btn-checkpoint" type="button" id="checkpoint-map">&#128205; IJkpunt opslaan</button><button class="btn secondary" type="button" id="pano-open">&#127956; Panoramakaart groot</button></div>
       <div class="map" id="piste-map" role="region" aria-label="Geografische SkiWelt-kaart met pistes"></div><div class="static-fallback" id="map-fallback">Kaartbibliotheek niet geladen. Internet is nodig om kaartlagen op te halen.</div>
       <p class="gps-status" id="gps-status" role="status">GPS is uit om de batterij te sparen. Tik voor een eenmalige meting of start bewust live volgen.</p>
@@ -456,7 +457,7 @@ body.legal-open{overflow:hidden}
       <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
       <label class="verify"><input id="motion-setting" type="checkbox" checked> Logoanimatie bij iedere nieuwe start tonen (niet bij verminderde beweging)</label>
       <div class="toolbar"><a class="btn secondary small-btn" href="install.html">📲 Installeren / deel installatielink</a><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">&#8635; Update app naar nieuwste versie</button></div>
-      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.4.0 · Controleer online op nieuwe updates.</p>
+      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.4.1 · Controleer online op nieuwe updates.</p>
       <p class="hint" id="install-help">Android: Chrome-menu &rarr; App installeren of Toevoegen aan startscherm. iPhone: Safari &rarr; Deel &rarr; Zet op beginscherm.</p>
       <div class="toolbar"><button class="btn secondary small-btn" id="export-all" type="button">&#128190; Mijn data exporteren</button><button class="btn clear small-btn" id="clear-private" type="button">Lokale data wissen</button></div>
       <details><summary>🔄 Back-up van Netlify importeren</summary>
@@ -502,7 +503,30 @@ body.legal-open{overflow:hidden}
  <div class="sos-grid"><a class="btn danger" href="tel:140">Bergredding 140</a><a class="btn danger" href="tel:112">Alarmnummer 112</a><a class="btn secondary" href="tel:144">Ambulance 144</a><a class="btn secondary" href="tel:133">Politie 133</a></div>
  <button type="button" class="btn secondary full" id="sos-coordinate">&#128205; GPS voor hulpdiensten tonen</button><p id="sos-position" role="status" class="gps-status">Wacht bij nood niet op GPS; bellen werkt ook zonder app.</p>
  <button type="button" class="btn secondary full" id="sos-copy">&#128203; Co&ouml;rdinaten kopi&euml;ren</button>
+ <button type="button" class="btn full" id="share-location-sos">📤 Deel mijn locatie</button>
  </div></div></div>
+<div class="utility-modal" id="share-location-modal" hidden role="dialog" aria-modal="true" aria-labelledby="share-location-title">
+ <div class="utility-panel">
+  <div class="utility-head"><strong id="share-location-title">📍 Locatie delen</strong><button class="modal-close" type="button" id="share-location-close" aria-label="Sluiten">&times;</button></div>
+  <div class="utility-content">
+   <p class="hint">Alleen jij kiest met wie de locatie wordt gedeeld.</p>
+   <p class="notice">Bij nood: bel eerst 112 of bergredding 140. Wacht niet op GPS. <a href="tel:112">112</a> · <a href="tel:140">140</a></p>
+   <p id="share-location-status" role="status" aria-live="polite" class="gps-status">Nog geen recente GPS-locatie.</p>
+   <label class="field" for="share-location-preview">Mijn GPS-locatie via SKI-je</label>
+   <textarea class="gps-share-preview" id="share-location-preview" readonly rows="6" aria-label="Locatiebericht met coördinaten en kaartlink"></textarea>
+   <div class="gps-share-actions">
+    <button class="btn secondary" id="share-location-refresh" type="button">◎ GPS ophalen</button>
+    <button class="btn" id="share-location-native" type="button" disabled>📤 Kies app om te delen</button>
+    <button class="btn secondary" id="share-location-copy" type="button" disabled>📋 Kopieer locatiebericht</button>
+   </div>
+   <div class="gps-share-fallback">
+    <a class="btn secondary" id="share-location-whatsapp" hidden rel="noopener noreferrer" target="_blank">WhatsApp openen</a>
+    <a class="btn secondary" id="share-location-sms" hidden>Open sms</a>
+   </div>
+   <p class="hint">GPS kan afwijken. Officiële aanwijzingen zijn altijd leidend.</p>
+  </div>
+ </div>
+</div>
 <div class="utility-modal" id="pano-modal" hidden role="dialog" aria-modal="true" aria-labelledby="pano-title"><div class="utility-panel pano-panel">
  <div class="utility-head"><strong id="pano-title">&#127956; SkiWelt panoramakaart 2026/27</strong><button type="button" class="modal-close" data-close="pano-modal" aria-label="Sluiten">&times;</button></div>
  <div class="pano-tools"><button class="btn secondary" id="pano-minus" type="button">-</button><span id="pano-zoom">100%</span><button class="btn secondary" id="pano-plus" type="button">+</button><button class="btn clear" id="pano-reset" type="button">Herstel</button></div>
@@ -983,6 +1007,7 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 <script src="app-update.js" defer></script>
 <script src="route-engine.js" defer></script>
 <script src="extra.js" defer></script>
+<script src="share-location.js" defer></script>
 <script src="group-cloudflare.js" defer></script>
 <script src="backup-migration.js" defer></script>
 </body>

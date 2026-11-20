@@ -14,6 +14,34 @@
   {area:'itter',x:.46,y:.86,restaurants:['KRAFTalm']},
   {area:'westendorf',x:.79,y:.67,restaurants:['Bergrestaurant Talkaser','Panorama Restaurant Choralpe']}
  ];
+ const photos={
+  'Gipfelalm Hohe Salve':{
+    src:'https://www.kitzbueheler-alpen.com/feratel/info/large/westendorf-gipfelrestaurant-hohe-salve-innen2.jpg',
+    credit:'Binnenfoto: Kitzbüheler Alpen / accommodatieinformatie',
+    page:'https://www.kitzbueheler-alpen.com/de/bri/infra/a-z/gipfelrestaurant-hohe-salve.html'
+  }
+ };
+ const pages={
+   'Bergrestaurant Brandstadl':'https://www.skiwelt.at/nl/webcam-restaurant-brandstadl.html',
+   'Gipfelalm Hohe Salve':'https://www.skiwelt.at/nl/soell/info/gipfelrestaurant-hohe-salve.html'
+ };
+ const select=$('pano-hut-select'),photo=$('pano-hut-photo'),photoStatus=$('pano-hut-photo-status'),link=$('pano-hut-link');
+ function showRestaurant(name){
+   $('pano-hut-name').textContent=name;
+   const data=photos[name];
+   if(data){
+      photo.hidden=false;photo.src=data.src;photo.alt='Binnenfoto van '+name;
+      photoStatus.textContent=data.credit;
+   }else{
+      photo.hidden=true;photo.removeAttribute('src');photoStatus.textContent='Geverifieerde binnenfoto volgt. Geen willekeurige foto getoond.';
+   }
+   link.href=pages[name]||data?.page||'https://skimap.skiwelt.at/en/winter/hausberg.html';
+   link.textContent='Restaurantinformatie bij bron';
+ }
+ photo?.addEventListener('error',()=>{
+   photo.hidden=true;photoStatus.textContent='Binnenfoto is momenteel niet bereikbaar; open de restaurantinformatie.';
+ });
+ select.addEventListener('change',()=>showRestaurant(select.value));
  const points=[];
  for(const area of groups){
   const button=document.createElement('button');button.type='button';button.className='pano-hut';
@@ -23,12 +51,10 @@
   button.addEventListener('pointerup',event=>event.stopPropagation());
   button.addEventListener('click',event=>{
    event.stopPropagation();
-   $('pano-hut-name').textContent=area.restaurants.join(' · ');
-   $('pano-hut-photo-status').textContent='Gebied indicatief gemarkeerd; een geverifieerde binnenfoto is nog niet beschikbaar.';
-   const link=$('pano-hut-link');
-   link.href='https://www.skiwelt.at/nl/';
-   link.textContent='Officiële SkiWelt-website';
+   select.replaceChildren();
+   for(const name of area.restaurants){const option=document.createElement('option');option.value=name;option.textContent=name;select.append(option);}
    $('pano-hut-info').hidden=false;
+   showRestaurant(area.restaurants[0]);
   });
   layer.append(button);points.push({button,area});
  }

@@ -37,7 +37,7 @@ function socket(env,room,memberId,token){const url=`https://ski-je.example/api/g
 test('first-party app and public health endpoint work; no explicit CORS',async()=>{
  const {env}=setup();const p=await worker.fetch(new Request('https://ski-je.example/'),env);
  assert.equal(p.status,200);assert.match(await p.text(),/SKI-je/);
- const h=await worker.fetch(new Request('https://ski-je.example/api/health'),env);const json=await h.json();assert.equal(json.ok,true);assert.equal(json.version,'4.5.5-cf');assert.equal(json.maxMembersPerGroup,50);assert.equal(h.headers.get('access-control-allow-origin'),null);
+ const h=await worker.fetch(new Request('https://ski-je.example/api/health'),env);const json=await h.json();assert.equal(json.ok,true);assert.equal(json.version,'4.5.6-cf');assert.equal(json.maxMembersPerGroup,50);assert.equal(h.headers.get('access-control-allow-origin'),null);
 });
 test('create requires configured admin code and same-origin; invite codes are unguessable',async()=>{
  const {env}=setup();let r=await post(env,'create',{memberName:'X',adminCode:'wrong'});assert.equal(r.status,403);
@@ -90,4 +90,33 @@ test('invalid payload cannot create or join a group and huge request is blocked'
  const {env}=setup();const owner=await create(env);
  const bad=await post(env,'join',{room:'123',memberName:'Skiër 2'});assert.equal(bad.status,400);
  const oversize=await post(env,'join',{room:owner.room,memberName:'a'.repeat(5000)});assert.equal(oversize.status,400);
+});
+
+test('eigen naam en vrij gekozen groepsnaam blijven afzonderlijk bewaard',async()=>{
+ const {env,contexts}=setup();
+ const r=await post(env,'create',{name:'SkiWelt vrienden 2026',memberName:'Ben',adminCode:env.GROUP_CREATE_SECRET});
+ assert.equal(r.status,200);
+ const data=await r.json();
+ assert.equal(data.ok,true);
+ assert.equal(data.groupName,'SkiWelt vrienden 2026');
+ const members=await contexts.get('skije-group:'+data.room).storage.list({prefix:'m:'});
+ assert.equal([...members.values()][0].name,'Ben');
+ assert.equal(data.owner,true);
+});
+test('groepdiagnose controleert Durable Objects zonder code of nieuwe groep aan te maken',async()=>{
+ const {env,contexts}=setup();
+ const res=await worker.fetch(new Request('https://ski-je.example/api/group/diagnose',{headers:{Origin:'https://ski-je.example'}}),env);
+ assert.equal(res.status,200);
+ const data=await res.json();
+ assert.equal(data.ok,true);assert.equal(data.storageReady,true);
+ const ctx=contexts.get('skije-group:__diagnostics__');assert.ok(ctx);
+ assert.equal(ctx.storage.map.size,0,'diagnose schrijft geen lidmaatschap of GPS weg');
+ assert.equal(JSON.stringify(data).includes(env.GROUP_CREATE_SECRET),false,'geen geheime code openbaar');
+});
+test('aanmaken toont juiste waarschuwing bij verkeerde code en vereist eigen groepsnaam',async()=>{
+ const {env}=setup();
+ let r=await post(env,'create',{name:'Testgroep',memberName:'Ben',adminCode:'niet-correct'});
+ assert.equal(r.status,403);assert.match((await r.json()).error,/GROUP_CREATE_SECRET/);
+ r=await post(env,'create',{memberName:'Ben',adminCode:env.GROUP_CREATE_SECRET});
+ assert.equal(r.status,400);
 });

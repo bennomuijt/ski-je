@@ -26,7 +26,7 @@ function adminReady(env){return typeof env.GROUP_CREATE_SECRET==='string'&&env.G
 export default {
  async fetch(request,env){
   const url=new URL(request.url);const p=url.pathname;
-  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.5-cf',groups:!!env.GROUPS,photos:!!env.PHOTOS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.6-cf',groups:!!env.GROUPS,photos:!!env.PHOTOS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
   if(p==='/api/skimap.pdf'){
    if(request.method!=='GET')return fail('Alleen GET toegestaan.',405);
    // Fixed, official source; no GPS or user-supplied URLs are transmitted.
@@ -77,6 +77,17 @@ export default {
   }
   if(p.startsWith('/api/')){
    if(!sameOrigin(request))return fail('Verzoek van ander domein geweigerd.',403);
+   if(p==='/api/group/diagnose'){
+    if(request.method!=='GET')return fail('Alleen GET toegestaan.',405);
+    if(!env.GROUPS)return fail('Cloudflare GROUPS Durable Objects-binding ontbreekt.',503);
+    try{
+     const probe=await groupStub(env,'__diagnostics__').fetch('https://group.internal/probe');
+     if(!probe.ok)return fail('Cloudflare-groepsopslag geeft een foutmelding.',503);
+     const data=await probe.json();
+     if(data.ok!==true||data.storageReady!==true)return fail('Cloudflare-groepsopslag reageert niet correct.',503);
+     return result({ok:true,storageReady:true,createConfigured:adminReady(env)});
+    }catch{return fail('Groepsopslag is niet bereikbaar. Controleer de Cloudflare Durable Objects-logs.',503);}
+   }
    if(p==='/api/group/socket'){
     if(request.headers.get('upgrade')?.toLowerCase()!=='websocket')return fail('WebSocket vereist.',426);
     const room=url.searchParams.get('room')||'';const memberId=url.searchParams.get('member')||'';const token=url.searchParams.get('token')||'';
@@ -86,11 +97,18 @@ export default {
    if(request.method!=='POST')return fail('Alleen POST toegestaan.',405);
    let data;try{data=await bodyData(request);}catch{return fail('Ongeldig of te groot verzoek.',400);}
    if(p==='/api/group/create'){
-    if(!adminReady(env))return fail('Stel op Cloudflare een beheerderscode van minimaal 16 tekens in.',503);
-    if(!(await equalSecret(data.adminCode,env.GROUP_CREATE_SECRET)))return fail('Beheerderscode onjuist.',403);
+    if(!env.GROUPS)return fail('De GROUPS-opslag ontbreekt in Cloudflare.',503);
+    if(!adminReady(env))return fail('Stel op Cloudflare GROUP_CREATE_SECRET van minimaal 16 tekens in.',503);
+    if(!(await equalSecret(data.adminCode,env.GROUP_CREATE_SECRET)))return fail('Beheerderscode onjuist. Gebruik precies de waarde van GROUP_CREATE_SECRET in Cloudflare, niet je Cloudflare-inlogcode.',403);
+    const name=nameText(data.name,60),memberName=nameText(data.memberName,24);
+    if(!name||!memberName)return fail('Vul je eigen naam en de groepsnaam in.',400);
     const room=randomCode(24);
-    const response=await groupStub(env,room).fetch('https://group.internal/create',{method:'POST',body:JSON.stringify({name:data.name,memberName:data.memberName})});
-    const payload=await response.json();return result({...payload,room},response.status);
+    try{
+     const response=await groupStub(env,room).fetch('https://group.internal/create',{method:'POST',body:JSON.stringify({name,memberName})});
+     const payload=await response.json();
+     if(!response.ok)return result(payload,response.status);
+     return result({...payload,room},response.status);
+    }catch{return fail('De groepsopslag kon de groep niet bewaren. Controleer de Cloudflare Durable Objects-logs.',503);}
    }
    if(['/api/group/join','/api/group/leave','/api/group/close'].includes(p)){
     const room=data.room||'';
@@ -121,6 +139,7 @@ export class SkiGroup {
  }
  async fetch(req){
   const op=new URL(req.url).pathname;
+  if(op==='/probe'){await this.ctx.storage.get('meta');return result({ok:true,storageReady:true});}
   if(op==='/socket'){
    if(req.headers.get('upgrade')?.toLowerCase()!=='websocket')return fail('WebSocket vereist.',426);
    const u=new URL(req.url);const member=await this.memberAuth(u.searchParams.get('member'),u.searchParams.get('token'));

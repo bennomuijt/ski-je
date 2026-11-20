@@ -130,14 +130,21 @@
   if(!data.createConfigured)throw Error('Beheerderscode ontbreekt in de actieve Worker: stel het secret GROUP_CREATE_SECRET in bij Cloudflare → Workers & Pages → ski-je → Instellingen → Variabelen en geheimen (minimaal 16 tekens).');
   return data;
  }
- async function api(path,data){const response=await fetch('/api/group/'+path,{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify(data)});
-  let json;try{json=await response.json();}catch{throw Error('Geen geldig antwoord van Cloudflare.');}
+ async function api(path,data){
+  let response;try{response=await fetch('/api/group/'+path,{method:'POST',headers:{'content-type':'application/json'},cache:'no-store',body:JSON.stringify(data)});}
+  catch{throw Error('Geen verbinding met Cloudflare. Controleer internet en appadres.');}
+  let json;try{json=await response.json();}catch{throw Error('Geen geldig JSON-antwoord van de Worker (HTTP '+response.status+'). Controleer de Cloudflare-logs en Durable Objects.');}
   if(!response.ok||!json?.ok)throw Error(json?.error||'Cloudflare antwoordt niet.');return json;
  }
  function startSession(data,room,memberName){group={room,memberId:data.memberId,token:data.token,memberName,groupName:data.groupName,owner:!!data.owner};saveGroup();render();connect();}
  function openGroup(){window.SKIApi?.goPage('more');$('group-section').open=true;requestAnimationFrame(()=>$('group-section').scrollIntoView({behavior:'smooth',block:'start'}));if(group&&!ws&&online())connect();}
  $('group-quick').addEventListener('click',openGroup);
  $('cf-group-map').addEventListener('click',openGroup);
+ $('cf-group-diagnose')?.addEventListener('click',async()=>{
+  const button=$('cf-group-diagnose');button.disabled=true;status('Groepsserver controleren…');
+  try{const info=await checkBackend();status('✓ Groepsserver '+info.version+' bereikbaar. GROUPS actief, beheerderscode ingesteld. Je kunt een groep proberen te maken.');}
+  catch(error){status(error.message,true);}finally{button.disabled=false;}
+ });
  $('cf-group-create').addEventListener('click',async()=>{
   const adminCode=$('cf-admin-code').value,memberName=cleanName($('cf-display-name').value),name=$('cf-new-name').value.trim().slice(0,60);
   if(!adminCode||!memberName){status('Vul jouw naam én de Cloudflare-beheerderscode in.',true);return;}

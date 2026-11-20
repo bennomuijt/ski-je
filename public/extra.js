@@ -82,39 +82,103 @@
  });
  $('sos-copy').addEventListener('click',()=>{if(!latestPos){showToast('Vraag eerst je GPS-positie op.');return;}copyText(latestPos.coords.latitude.toFixed(6)+', '+latestPos.coords.longitude.toFixed(6));});
  // Full-screen offline-compatible panorama; location is never placed on it.
- let zoom=1,panX=0,panY=0,panoDown=null;
- function updatePano(){const img=$('pano-img');img.style.transform=`translate3d(${panX}px,${panY}px,0) scale(${zoom})`;$('pano-zoom').textContent=Math.round(zoom*100)+'%';}
- $('pano-open').addEventListener('click',()=>{if(!$('pano-img').src||!$('pano-img').hasAttribute('src'))$('pano-img').src=$('pano-img').dataset.src;zoom=1;panX=panY=0;updatePano();ownModal('pano-modal');});
- $('pano-plus').addEventListener('click',()=>{zoom=limit(zoom+.4,1,4);updatePano();});
- $('pano-minus').addEventListener('click',()=>{zoom=limit(zoom-.4,1,4);if(zoom===1)panX=panY=0;updatePano();});
- $('pano-reset').addEventListener('click',()=>{zoom=1;panX=panY=0;updatePano();if($('pano-focus'))$('pano-focus').value='overview';});
+ let zoom=1,panX=0,panY=0;
+ const MAX_ZOOM=20,MIN_ZOOM=1;
+ const panoView=$('pano-viewport'),activePointers=new Map();
+ let drag=null,pinch=null;
+ function updatePano(){
+  const rect=panoView.getBoundingClientRect();
+  const maxX=rect.width*(zoom-1)/2,maxY=rect.height*(zoom-1)/2;
+  panX=limit(panX,-maxX,maxX);panY=limit(panY,-maxY,maxY);
+  if(zoom<=1){panX=0;panY=0;}
+  $('pano-img').style.transform='translate3d('+panX+'px,'+panY+'px,0) scale('+zoom+')';
+  $('pano-zoom').textContent=Math.round(zoom*100)+'%';
+  $('pano-plus').disabled=zoom>=MAX_ZOOM;$('pano-minus').disabled=zoom<=MIN_ZOOM;
+ }
+ function zoomAt(next,x,y){
+  next=limit(next,MIN_ZOOM,MAX_ZOOM);
+  const rect=panoView.getBoundingClientRect();
+  const dx=x-(rect.left+rect.width/2),dy=y-(rect.top+rect.height/2),ratio=next/zoom;
+  panX=dx-(dx-panX)*ratio;panY=dy-(dy-panY)*ratio;
+  zoom=next;updatePano();
+ }
+ function zoomButton(factor){
+  const rect=panoView.getBoundingClientRect();
+  zoomAt(zoom*factor,rect.left+rect.width/2,rect.top+rect.height/2);
+ }
+ $('pano-open').addEventListener('click',()=>{
+  if(!$('pano-img').hasAttribute('src'))$('pano-img').src=$('pano-img').dataset.src;
+  zoom=1;panX=panY=0;updatePano();ownModal('pano-modal');
+ });
+ $('pano-plus').addEventListener('click',()=>zoomButton(1.5));
+ $('pano-minus').addEventListener('click',()=>zoomButton(1/1.5));
+ $('pano-reset').addEventListener('click',()=>{zoom=1;panX=panY=0;updatePano();$('pano-focus').value='overview';});
  const panoCenters={going:[.27,.38],ellmau:[.27,.45],scheffau:[.22,.55],soll:[.35,.72],itter:[.46,.86],hopfgarten:[.68,.84],brixen:[.73,.46],westendorf:[.79,.67]};
  $('pano-focus').addEventListener('change',()=>{
-   const center=panoCenters[$('pano-focus').value];
-   if(!center){zoom=1;panX=panY=0;updatePano();return;}
-   zoom=2.6;const box=$('pano-viewport').getBoundingClientRect();
-   panX=(.5-center[0])*box.width*zoom;panY=(.5-center[1])*box.height*zoom;updatePano();
+  const center=panoCenters[$('pano-focus').value];
+  if(!center){zoom=1;panX=panY=0;updatePano();return;}
+  zoom=3.8;
+  const box=panoView.getBoundingClientRect();
+  panX=(.5-center[0])*box.width*zoom;panY=(.5-center[1])*box.height*zoom;updatePano();
  });
  $('pano-focus-open').addEventListener('click',()=>{
-   $('pano-open').click();$('pano-focus').value=$('pano-quick-area').value;
-   $('pano-focus').dispatchEvent(new Event('change',{bubbles:true}));
+  $('pano-open').click();$('pano-focus').value=$('pano-quick-area').value;
+  $('pano-focus').dispatchEvent(new Event('change',{bubbles:true}));
  });
  const panoImg=$('pano-img');
  panoImg.addEventListener('error',()=>{
-   if(!panoImg.src.endsWith('Kaart%202026-2027.png')){
-     panoImg.src='Kaart%202026-2027.png';
-     $('pano-map-status').textContent='⚠️ Volledige kaart tijdelijk niet bereikbaar. Dit is alleen de oude uitsnede; probeer later opnieuw.';
-   }
+  if(!panoImg.src.endsWith('Kaart%202026-2027.png')){
+   panoImg.src='Kaart%202026-2027.png';
+   $('pano-map-status').textContent='⚠️ Volledige kaart tijdelijk niet bereikbaar. Dit is alleen de oude uitsnede; probeer later opnieuw.';
+  }
  });
  const preview=$('page-map').querySelector('.preview img');
  if(preview)preview.addEventListener('error',()=>{
-   if(!preview.src.endsWith('Kaart%202026-2027.png')){
-     preview.src='Kaart%202026-2027.png';$('pano-download-note').textContent='⚠️ Volledige panorama tijdelijk niet beschikbaar; de kleine uitsnede is getoond. Probeer later opnieuw.';
-   }
+  if(!preview.src.endsWith('Kaart%202026-2027.png')){
+   preview.src='Kaart%202026-2027.png';
+   $('pano-download-note').textContent='⚠️ Volledige panorama tijdelijk niet beschikbaar; de kleine uitsnede is getoond. Probeer later opnieuw.';
+  }
  });
- $('pano-viewport').addEventListener('pointerdown',e=>{if(zoom<=1)return;panoDown={id:e.pointerId,x:e.clientX,y:e.clientY,startX:panX,startY:panY};$('pano-viewport').setPointerCapture(e.pointerId);});
- $('pano-viewport').addEventListener('pointermove',e=>{if(!panoDown||panoDown.id!==e.pointerId)return;panX=panoDown.startX+e.clientX-panoDown.x;panY=panoDown.startY+e.clientY-panoDown.y;updatePano();});
- const clearPan=()=>panoDown=null;$('pano-viewport').addEventListener('pointerup',clearPan);$('pano-viewport').addEventListener('pointercancel',clearPan);
+ const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+ const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+ function prepareGesture(){
+  const pts=[...activePointers.values()];
+  if(pts.length===1){drag={x:pts[0].x,y:pts[0].y,panX,panY};pinch=null;}
+  else if(pts.length===2){
+   pinch={distance:Math.max(1,dist(pts[0],pts[1])),zoom,panX,panY,mid:mid(pts[0],pts[1])};
+   drag=null;
+  }else{drag=null;pinch=null;}
+ }
+ panoView.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse'&&e.button!==0)return;
+  activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  try{panoView.setPointerCapture(e.pointerId);}catch{}
+  prepareGesture();
+ });
+ panoView.addEventListener('pointermove',e=>{
+  if(!activePointers.has(e.pointerId))return;
+  activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const pts=[...activePointers.values()];
+  if(pts.length===2&&pinch){
+   const point=mid(pts[0],pts[1]),ratio=dist(pts[0],pts[1])/pinch.distance;
+   zoom=limit(pinch.zoom*ratio,MIN_ZOOM,MAX_ZOOM);
+   const rect=panoView.getBoundingClientRect(),ox=pinch.mid.x-(rect.left+rect.width/2),oy=pinch.mid.y-(rect.top+rect.height/2);
+   panX=pinch.panX+(point.x-pinch.mid.x)+(ox-pinch.panX)*(1-zoom/pinch.zoom);
+   panY=pinch.panY+(point.y-pinch.mid.y)+(oy-pinch.panY)*(1-zoom/pinch.zoom);
+   updatePano();
+  }else if(pts.length===1&&drag){
+   panX=drag.panX+pts[0].x-drag.x;panY=drag.panY+pts[0].y-drag.y;updatePano();
+  }
+ });
+ const endPointer=e=>{activePointers.delete(e.pointerId);prepareGesture();};
+ for(const type of ['pointerup','pointercancel','lostpointercapture'])panoView.addEventListener(type,endPointer);
+ panoView.addEventListener('dblclick',e=>{e.preventDefault();zoomAt(zoom*1.8,e.clientX,e.clientY);});
+ panoView.addEventListener('wheel',e=>{
+  if($('pano-modal').hidden)return;
+  e.preventDefault();zoomAt(zoom*(e.deltaY<0?1.18:.84),e.clientX,e.clientY);
+ },{passive:false});
+ window.addEventListener('resize',()=>{if(!$('pano-modal').hidden)updatePano();});
+ window.SKIPanorama={getZoom:()=>zoom,getPan:()=>({x:panX,y:panY}),zoomAt,reset:()=>$('pano-reset').click()};
  // Do not claim precise location on the drawn panorama: accurate pins live on OSM.
  let checkMap=null,checkMarkers=[],markerDirty=true;
  window.addEventListener('skije:mapready',e=>{checkMap=e.detail.map;markerDirty=true;renderCheckMarkers();});

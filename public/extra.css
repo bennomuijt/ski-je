@@ -149,3 +149,8 @@ body.utility-open{overflow:hidden}
 #app-update-now.is-current,#check-update.is-current{background:#128c61!important;color:#fff!important}
 #app-update-now.is-failed,#check-update.is-failed{background:#b74140!important;color:#fff!important}
 @media(max-width:420px){.day-timeline-row{grid-template-columns:99px minmax(0,1fr)}.day-time{font-size:11px}.closure-form{grid-template-columns:1fr}.closure-form .field:nth-child(3),.closure-form button{grid-column:auto}.day-plan-actions{grid-template-columns:1fr}#download-day-pdf{grid-column:auto}}
+
+/* High-zoom panorama gestures: viewport consumes touch moves; controls stay reachable. */
+.pano-hint{font-size:12px;font-weight:700;margin:4px 12px 9px;color:#135a81;text-align:center}
+.pano-viewport{touch-action:none;overscroll-behavior:contain;user-select:none}
+.pano-viewport img{touch-action:none;-webkit-user-drag:none}

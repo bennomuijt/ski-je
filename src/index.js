@@ -52,7 +52,7 @@ export default {
    if(!env.PHOTOS)return fail('Fotofunctie is nog niet geactiveerd op de Cloudflare Worker.',503);
    if(!sameOrigin(request))return fail('Verzoek van ander domein geweigerd.',403);
    const op=p.slice('/api/photos'.length);
-   if(!['/list','/submit','/admin-list','/review'].includes(op)&&!/^\\/image\\/[a-f0-9-]{36}$/.test(op))return fail('Onbekende foto-opdracht.',404);
+   if(!['/list','/submit','/admin-list','/review'].includes(op)&&!op.startsWith('/image/'))return fail('Onbekende foto-opdracht.',404);
    if(request.method==='GET'&&!['/list'].includes(op)&&!op.startsWith('/image/'))return fail('Ongeldige methode.',405);
    if(request.method!=='GET'&&request.method!=='POST')return fail('Ongeldige methode.',405);
    const board=env.PHOTOS.get(env.PHOTOS.idFromName('skije-community-photos-v1'));

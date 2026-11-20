@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url);
-const engine=require('../public/route-engine.js');
+import vm from 'node:vm';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const sandbox={module:{exports:{}},globalThis:{}};
+vm.runInNewContext(read('public/route-engine.js'),sandbox);
+const engine=sandbox.module.exports;
 const network=[
  {from:'Start',to:'Lift',name:'Lift A',type:'lift',level:'blue',lengthKm:1,verified:true},
  {from:'Lift',to:'Eind',name:'Zwarte piste',type:'piste',level:'black',lengthKm:3,verified:true},

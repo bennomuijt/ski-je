@@ -216,6 +216,10 @@ body.legal-open{overflow:hidden}
       </div>
       <div class="switchrow"><label for="same-end">Terug naar mijn startpunt</label><input id="same-end" type="checkbox" checked></div>
       <div class="grid"><div class="field"><label for="departure">Vertrek</label><input id="departure" type="time" lang="nl-NL" value="09:00"></div><div class="field"><label for="return-time">Uiterlijk terug</label><input id="return-time" type="time" lang="nl-NL" value="16:00"></div></div>
+       <details class="buffer-options"><summary>⏱️ Veiligheidsmarge instellen</summary>
+        <div class="switchrow"><label for="use-safety">Veiligheidsmarge vóór de uiterlijke eindtijd</label><input type="checkbox" id="use-safety" checked></div>
+        <div class="field" id="safety-settings"><label for="safety-duration">Veiligheidsmarge (minuten)</label><input type="number" id="safety-duration" min="0" max="120" step="5" value="30"><p class="hint">Standaard 30 minuten. Mag worden gewijzigd of uitgevinkt. Zonder marge loop je extra risico om te laat bij een lift te zijn.</p></div>
+       </details>
       <h3 style="margin-top:16px">Wat voor route wil je?</h3>
       <div class="choice" id="style-group" role="group" aria-label="Routestijl">
         <button type="button" data-style="relaxed" aria-pressed="true">🌞 Lekker skiën<br><small>Afwisseling & uitzicht</small></button>
@@ -254,8 +258,10 @@ body.legal-open{overflow:hidden}
            <label><input type="radio" name="black-pistes" id="allow-black" value="yes"> Ja, ik wil ook zwarte pistes</label>
           </fieldset>
           <p class="hint">Zwarte pistes staan altijd standaard uit, ook bij Professional. Bij Beginner zijn ze niet beschikbaar. Onbekende pistekleuren ter plaatse controleren.</p>
-          <div class="switchrow"><label for="early-break">Ochtendpauze (30 min)</label><input id="early-break" type="checkbox"></div>
-          <div class="switchrow"><label for="late-break">Middagpauze (30 min)</label><input id="late-break" type="checkbox"></div>
+          <div class="switchrow"><label for="early-break">Ochtendpauze inplannen</label><input id="early-break" type="checkbox"></div>
+          <div class="field" id="early-break-settings" hidden><label for="early-duration">Ochtendpauze (minuten, standaard 30)</label><input id="early-duration" type="number" min="5" max="120" step="5" value="30"></div>
+          <div class="switchrow"><label for="late-break">Middagpauze inplannen</label><input id="late-break" type="checkbox"></div>
+          <div class="field" id="late-break-settings" hidden><label for="late-duration">Middagpauze (minuten, standaard 30)</label><input id="late-duration" type="number" min="5" max="120" step="5" value="30"></div>
         </div>
         <p class="hint">Dit zijn routewensen, geen bevestigde piste- of liftverbindingen. Controleer actuele status en sluitingstijden voor vertrek.</p>
       </details>
@@ -740,6 +746,9 @@ function renderWishes(){
 function updateLunch(){
  $('lunch-settings').classList.toggle('hidden',!$('use-lunch').checked);
  $('lunch-duration-value').textContent=$('lunch-duration').value+' min';
+ $('safety-settings').hidden=!$('use-safety').checked;
+ $('early-break-settings').hidden=!$('early-break').checked;
+ $('late-break-settings').hidden=!$('late-break').checked;
 }
 function syncSkiProfile(){
  const profiles={blue:{speed:'easy',effective:12,measured:'19,9'},red:{speed:'normal',effective:20,measured:'32,4'},pro:{speed:'sporty',effective:28,measured:'44,5'}};
@@ -753,7 +762,7 @@ function syncSkiProfile(){
 syncSkiProfile();updateLunch();
 for(const radio of document.querySelectorAll('input[name="black-pistes"]'))radio.addEventListener('change',()=>{syncSkiProfile();save();});
 $('skill').addEventListener('change',syncSkiProfile);
-const editable=['start','finish','same-end','departure','return-time','day','skill','speed','use-lunch','lunch-time','lunch-duration','lunch-restaurant','early-break','late-break'];
+const editable=['start','finish','same-end','departure','return-time','use-safety','safety-duration','day','skill','speed','use-lunch','lunch-time','lunch-duration','lunch-restaurant','early-break','early-duration','late-break','late-duration'];
 function save(){const f={};for(const id of editable){let e=$(id);f[id]=e.type==='checkbox'?e.checked:e.value;}
   f.wishes=wishes.slice();state.form=f;try{localStorage.setItem('skije-preview-v1',JSON.stringify(state));}catch{}
 }
@@ -765,11 +774,11 @@ setStyle(state.style);
 function minutes(hhmm){const [h,m]=(hhmm||'00:00').split(':').map(Number);return h*60+m;}
 function toHhmm(m){return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;}
 function renderPlan(){save();const begin=minutes($('departure').value),end=minutes($('return-time').value);if(!(end>begin+90)){$('plan-output').innerHTML='<strong>Controleer de tijden</strong><p>De eindtijd moet minimaal 90 minuten na vertrek liggen.</p>';return;}
-const safeEnd=end-30,lunch=$('use-lunch').checked,duration=Number($('lunch-duration').value),rest=$('lunch-restaurant').selectedOptions[0].textContent;
+const safeEnd=end-($('use-safety').checked?Math.min(120,Math.max(0,Number($('safety-duration').value)||30)):0),lunch=$('use-lunch').checked,duration=Number($('lunch-duration').value),rest=$('lunch-restaurant').selectedOptions[0].textContent;
 const lunchText=lunch?`Lunch rond ${$('lunch-time').value} (${duration} min)`+($('lunch-restaurant').value?` bij ${rest}`:'; restaurant naar keuze'):'Geen lunchpauze';const destination=$('finish').value;
-const notes=[`Start: ${$('start').value} om ${$('departure').value}`,`Eindpunt: ${destination}`,`Wens: ${state.style==='fast'?'effici\u00ebntste route':'veel afwisseling en uitzicht'}`,lunchText,`Streefaankomst uiterlijk ${toHhmm(safeEnd)} (30 min marge voor ${$('return-time').value})`];
+const notes=[`Start: ${$('start').value} om ${$('departure').value}`,`Eindpunt: ${destination}`,`Wens: ${state.style==='fast'?'effici\u00ebntste route':'veel afwisseling en uitzicht'}`,lunchText,`Streefaankomst uiterlijk ${toHhmm(safeEnd)} (instelbare marge voor ${$('return-time').value})`];
 if(wishes.length)notes.push('Gewenste plekken/pistes: '+wishes.map(k=>wishesById.get(k)).join('; '));
-if($('early-break').checked)notes.push('Ochtendpauze: 30 min');if($('late-break').checked)notes.push('Middagpauze: 30 min');
+if($('early-break').checked)notes.push('Ochtendpauze: '+$('early-duration').value+' min');if($('late-break').checked)notes.push('Middagpauze: '+$('late-duration').value+' min');
 $('plan-output').innerHTML='<strong>Jouw skidag is ingesteld</strong>'+notes.map(t=>`<p>&bull; ${escapeHtml(t)}</p>`).join('')+'<p class="hint"><b>Let op:</b> dit bewaart je instellingen en toont je dagwensen; er is nog geen gecontroleerde lift-piste-lift-route berekend. Het vertrekpunt van je terugweg hangt af van de echte route en lift-sluitingen.</p>';
 }
 function escapeHtml(x){return String(x).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}

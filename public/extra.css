@@ -278,3 +278,20 @@ body.utility-open{overflow:hidden}
 .ski-source-link{display:inline-flex;align-items:center;min-height:40px;border:1px solid #b5d6e8;border-radius:9px;padding:7px 9px;text-decoration:none;color:#155d86;font-size:12px;font-weight:750;background:#f1f9ff}
 .ski-source-link:focus-visible{outline:3px solid #ffae36}
 @media(max-width:430px){.ski-source-link{min-height:46px}}
+
+/* SkiWelt lift markers: only area clusters on a non-GPS illustration. */
+.pano-lift-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.pano-lift-layer[hidden]{display:none!important}
+.pano-lift-group{position:absolute;pointer-events:auto;transform:translate(-50%,-50%);z-index:2;min-width:47px;min-height:46px;border-radius:24px;border:2px solid #fff;background:#075f9d;color:white;font-size:13px;font-weight:850;box-shadow:0 2px 10px #0638598c;touch-action:manipulation}
+.pano-lift-group:focus-visible{outline:3px solid orange;outline-offset:2px}
+.pano-lift-info{padding:8px 12px;flex:none;display:flex;align-items:start;gap:8px;background:#eaf7ff;border-top:1px solid #b8dbe8;max-height:min(38dvh,295px);overflow:auto;color:#123e5c}
+.pano-lift-info[hidden]{display:none!important}
+.pano-lift-details{flex:1;min-width:0;display:grid;gap:6px;font-size:13px}
+.pano-lift-details strong{font-size:15px}
+.pano-lift-details .tiny{margin:0}
+.pano-lift-details input,.pano-lift-details select{width:100%;min-height:43px;padding:8px;border-radius:9px;border:1px solid #adcedc;background:white;color:#133f60}
+.pano-lift-details img{display:block;max-height:110px;max-width:100%;object-fit:contain;border-radius:8px}
+.pano-lift-details img[hidden]{display:none!important}
+.pano-lift-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.pano-lift-actions a,.pano-lift-actions button{min-height:42px;padding:9px;border:1px solid #b5cedd;border-radius:9px;background:white;color:#0a5686;font-weight:750;font-size:12px;text-decoration:none}
+#pano-lift-close{background:white;border:1px solid #b5cedd;border-radius:9px;min-width:40px;min-height:40px;font-size:22px}

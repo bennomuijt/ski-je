@@ -98,7 +98,7 @@
   label(ctx,'UITERLIJK TERUG',812,412,17,COL.gray,true);label(ctx,plan.returnTime,812,459,31,COL.navy,true);
   box(ctx,58,494,1120,76,'#fff1dc');
   label(ctx,'⚠  VOORLOPIGE ROUTE – NIET LIVE GECONTROLEERD',82,529,23,'#9e5f1e',true);
-  label(ctx,'Pistes op kaart voor planning aangenomen open; controleer actuele sluitingen.',82,557,19,'#835f3b');
+  label(ctx,plan.arrival?'Verwachte aankomst '+plan.arrival+' · actuele sluitingen controleren.':'Pistes op kaart voor planning aangenomen open; controleer actuele sluitingen.',82,557,19,'#835f3b');
   let y=591;
   for(const row of plan.sections){
    if(y>H-245)break;
@@ -236,7 +236,7 @@
    'Liftwachttijden, actuele afsluitingen, weer en pistecondities kunnen afwijken.',
    'Terugweg eerst op tijd starten. GPS is op de panoramakaart niet exact.',
    'Kleurcode: liften paars; pistes blauw (tenzij moeilijkheid bekend is).',
-   'Ski-je berekent voorlopig gebiedsverbindingen, geen gegarandeerde GPS-afslagroute.',
+   plan.stationNetwork?'De stationstijden zijn gebaseerd op kaartbronnen en geschatte wachtrijen.':'De tijdsindeling volgt voorlopige gebiedsverbindingen.',
     'Afstanden zijn indicaties van beschreven deeltrajecten, niet GPS-gemeten.',
    '© SkiWelt voor officiële verbindingsinformatie; gebruik op eigen risico.'
   ];
@@ -248,8 +248,8 @@
   for(let i=0;i<events.length;i+=9)pages.push({kind:'detail',rows:events.slice(i,i+9)});
   // Keep area source and closure notes. Existing pagination handles longer notices.
   const missing=(data.itinerary?.missingSteps||[]).map(s=>'ONTBREKEND '+s.phase+': '+(s.code?s.code+' ':'')+s.name+' - '+s.reason);
-   const gaps=(data.itinerary?.unverifiedTransitions||[]).map(s=>'ONBEVESTIGD '+s.corridor+': lift '+s.from+' naar lift '+s.to+' - '+s.reason);
-   const regions=layoutPages(data.route?.steps||[],[...(data.route?.notes||[]),...(data.plan?.notes||[]),...(data.itinerary?.warnings||[]),...missing,...gaps]);
+   const gaps=(data.itinerary?.unverifiedTransitions||[]).map(s=>'ONBEVESTIGD '+s.corridor+': '+s.from+' naar '+s.to+' - '+s.reason);
+   const regions=layoutPages(data.route?.steps||[],[...new Set([...(data.route?.notes||[]),...(data.plan?.notes||[]),...(data.itinerary?.warnings||[]),...missing,...gaps])]);
   pages.push(...regions.slice(1));
   for(let i=0;i<wc.length;i+=5)pages.push({kind:'wc',rows:wc.slice(i,i+5)});
   pages.push({kind:'summary'});

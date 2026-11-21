@@ -25,8 +25,8 @@
    ba:[item('lift','6','Jochbahn'),item('piste','65a','Verbinding Aualm–Osthang (of 72/70)'),item('transfer','','Vervolg richting Scheffau controleren')]
   },
   'brixen-westendorf':{
-   ab:[item('lift','1','Gondellift Hochbrixen'),item('lift','11','SkiWeltbahn richting Westendorf'),item('piste','110','SkiWelt Tour: piste 110'),item('piste','111','SkiWelt Tour: piste 111'),item('piste','117','SkiWelt Tour: piste 117'),item('lift','117','Fleiding (volgende etappe volgens officiële SkiWelt Tour)')],
-   ba:[item('piste','111','Windau-afdaling'),item('lift','112','Choralmbahn'),item('piste','11','Kandleralm-afdaling'),item('lift','18','Sonnenband'),item('lift','12','Sonnenlift'),item('lift','1','Hochbrixen gondellift')]
+   ab:[item('transfer','','Aanloop naar dalstation SkiWeltbahn afhankelijk van vertrekpunt'),item('lift','11','SkiWeltbahn richting Westendorf'),item('piste','110','SkiWelt Tour: piste 110'),item('piste','111','SkiWelt Tour: piste 111'),item('piste','117','SkiWelt Tour: piste 117'),item('lift','117','Fleiding (volgende etappe volgens officiële SkiWelt Tour)')],
+   ba:[item('piste','111','Windau-afdaling'),item('lift','112','Choralmbahn'),item('piste','11','Kandleralm-afdaling'),item('lift','18','Sonnenband'),item('lift','12','Sonnenlift'),item('transfer','','Loopbrug naar dalstation Hochbrixen 1')]
   },
   'brixen-hopfgarten':{
    ab:[item('lift','2','Kälbersalvenbahn'),item('transfer','','Verdere verbinding richting Hopfgarten controleren')],
@@ -193,6 +193,8 @@
   // Never hide missing pistes between consecutive lifts or area corridors.
   for(const leg of route?.steps||[]){
    const parts=buildSegments([leg],options);
+   if(leg.id==='brixen-westendorf'&&leg.direction==='ab')
+    unverifiedTransitions.push({corridor:leg.id,from:'Vertrekpunt Brixen',to:'Dalstation SkiWeltbahn 11',reason:'Aanloop vanaf het gekozen station ontbreekt in het gebiedsadvies'});
    for(let i=1;i<parts.length;i++){
     if(parts[i-1].type==='lift'&&parts[i].type==='lift')
      unverifiedTransitions.push({corridor:leg.id,from:parts[i-1].code,to:parts[i].code,reason:'Geen afzonderlijke piste of loopverbinding vermeld tussen deze liften'});

@@ -31,10 +31,11 @@
    'SKI-je · '+t('Voorlopige skidagplanning'),
    p.date||'',p.startPoint+' → '+p.endPoint,
    p.departure+' – '+p.returnTime+'  ('+t('Streefaankomst')+': '+p.safeArrival+')',
+   p.arrival?'Verwachte aankomst '+p.arrival:'',
    ...it.steps.map(s=>s.start+'–'+s.end+'  '+(s.type==='lift'?'🚡 ':s.type==='piste'?'⛷️ ':'')+s.label),
    n.steps.length?t('Voorgestelde gebiedsverbindingen')+':':'',
    ...n.steps.map(s=>'⚠ '+s.from+' → '+s.to+': '+s.via),
-   ...n.notes.slice(0,4),
+   ...(p.stationNetwork?n.notes:n.notes.slice(0,4)),
    t('Geen live garantie. Officiële piste- en liftinformatie gaat altijd voor.')
   ].filter(Boolean).join('\n');
  }
@@ -54,19 +55,27 @@
   }
  }
  function render(){
-  const options=inputs(),route=network.build(options,getClosures()),plan=planner.compute({...options,returnEstimate:route.returnEstimate}),output=$('plan-output');output.replaceChildren();readyPdf=null;
+  const options=inputs(),closures=getClosures(),output=$('plan-output');
+  const stationData=window.SKIWeltStations?.plan(options,closures);
+  const route=stationData?stationData.route:network.build(options,closures);
+  const plan=stationData?stationData.plan:planner.compute({...options,returnEstimate:route.returnEstimate});
+  output.replaceChildren();readyPdf=null;
   if(!plan.ok){
    output.append(el('strong','',t('Controleer je planning')));
    output.append(el('p','route-errors',plan.reason));
+   for(const gap of stationData?.gaps||[]){
+    output.append(el('p','hint',gap.from+' → '+gap.to+' · '+gap.reason));
+   }
    output.append(el('p','hint',t('Kies haalbare tijden; de officiële veiligheid en liftstatus blijven leidend.')));
    current=null;return;
   }
-  const itinerary=detail.buildTimeline(plan,route,options);current={plan,route,options,itinerary};
-  output.append(el('strong','plan-heading',itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length||itinerary.steps.some(s=>s.unplanned)?'⚠️ Voorlopige skidag — niet alle pistes en liften gecontroleerd':t('Jouw volledige skidag')));
+  const itinerary=stationData?.itinerary||detail.buildTimeline(plan,route,options);current={plan,route,options,itinerary};
+  output.append(el('strong','plan-heading',plan.stationNetwork?'Stationsroute Brixen–Westendorf · richttijden':itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length||itinerary.steps.some(s=>s.unplanned)?'⚠️ Voorlopige skidag — niet alle pistes en liften gecontroleerd':t('Jouw volledige skidag')));
   const intro=el('div','day-intro');
   intro.append(el('span','day-pill',plan.departure+' – '+plan.returnTime));
   intro.append(el('span','day-pill',t('Streefaankomst')+' '+plan.safeArrival+' · marge '+plan.margin+' min'));
   intro.append(el('span','day-pill',plan.lunchMinutes+' '+t('minuten lunch')));
+  if(plan.arrival)intro.append(el('span','day-pill','Verwachte aankomst '+plan.arrival));
   output.append(intro);
   output.append(el('p','plan-locations',plan.startPoint+' → '+plan.endPoint));
   const lengths=detail.routeDistances?.(itinerary,options)||{pisteKm:0,liftKm:0,pisteCount:0,liftCount:0};
@@ -87,6 +96,9 @@
   routeWrap.append(el('h3','',t('Lift-piste-route met richttijden')+' · ⚠'));
   const guidance=el('p','hint',t('De tijden zijn schattingen vanaf vertrek. Controleer bij elke lift of je voor of achter op schema ligt. Onbekende verbindingen zijn geen exacte GPS-navigatie.'));
   routeWrap.append(guidance);
+  if(!plan.stationNetwork&&[options.start,options.finish].some(point=>window.SKIWeltStations?.selectable.includes(point))){
+   routeWrap.append(el('p','hint','Gebiedsadvies. Het traject tussen het gekozen station en het aangrenzende gebied is nog niet in het stationsnetwerk opgenomen.'));
+  }
   const legend=el('div','ski-route-legend');
   for(const [kind,title] of [['lift','🚡 '+t('Lift')],['piste','⛷️ '+t('Piste')],['transfer','⇄ '+t('Overstap')],['lunch','🍽️ '+t('Lunchpauze')],['return','🏠 '+t('Terugweg')]]){
    legend.append(el('span','ski-route-tag '+kind,title));
@@ -102,6 +114,15 @@
    info.append(el('strong','',(step.type==='lift'?'🚡 ':step.type==='piste'?'⛷️ ':step.type==='lunch'?'🍽️ ':step.type==='buffer'?'✓ ':step.type==='break'?'☕ ':step.type==='return'?'🏠 ':step.type==='transfer'?'⇄ ':'⛷️ ')+step.label));
    info.append(el('small','',step.minutes+' '+t('minuten indicatief')+' · '+(step.phase||'planning')));
    if(step.detail)info.append(el('p','',step.detail));
+   if(step.sources?.length){
+    const refs=el('details','');
+    refs.append(el('summary','','Bronnen voor deze stap'));
+    for(const [index,url] of step.sources.entries()){
+     const link=el('a','legal-inline-link','Bron '+(index+1));link.href=url;link.target='_blank';link.rel='noopener noreferrer';
+     const line=el('p','');line.append(link);refs.append(line);
+    }
+    info.append(refs);
+   }
    row.append(when,info);detailed.append(row);
   }
   routeWrap.append(detailed);
@@ -114,7 +135,7 @@
     gaps.append(el('p','route-gap-line','⏳ '+part.phase+': '+(part.code?part.code+' · ':'')+part.name+' — '+part.reason));
    }
    for(const gap of itinerary.unverifiedTransitions||[]){
-    gaps.append(el('p','route-gap-line','⇄ '+gap.corridor+': lift '+gap.from+' → lift '+gap.to+' — '+gap.reason));
+    gaps.append(el('p','route-gap-line','⇄ '+gap.corridor+': '+gap.from+' → '+gap.to+' — '+gap.reason));
    }
    routeWrap.append(gaps);
   }

@@ -600,7 +600,7 @@ body.legal-open{overflow:hidden}
    <p class="hint">SKI-je gebruikt je GPS alleen op je toestel. De huidige piste en liftrichting zijn nog niet exact herkend; dit is een voorlopige route tussen skigebieden.</p>
    <div id="return-home-status" class="gps-status" role="status" aria-live="polite">Tik op GPS ophalen.</div>
    <div class="field"><label for="return-area-override">Geschat skigebied (controleer zelf)</label><select id="return-area-override" aria-label="Corrigeer herkend vertrekgebied"></select></div>
-   <div class="toolbar"><button class="btn" id="return-home-retry" type="button">◎ Nieuwe GPS-meting</button><button class="btn secondary" id="return-home-manual" type="button">Bereken vanaf gekozen gebied</button></div>
+   <div class="toolbar"><button class="btn" id="return-home-retry" type="button">◎ Nieuwe GPS-meting</button><button class="btn secondary" id="return-home-manual" type="button">Bereken vanaf gekozen punt</button></div>
    <div id="return-home-output" aria-live="polite"></div>
    <p class="notice">⚠️ Geen turn-by-turn pisteherkenning. Niet bedoeld als veiligheidsnavigatie. Check de actuele lifttijden, afsluitingen en bewegwijzering. Bel in nood 112 of bergredding 140.</p>
   </div>
@@ -689,7 +689,10 @@ const inSkiWelt=(lat,lng)=>lat>=BOUNDS.south&&lat<=BOUNDS.north&&lng>=BOUNDS.wes
 const stations=[
  ['Ellmau dalstation','Ellmau · dalstation'],['Going dalstation','Going · dalstation'],['Scheffau dalstation','Scheffau · dalstation'],['Söll dalstation','Söll · dalstation'],
  ['Brixen dalstation','Brixen im Thale · dalstation'],['Westendorf dalstation','Westendorf · dalstation'],['Hopfgarten dalstation','Hopfgarten · dalstation'],['Itter dalstation','Itter · dalstation'],
- ['Hopfgarten tussenstation','Hopfgarten · tussenstation'],['Hartkaiser bergstation','Ellmau · Hartkaiser bergstation'],['Brandstadl bergstation','Scheffau · Brandstadl bergstation'],['Hohe Salve','Hohe Salve · bergtop']
+ ['Hopfgarten tussenstation','Hopfgarten · tussenstation'],['Hartkaiser bergstation','Ellmau · Hartkaiser bergstation'],['Brandstadl bergstation','Scheffau · Brandstadl bergstation'],['Hohe Salve','Hohe Salve · bergtop'],
+ ['Hochbrixen bergstation','Brixen · Hochbrixen bergstation'],['SkiWeltbahn dalstation Brixen','Brixen · SkiWeltbahn dalstation'],['Jochbahn dalstation Brixen','Brixen · Jochbahn dalstation'],
+ ['Choralpe','Westendorf · Choralpe'],['Talkaser','Westendorf · Talkaser'],['Alpenrosenbahn tussenstation Westendorf','Westendorf · Alpenrosenbahn tussenstation'],
+ ['Choralmbahn dalstation Westendorf','Westendorf · Choralmbahn dalstation'],['Fleiding dalstation Westendorf','Westendorf · Fleiding dalstation'],['Fleiding bergstation Westendorf','Westendorf · Fleiding bergstation']
 ];
 function makeOptions(){for(const id of ['start','finish']){$(id).innerHTML=stations.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');}}
 makeOptions();
@@ -1151,6 +1154,7 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 <script src="i18n.js" defer></script>
 <script src="app-update.js?v=4510" defer></script>
 <script src="route-engine.js" defer></script>
+<script src="skiwelt-stations.js" defer></script>
 <script src="day-planner.js" defer></script>
 <script src="skiwelt-corridors.js" defer></script>
 <script src="route-detail.js" defer></script>

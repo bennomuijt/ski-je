@@ -23,8 +23,10 @@
     ba:'Jochbahn 6 via verbinding 65a/72 of Muldenabfahrt 70 richting Scheffau',
     codes:['lift:71','piste:2a','piste:6','lift:6','piste:65a','piste:72','piste:70'],minutes:45},
   {id:'brixen-westendorf',a:'Brixen',b:'Westendorf',
-    ab:'Hochbrixen-gondel 1 en SkiWeltbahn 11 naar Westendorf',
-    ba:'Windau-afdaling 111, Choralmbahn 112 en Kandleralm 11 richting Brixen',
+    ab:'Referentie vanaf dalstation SkiWeltbahn 11: via 110, 111 en 117 naar Fleiding. Aanloop vanuit het gekozen punt in Brixen controleren.',
+    ba:'Windau 111 → Choralmbahn 112 → Kandleralm 11 → Sonnenband 18 → Sonnenlift 12 → loopbrug naar dalstation Hochbrixen 1.',
+    abCodes:['lift:11','piste:110','piste:111','piste:117','lift:117'],
+    baCodes:['piste:111','lift:112','piste:11','lift:18','lift:12'],
     codes:['lift:1','lift:11','piste:110','piste:111','piste:117','lift:117','lift:112','piste:11','lift:18','lift:12'],minutes:50},
   {id:'brixen-hopfgarten',a:'Brixen',b:'Hopfgarten',
     ab:'Via Kälbersalvenbahn 2 richting Hopfgarten; controleer vervolg op de pistekaart',
@@ -66,10 +68,10 @@
    .map(x=>({kind:x.kind,code:String(x.code||'').trim().toLowerCase().slice(0,20),note:String(x.note||'').trim().slice(0,150),at:String(x.at||'')}))
    .filter(x=>/^[a-z0-9_-]{1,20}$/.test(x.code)).slice(-150);
  }
- function closedCorridor(edge,closures){
+ function closedCorridor(edge,closures,direction){
   const items=parseClosures(closures);
   return items.some(item=>(item.kind==='corridor'&&item.code===edge.id)||
-   edge.codes.some(code=>code===item.kind+':'+item.code));
+   (edge[direction+'Codes']||edge.codes).includes(item.kind+':'+item.code));
  }
  function shortest(start,finish,closures){
   if(!areas.includes(start)||!areas.includes(finish))return null;
@@ -83,9 +85,10 @@
    if(current===finish)break;
    visited.add(current);
    for(const edge of corridors){
-    if(closedCorridor(edge,closures))continue;
-    const next=edge.a===current?edge.b:edge.b===current?edge.a:null;
-    if(!next||visited.has(next))continue;
+    const direction=edge.a===current?'ab':edge.b===current?'ba':null;
+    if(!direction||closedCorridor(edge,closures,direction))continue;
+    const next=direction==='ab'?edge.b:edge.a;
+    if(visited.has(next))continue;
     const candidate=cost+edge.minutes;
     if(candidate<(distances.get(next)??Infinity)){
      distances.set(next,candidate);parents.set(next,{previous:current,edge});
@@ -102,7 +105,7 @@
     direction:found.previous===e.a?'ab':'ba',minutes:e.minutes,
     status:'unknown',mapListed:true,
     warning:'⚠️ Op officiële verbindingspagina, niet live gecontroleerd',
-    codes:e.codes.slice(),source:SOURCE});
+    codes:(e[found.previous===e.a?'abCodes':'baCodes']||e.codes).slice(),source:SOURCE});
    node=found.previous;
   }
   return route.reverse();

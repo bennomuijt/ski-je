@@ -13,6 +13,8 @@
   {area:'brixen',x:.67,y:.65},{area:'westendorf',x:.79,y:.67}
  ];
  const huts=data.huts;
+ const printed=window.SKIPrintedHutAnchors;
+ const exact=[];
  const normalize=s=>String(s||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
  const photos={
   'Kaiserlounge':{
@@ -123,6 +125,24 @@
   });
   layer.append(b);points.push({button:b,anchor});
  }
+ const officialByNumber=new Map();
+ for(const hut of huts.filter(h=>h.source==='official'&&h.number)){
+  if(!officialByNumber.has(hut.number))officialByNumber.set(hut.number,[]);
+  officialByNumber.get(hut.number).push(hut);
+ }
+ for(const mark of printed?.huts||[]){
+  const matching=officialByNumber.get(mark.number)||[];
+  // No ambiguous or duplicate number-to-restaurant associations.
+  if(matching.length!==1||!(mark.x>0&&mark.x<1&&mark.y>0&&mark.y<1))continue;
+  const hut=matching[0],b=document.createElement('button');
+  b.type='button';b.className='pano-numbered-hut';b.textContent=mark.number;
+  b.title='Hut '+mark.number+' · '+hut.name+' (officiële SkiWelt-PDF)';
+  b.setAttribute('aria-label',b.title);
+  b.addEventListener('pointerdown',e=>e.stopPropagation());
+  b.addEventListener('pointerup',e=>e.stopPropagation());
+  b.addEventListener('click',e=>{e.stopPropagation();search.value='';fillOptions(huts.filter(x=>x.areaKey===hut.areaKey));showRestaurant(hut);$('pano-lift-info').hidden=true;});
+  layer.append(b);exact.push({b,mark});
+ }
  function position(){
   if($('pano-modal')?.hidden)return;
   const box=view.getBoundingClientRect(),iw=img.naturalWidth,ih=img.naturalHeight;
@@ -133,6 +153,14 @@
   const panX=shape?Number(shape[1]):0,panY=shape?Number(shape[2]):0,zoom=shape?Number(shape[3]):1;
   const renderedWidth=Math.min(box.width,box.height*iw/ih);
   const renderedHeight=Math.min(box.height,box.width*ih/iw);
+  const expected=printed?.pageWidth/printed?.pageHeight;
+  const precise=Number.isFinite(expected)&&Math.abs(iw/ih/expected-1)<.012&&zoom>=1.8;
+  for(const {b,mark} of exact){
+   const x=box.width/2+(mark.x-.5)*renderedWidth*zoom+panX;
+   const y=box.height/2+(mark.y-.5)*renderedHeight*zoom+panY;
+   b.style.left=x+'px';b.style.top=y+'px';
+   b.hidden=!precise||x<0||x>box.width||y<0||y>box.height;
+  }
   for(const {button,anchor} of points){
    const x=box.width/2+(anchor.x-.5)*renderedWidth*zoom+panX-28;
    const y=box.height/2+(anchor.y-.5)*renderedHeight*zoom+panY;
@@ -142,7 +170,7 @@
  }
  function update(){
   layer.hidden=!toggle.checked;
-  count.textContent=toggle.checked?huts.length+' hutten / restaurants in '+anchors.length+' gebieden':'Restaurantmarkeringen verborgen';
+  count.textContent=toggle.checked?exact.length+' exacte hutlabels uit PDF; overige hutten via gebiedszoeker':'Restaurantmarkeringen verborgen';
   if(!toggle.checked)info.hidden=true;
   if(toggle.checked)requestAnimationFrame(position);
  }

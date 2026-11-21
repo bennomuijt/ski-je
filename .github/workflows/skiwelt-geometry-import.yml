@@ -20,10 +20,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Fetch fixed-zoom OpenSkiData geometry and inspect coverage
-        run: node scripts/build-skiwelt-geometry.mjs
-      - name: Derive downhill direction using Copernicus terrain DEM
-        run: node scripts/enrich-skiwelt-elevation.mjs
+      - name: Reuse complete offline terrain snapshot, else fetch and validate
+        run: |
+          if node -e "const x=require('./public/skiwelt-geometry.json'); process.exit(x.features.length >= 500 && x.terrainElevation?.missing === 0 ? 0 : 1)"; then
+            echo 'Using checked-in complete SkiWelt geometry, avoiding flaky elevation API.'
+          else
+            node scripts/build-skiwelt-geometry.mjs
+            node scripts/enrich-skiwelt-elevation.mjs
+          fi
       - name: Construct slope and lift junction graph with directed edges
         run: node scripts/build-skiwelt-network.mjs
       - name: Save reproducible offline map data on this branch

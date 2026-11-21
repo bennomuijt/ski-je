@@ -9,7 +9,9 @@ const options={start:'Ellmau dalstation',finish:'Ellmau dalstation',
  skill:'red',speed:'normal',allowBlack:false,style:'relaxed',useSafety:true,safetyMarginMin:30,wishes:[]};
 test('SkiWelt has real directional geometry not synthetic area corridors',()=>{
  assert.ok(graph.nodes.length>=3000);assert.ok(graph.edges.length>=5000);
- assert.ok(Object.keys(graph.stations).length>=12);
+ assert.ok(Object.keys(graph.stations).length>=160,'mapped lifts should offer individual stations');
+ for(const n of ['7','8','9','10','18','12','1','30'])for(const type of ['bottom','top'])assert.ok(graph.stations['lift:'+n+':'+type], 'missing lift station '+n+' '+type);
+ assert.ok(graph.stations['lift:30:middle1'],'Salvistabahn midway station missing');
  for(const edge of graph.edges)assert.ok(edge[0]!==edge[1]);
  const lifts=graph.features.filter(f=>f.kind==='lift');
  assert.ok(lifts.some(f=>f.ref==='8'&&/Würste?lexpress/i.test(f.name)));
@@ -32,7 +34,8 @@ test('path from lift lower station to lift upper station includes correct physic
 });
 test('all returned plans have no missing station joins, no imaginary named missing slopes',()=>{
  let okay=0,failed=0;
- for(const start of Object.keys(graph.stations))for(const finish of Object.keys(graph.stations)){
+ const publicStations=Object.keys(graph.stations).filter(name=>!name.startsWith('lift:'));
+ for(const start of publicStations)for(const finish of publicStations){
   const result=map.build({...options,start,finish},[]);
   if(!result.ok){failed++;assert.ok(result.reason.length>10);continue;}
   okay++;const list=result.path.edgeIds,first=graph.stations[start].node,last=graph.stations[finish].node;
@@ -43,7 +46,7 @@ test('all returned plans have no missing station joins, no imaginary named missi
   assert.ok(result.itinerary.steps.some(x=>x.type==='piste'));
   assert.ok(result.plan.sections.at(-1).end===options.returnTime);
  }
- console.log('Geometric route coverage',okay,'of',Object.keys(graph.stations).length**2, 'missing',failed);
+ console.log('Geometric route coverage',okay,'of',publicStations.length**2, 'missing',failed);
  assert.ok(okay>5,'At least several connected skier routes must exist');
 });
 test('terrain and piste colour prevent reversed black/freeride by default',()=>{
@@ -55,5 +58,14 @@ test('terrain and piste colour prevent reversed black/freeride by default',()=>{
  for(const id of route.edgeIds){
   const feature=graph.features[graph.edges[id][2]];
   if(feature?.kind==='piste')assert.ok(!['advanced','expert','freeride','extreme'].includes(feature.difficulty));
+ }
+});
+
+test('every named lift has bottom and top stations mapped to its own ascent geometry',()=>{
+ const named=graph.features.filter(x=>x.kind==='lift'&&x.ref);
+ for(const lift of named){
+  const bottom=graph.stations['lift:'+lift.ref.toLowerCase()+':bottom],top=graph.stations['lift:'+lift.ref.toLowerCase()+':top];
+  assert.ok(bottom&&top,'no complete stations for lift '+lift.ref);
+  assert.notEqual(bottom.node,top.node,'invalid lift '+lift.ref);
  }
 });

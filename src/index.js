@@ -26,7 +26,7 @@ function adminReady(env){return typeof env.GROUP_CREATE_SECRET==='string'&&env.G
 export default {
  async fetch(request,env){
   const url=new URL(request.url);const p=url.pathname;
-  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.7-cf',groups:!!env.GROUPS,photos:!!env.PHOTOS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.8-cf',groups:!!env.GROUPS,photos:!!env.PHOTOS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
   if(p==='/api/skimap.pdf'){
    if(request.method!=='GET')return fail('Alleen GET toegestaan.',405);
    // Fixed, official source; no GPS or user-supplied URLs are transmitted.

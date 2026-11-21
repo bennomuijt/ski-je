@@ -133,7 +133,7 @@
    // but don't invent one minute of skiing/walking per intersection.
    if(info.type==='transfer'&&e[3]<=3&&
       ['map-junction','map-crossing','station-access'].includes(info.confidence)){
-    if(previous)previous.points.push(graph.nodes[e[1]].slice(0,2));
+    if(previous){previous.points.push(graph.nodes[e[1]].slice(0,2));previous.to=e[1];}
     continue;
    }
    const same=previous&&previous.type===info.type&&previous.feature===info.feature&&previous.confidence===info.confidence;

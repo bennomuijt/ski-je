@@ -10,6 +10,8 @@
  const name=$('pano-lift-name'),status=$('pano-lift-photo-status'),photo=$('pano-lift-photo'),link=$('pano-lift-link');
  if(!data||!layer||!view||!img||!toggle||!select||!search||!info)return;
  const areas=data.areas, lifts=data.lifts,connections=window.SKILiftConnections?.byNumber||{};
+ const printed=window.SKIPrintedLiftAnchors;
+ const placed=[];
  const buttons=$('pano-lift-buttons'),areaInfo=$('pano-lift-area'),linked=$('pano-lift-connections'),pistes=$('pano-lift-pistes');
  const norm=s=>String(s||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
  const srcMap={
@@ -105,6 +107,26 @@
   window.SKIApi?.goPage('more');
   window.SKIPhotoSources?.open(sourceSearch(lift));
  });
+ // Exact number-center coordinates extracted from the original vector PDF;
+ // never create placements for labels absent from that printed map.
+ const confirmedByNumber=new Map(lifts.map(l=>[l.number,l]));
+ if(printed?.lifts?.length){
+  for(const mark of printed.lifts){
+   const lift=confirmedByNumber.get(mark.number);
+   if(!lift||!(mark.x>0&&mark.x<1&&mark.y>0&&mark.y<1))continue;
+   const b=document.createElement('button');b.type='button';
+   b.className='pano-numbered-lift';b.textContent=mark.number;
+   b.title='Lift '+mark.number+' · '+lift.name+' (afgelezen van officiële SkiWelt-PDF)';
+   b.setAttribute('aria-label',b.title);
+   b.addEventListener('pointerdown',e=>e.stopPropagation());
+   b.addEventListener('pointerup',e=>e.stopPropagation());
+   b.addEventListener('click',e=>{
+    e.stopPropagation();search.value='';fillOptions(lift.areaKey);setLift(lift);
+    $('pano-hut-info').hidden=true;
+   });
+   layer.append(b);placed.push({b,mark});
+  }
+ }
  function position(){
   if($('pano-modal')?.hidden)return;
   const box=view.getBoundingClientRect(),iw=img.naturalWidth,ih=img.naturalHeight;
@@ -115,16 +137,27 @@
   const shape=img.style.transform.match(/translate3d\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px\s*,\s*0(?:px)?\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
   const panX=shape?Number(shape[1]):0,panY=shape?Number(shape[2]):0,zoom=shape?Number(shape[3]):1;
   const renderedWidth=Math.min(box.width,box.height*iw/ih),renderedHeight=Math.min(box.height,box.width*ih/iw);
+  const aspect=iw/ih,expected=printed?.pageWidth/printed?.pageHeight;
+  const ratioOk=Number.isFinite(expected)&&Math.abs(aspect/expected-1)<.012;
+  const precise=ratioOk&&zoom>=1.8;
+  for(const {b,mark} of placed){
+   const x=box.width/2+(mark.x-.5)*renderedWidth*zoom+panX;
+   const y=box.height/2+(mark.y-.5)*renderedHeight*zoom+panY;
+   b.style.left=x+'px';b.style.top=y+'px';
+   b.hidden=!precise||x<0||x>box.width||y<0||y>box.height;
+  }
   for(const {b,area} of points){
-   const x=box.width/2+(area.x-.5)*renderedWidth*zoom+panX;
+   // Area buttons are navigational clusters, not exact lift positions. Offset
+   // alongside hut clusters so neither type blocks the other on small screens.
+   const x=box.width/2+(area.x-.5)*renderedWidth*zoom+panX+28;
    const y=box.height/2+(area.y-.5)*renderedHeight*zoom+panY;
    b.style.left=x+'px';b.style.top=y+'px';
-   b.hidden=x<0||x>box.width||y<0||y>box.height;
+   b.hidden=precise||x<0||x>box.width||y<0||y>box.height;
   }
  }
  function update(){
   layer.hidden=!toggle.checked;
-  count.textContent=toggle.checked?lifts.length+' liften in '+areas.length+' gebiedsgroepen':'Liftmarkeringen verborgen';
+  count.textContent=toggle.checked?(placed.length+' kaartlabels op hun PDF-positie; overige liften zoekbaar. Zoom voor afzonderlijke nummers.'):'Liftmarkeringen verborgen';
   if(!toggle.checked)info.hidden=true;
   if(toggle.checked)requestAnimationFrame(position);
  }
@@ -135,5 +168,5 @@
  $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));
  document.addEventListener('skije-photo-list-updated',()=>{if(!info.hidden&&select.value)setLift(lifts.find(l=>l.number===select.value));});
  fillOptions(null);update();
- window.SKILiftMap={lifts:()=>lifts.map(l=>({...l})),precision:'area-only'};
+ window.SKILiftMap={lifts:()=>lifts.map(l=>({...l})),printedLabelCount:placed.length,precision:'official-pdf-number-positions-only'};
 })();

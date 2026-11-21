@@ -318,3 +318,27 @@ body.utility-open{overflow:hidden}
  #pano-modal .pano-target-grid{max-height:80px}
  #pano-modal .pano-hut-info,#pano-modal .pano-lift-info{max-height:42dvh}
 }
+
+
+/* Black printed lift numbers are anchored to official PDF text centers.
+ * Detailed hotspots appear only when zoomed; area counters remain at overview. */
+.pano-numbered-lift{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;
+  min-width:34px;min-height:34px;padding:2px 5px;border-radius:10px;
+  background:#0b649b;color:white;border:2px solid #fff;box-shadow:0 2px 8px #002d5399;
+  font-size:12px;font-weight:900;touch-action:manipulation;white-space:nowrap;z-index:4}
+.pano-numbered-lift[hidden]{display:none!important}
+.pano-numbered-lift:focus-visible{outline:3px solid #ffab2e;outline-offset:3px}
+
+/* Put both cluster types on separate lanes in overview so either is clickable. */
+.pano-hut-layer{z-index:3}
+.pano-lift-layer{z-index:4}
+
+/* The 8 individually verified green hut markers are extracted from the PDF.
+   Number hotspots appear at zoom; remain separate from piste/lift numbers. */
+.pano-numbered-hut{position:absolute;transform:translate(-50%,-50%);
+ pointer-events:auto;z-index:5;min-width:36px;min-height:36px;
+ border-radius:11px;padding:3px 5px;border:2px solid #fff;
+ background:#82bb41;color:#123e16;font-size:12px;font-weight:900;
+ box-shadow:0 2px 8px #00331b99;touch-action:manipulation}
+.pano-numbered-hut[hidden]{display:none!important}
+.pano-numbered-hut:focus-visible{outline:3px solid #ff9a21;outline-offset:2px}

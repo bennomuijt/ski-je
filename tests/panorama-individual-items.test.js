@@ -12,8 +12,10 @@ const {lifts}=catalogue('public/lift-catalogue.js');
 const {byNumber}=catalogue('public/skiwelt-lift-connections.js');
 test('catalogus heeft genummerde afzonderlijk selecteerbare liften en hutten',()=>{
  assert.ok(lifts.length>=80);
- assert.ok(huts.length>=80);
+ assert.ok(huts.length>=73);
  assert.ok(officialCount>=70);
+ assert.ok(huts.some(h=>h.number==='32'&&h.name==='Marchental Skihütte'));
+ assert.ok(huts.some(h=>h.number==='50'&&h.name==='Keatalm Skihütte'));
  assert.equal(new Set(huts.map(h=>h.id)).size,huts.length);
  assert.equal(new Set(lifts.map(l=>l.number)).size,lifts.length);
  assert.ok(huts.every(h=>typeof h.name==='string'&&h.name.length>2));

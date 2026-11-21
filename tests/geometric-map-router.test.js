@@ -35,19 +35,30 @@ test('path from lift lower station to lift upper station includes correct physic
 test('all returned plans have no missing station joins, no imaginary named missing slopes',()=>{
  let okay=0,failed=0;
  const publicStations=Object.keys(graph.stations).filter(name=>!name.startsWith('lift:'));
- for(const start of publicStations)for(const finish of publicStations){
+ let fullyConnected=0;
+ for(const [si,start] of publicStations.entries())for(const [fi,finish] of publicStations.entries()){
+  const first=graph.stations[start].node,last=graph.stations[finish].node;
+  // Check all 144 start/end pairs without recomputing a full 7-hour
+  // lunch & scenic search for every pair.
+  const direct=map.shortest(first,last,{skill:'red',speed:'normal',allowBlack:false},[]);
+  if(!direct){failed++;continue;}
+  assert.ok(map.validateRoute(direct,first,last));
+  fullyConnected++;
+  if((si*publicStations.length+fi)%10!==0)continue;
   const result=map.build({...options,start,finish},[]);
-  if(!result.ok){failed++;assert.ok(result.reason.length>10);continue;}
-  okay++;const list=result.path.edgeIds,first=graph.stations[start].node,last=graph.stations[finish].node;
-  assert.equal(list.length>0,true);
+  if(!result.ok){assert.ok(result.reason.length>10);continue;}
+  okay++;const list=result.path.edgeIds;
+  assert.ok(list.length>0);
   assert.ok(map.validateRoute(result.path,first,last));
   for(let i=1;i<list.length;i++)assert.equal(graph.edges[list[i-1]][1],graph.edges[list[i]][0]);
   assert.ok(result.itinerary.steps.some(x=>x.type==='lift'));
   assert.ok(result.itinerary.steps.some(x=>x.type==='piste'));
-  assert.ok(result.plan.sections.at(-1).end===options.returnTime);
+  assert.equal(result.plan.sections.at(-1).end,options.returnTime);
  }
- console.log('Geometric route coverage',okay,'of',publicStations.length**2, 'missing',failed);
- assert.ok(okay>5,'At least several connected skier routes must exist');
+ console.log('Directed shortest-path coverage',fullyConnected,'of',publicStations.length**2,'unreachable',failed,
+  'full-day route samples',okay);
+ assert.equal(fullyConnected,publicStations.length**2,'all known valley and mountain stations must be connected');
+ assert.ok(okay>5,'full-day planners must succeed in several sampled station combinations');
 });
 test('terrain and piste colour prevent reversed black/freeride by default',()=>{
  const piste=graph.features.filter(f=>f.kind==='piste');

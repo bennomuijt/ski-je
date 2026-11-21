@@ -62,6 +62,17 @@ def main():
    color=tuple(round(ch*255) for ch in fill[:3])
    small.append({"fill":color,"x":round(rect.x0,1),"y":round(rect.y0,1),"w":round(rect.width,1),"h":round(rect.height,1)})
   groups=collections.Counter(str(d["fill"]) for d in small)
+  green=[d for d in small if d["fill"]==(130,187,65) and 10.5<=d["w"]<=13 and 5.5<=d["h"]<=8]
+  pairs=[]
+  for rect in green:
+   nearby=[]
+   for word in nums:
+    x=word["x"]+word["w"]/2;y=word["y"]+word["h"]/2
+    if rect["x"]-4<=x<=rect["x"]+rect["w"]+4 and rect["y"]-4<=y<=rect["y"]+rect["h"]+4:
+     nearby.append({"v":word["text"],"x":round(x,1),"y":round(y,1),"font":word["font"],"size":word["size"],"color":word["color"]})
+   pairs.append({"rect":rect,"text":nearby})
+  print("GREEN_RECTS_NEAR_TEXT",json.dumps(pairs,ensure_ascii=False,separators=(',',':')))
+
   print("SMALL_FILLS",json.dumps([{"fill":k,"count":v,"samples":[d for d in small if str(d["fill"])==k][:8]} for k,v in groups.most_common(16)],ensure_ascii=False))
  except Exception as exc:
   print("DRAWING_INSPECT_FAILED",repr(exc))

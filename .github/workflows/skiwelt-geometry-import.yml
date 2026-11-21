@@ -1,0 +1,33 @@
+name: Import SkiWelt map linework
+on:
+  push:
+    branches: [skije-v4.5.12-map-graph]
+    paths:
+      - 'scripts/build-skiwelt-geometry.mjs'
+      - '.github/workflows/skiwelt-geometry-import.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch fixed-zoom OpenSkiData geometry and inspect coverage
+        run: node scripts/build-skiwelt-geometry.mjs
+      - name: Save reproducible offline map data on this branch
+        run: |
+          git config user.name "skije-map-builder"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/skiwelt-geometry.json public/skiwelt-source-summary.json
+          if git diff --cached --quiet; then
+            echo "No map geometry changes."
+          else
+            git commit -m "data: import offline OpenSkiData SkiWelt lift and piste linework"
+            git push
+          fi

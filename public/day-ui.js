@@ -55,11 +55,16 @@
  }
  function render(){
   const options=inputs(),route=network.build(options,getClosures()),plan=planner.compute({...options,returnEstimate:route.returnEstimate}),output=$('plan-output');output.replaceChildren();readyPdf=null;
-  if(!plan.ok){
+  if(!plan.ok||!route.ok){
    output.append(el('strong','',t('Controleer je planning')));
-   output.append(el('p','route-errors',plan.reason));
+   output.append(el('p','route-errors',(route.ok?plan.reason:route.reason||plan.reason)));
    output.append(el('p','hint',t('Kies haalbare tijden; de officiële veiligheid en liftstatus blijven leidend.')));
    current=null;return;
+  }
+  if(route.lunchAutomaticallyChosen&&plan.useLunch){
+   const lunch=plan.sections.find(section=>section.type==='lunch');
+   if(lunch){lunch.label='Lunchgebied '+route.lunchArea+' (restaurant nog te kiezen)';lunch.detail='SKI-je heeft een haalbaar gebied gekozen; exacte hut, pisteverbinding en openingstijd ter plaatse controleren.';}
+   plan.lunchRestaurant='Lunchgebied '+route.lunchArea+' (restaurant ter plaatse kiezen)';
   }
   const itinerary=detail.buildTimeline(plan,route,options);current={plan,route,options,itinerary};
   output.append(el('strong','plan-heading',itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length||itinerary.steps.some(s=>s.unplanned)?'⚠️ Voorlopige skidag — niet alle pistes en liften gecontroleerd':t('Jouw volledige skidag')));

@@ -138,73 +138,100 @@
   const empty={ok:false,startArea:start,endArea:finish,steps:[],phases:{preLunch:[],postLunch:[],return:[]},
    notes,unreachable,source:SOURCE,provisional:true,returnEstimate:0,durationEstimate:0};
   if(!start||!finish)return {...empty,reason:'Start- of eindstation nog niet aan een SkiWelt-gebied gekoppeld.'};
-  const dayStart=minutes(settings?.departure||'09:00')??540;
-  const end=minutes(settings?.returnTime||'16:00')??960;
-  const lunchStart=minutes(settings?.lunchTime||'12:30')??750;
+  const dayStart=minutes(settings?.departure||'09:00');
+  const end=minutes(settings?.returnTime||'16:00');
   const withLunch=settings?.useLunch!==false;
-  const lunchMinutes=withLunch?Math.max(30,Math.min(120,Number(settings?.lunchDuration||60))):0;
-  const breaks=(settings?.morningBreak?Math.max(5,Number(settings.morningDuration)||30):0)+(settings?.afternoonBreak?Math.max(5,Number(settings.afternoonDuration)||30):0);
-   const margin=settings?.useSafety===false?0:Math.max(0,Math.min(120,Number.isFinite(Number(settings?.safetyMarginMin))?Number(settings.safetyMarginMin):30));
-  const available=Math.max(0,end-dayStart-margin-lunchMinutes-breaks-15);
-  const lunchRestaurant=String(settings?.lunchRestaurantLabel||'');
-  const assignedLunch=withLunch?areaOf(lunchRestaurant):null;
+  const lunchStart=minutes(settings?.lunchTime||'12:30');
+  const lunchMinutes=withLunch?Number(settings?.lunchDuration??60):0;
+  const earlyBreak=settings?.morningBreak?Math.max(5,Math.min(120,Number(settings.morningDuration)||30)):0;
+  const lateBreak=settings?.afternoonBreak?Math.max(5,Math.min(120,Number(settings.afternoonDuration)||30)):0;
+  const margin=settings?.useSafety===false?0:Math.max(0,Math.min(120,Number.isFinite(Number(settings?.safetyMarginMin))?Number(settings.safetyMarginMin):30));
+  const safe=end===null?null:end-margin;
+  if(dayStart===null||safe===null||safe<=dayStart||
+      (withLunch&&(lunchStart===null||lunchStart<705||lunchStart>795||!Number.isInteger(lunchMinutes)||lunchMinutes<30||lunchMinutes>120)))
+   return {...empty,reason:'De opgegeven dag- of lunchtijden zijn ongeldig.'};
+  const pace=settings?.skill==='blue'?1.45:settings?.skill==='pro'?0.86:1;
+  const travel=legs=>(legs||[]).reduce((sum,leg)=>sum+Math.max(12,Math.ceil(leg.minutes*pace)),0);
+  const adjust=legs=>legs.map(leg=>({...leg,minutes:Math.max(12,Math.ceil(leg.minutes*pace))}));
+  const direct=shortest(start,finish,blocked);
+  if(direct===null){
+   unreachable.push(start+' → '+finish);
+   return {...empty,unreachable,reason:'Geen gedocumenteerde verbinding tussen start en eindpunt. Controleer je gemelde sluitingen.'};
+  }
+  const baseline=travel(direct),breaks=earlyBreak+lateBreak;
+  const baseReserve=Math.min(75,Math.max(35,Math.floor((safe-dayStart-lunchMinutes-breaks)*.20)));
+  const restaurant=String(settings?.lunchRestaurantLabel||'');
+  const assignedLunch=withLunch&&restaurant?areaOf(restaurant):null;
+  // A chosen venue is a hard constraint; an automatic venue is not.
+  if(withLunch&&restaurant&&!assignedLunch)
+   return {...empty,reason:'Het gekozen restaurant heeft nog geen herkenbaar SkiWelt-gebied. Kies een andere lunchplek.'};
   const wishes=[];
   if(Array.isArray(settings?.wishes))for(const wish of settings.wishes){
    const area=wishAreas[wish];if(area&&!wishes.includes(area))wishes.push(area);
   }
-  let preLunchArea=assignedLunch||null,scenicTarget=null;
-  const explicit=wishes.find(x=>x!==start&&x!==finish);
-  // Prioritise explicit wishes, otherwise travel away from the often-skied home area.
-  if(explicit)scenicTarget=explicit;
-  else if(settings?.style==='relaxed'||start===finish){
-   scenicTarget=pickScenicTarget(start,finish,preLunchArea,available*.78,blocked,settings?.date);
-  }
-  if(!scenicTarget&&start!==finish)scenicTarget=finish;
-  if(!scenicTarget&&start===finish)scenicTarget=preLunchArea||start;
-  if(!preLunchArea)preLunchArea=scenicTarget;
-  // A requested lunch venue must be reachable before lunch, not after.
-  let preLunch=shortest(start,preLunchArea,blocked);
-  if(preLunch===null){unreachable.push(start+' → '+preLunchArea);preLunch=[];}
-  let timeUntilLunch=withLunch?lunchStart-dayStart-15:Infinity;
-  if(withLunch&&cost(preLunch)>timeUntilLunch){
-   notes.push('⚠️ De gekozen lunchlocatie is mogelijk niet vóór '+settings.lunchTime+' bereikbaar. Wijzig vertrek of lunchtijd.');
-  }
-  let postLunch=[];
-  if(scenicTarget!==preLunchArea){
-   const path=shortest(preLunchArea,scenicTarget,blocked);
-   if(path!==null)postLunch=path;else unreachable.push(preLunchArea+' → '+scenicTarget);
-  }
-  let latestArea=postLunch.length?postLunch.at(-1).to:preLunchArea;
-  let returnSteps=shortest(latestArea,finish,blocked);
-  if(returnSteps===null){unreachable.push(latestArea+' → '+finish);returnSteps=[];}
-  if(withLunch){
-   const afterLunchTime=end-margin-(lunchStart+lunchMinutes)-15-(settings?.afternoonBreak?(Number(settings.afternoonDuration)||30):0);
-   if(cost(postLunch)+cost(returnSteps)>afterLunchTime){
-    if(!explicit&&postLunch.length){
-     scenicTarget=preLunchArea;postLunch=[];
-     latestArea=preLunchArea;returnSteps=shortest(latestArea,finish,blocked)||[];
-     notes.push('Een te lange extra omweg na de lunch is geschrapt om tijdig terug te keren.');
-    } else notes.push('⚠️ De gekozen route kan na de lunch niet binnen de opgegeven terugkeertijd passen.');
+  const explicit=wishes.find(area=>area!==start&&area!==finish)||null;
+  const lunchAreas=withLunch?(assignedLunch?[assignedLunch]:areas):[start];
+  const targets=explicit?[explicit]:areas;
+  const options=[];
+  for(const lunchArea of lunchAreas){
+   for(const target of targets){
+    const pre=shortest(start,withLunch?lunchArea:target,blocked);
+    const post=withLunch?shortest(lunchArea,target,blocked):[];
+    const back=shortest(target,finish,blocked);
+    if(pre===null||post===null||back===null)continue;
+    const before=travel(pre),after=travel(post),returnCost=travel(back);
+    const total=before+after+returnCost;
+    const returnReserve=Math.max(baseReserve,returnCost?returnCost+15:baseReserve);
+    if(withLunch){
+     // Before lunch: reach the area with a small walking/wayfinding margin.
+     if(dayStart+earlyBreak+before+15>lunchStart)continue;
+     // After lunch: allow the day planner to reserve the entire return route.
+     const finalReturnStart=safe-returnReserve;
+     if(lunchStart+lunchMinutes+10>finalReturnStart)continue;
+     if(lunchStart+lunchMinutes+lateBreak+after>finalReturnStart)continue;
+    }else if(dayStart+breaks+total+15>safe)continue;
+    if(total+breaks+lunchMinutes+15>safe-dayStart)continue;
+    const steps=[...pre,...post,...back];
+    if(!steps.length)continue;
+    const nodes=[start,...steps.map(leg=>leg.to)];
+    const repeated=nodes.slice(1,-1).filter((area,index)=>nodes.indexOf(area)<index+1).length;
+    const distinct=new Set(nodes).size;
+    const depth=Math.max(...nodes.map(area=>(shortest(start,area,blocked)||[]).length));
+    // Reward different areas, never reward repeated backtracking around the base.
+    let score=settings?.style==='fast'?-total-repeated*40:
+      distinct*60+depth*12-repeated*95-Math.max(0,total-baseline)*.75;
+    if(start!==finish&&target===finish)score+=12;
+    if(start===finish&&target===start)score-=70;
+    if(withLunch&&lunchArea===start&&start!==finish)score-=15;
+    if(withLunch&&lunchArea===finish&&start!==finish)score-=6;
+    score+=Math.min(before,180)*.08;
+    options.push({lunchArea,target,pre,post,back,score,total,returnCost,returnReserve});
    }
   }
-  const minCost=cost(preLunch)+cost(postLunch)+cost(returnSteps);
-  if(minCost>available)notes.push('⚠️ Verwachte verbindingstijd is langer dan de beschikbare tijd. Kies minder stops of een latere eindtijd.');
-  if(unreachable.length)notes.push('⚠️ Geen gedocumenteerde open verbinding voor '+unreachable.join(', ')+'. Er worden geen ontbrekende pistes verzonnen.');
+  options.sort((a,b)=>b.score-a.score||a.total-b.total||a.lunchArea.localeCompare(b.lunchArea));
+  const chosen=options[0];
+  if(!chosen){
+   const reason=withLunch?(assignedLunch?
+    'Dit lunchrestaurant kan met de beschikbare tijd en de terugweg niet veilig worden ingepast. Kies een ander restaurant of pas de tijden aan.':
+    'Ook na het doorrekenen van alternatieve lunchgebieden past geen gedocumenteerde route in deze dag. Kies een later eindtijdstip of een dichterbij gelegen bestemming.'):
+    'Geen beschreven route past binnen de beschikbare skitijd en veiligheidsmarge.';
+   return {...empty,reason};
+  }
+  const preLunch=adjust(chosen.pre),postLunch=adjust(chosen.post),returnSteps=adjust(chosen.back);
+  const steps=[...preLunch,...postLunch,...returnSteps];
+  if(withLunch&&assignedLunch)notes.push('Lunchgebied bij gekozen restaurant: '+chosen.lunchArea+'. Controleer de exacte hutlocatie en de piste-aansluiting.');
+  else if(withLunch)notes.push('Lunchgebied automatisch gekozen: '+chosen.lunchArea+'. Restaurantnummer en bereikbaarheid ter plaatse controleren.');
+  if(!explicit&&chosen.target!==start&&chosen.target!==finish)notes.push('Afwisselende route richting '+chosen.target+' gekozen binnen de lunch- en terugreistijd.');
+  if(explicit)notes.push('Gezocht via het gewenste gebied '+explicit+'; de precieze piste-aansluitingen zijn niet bevestigd.');
+  if(pace!==1)notes.push('Indicatieve verbindingstijden aangepast aan '+(settings?.skill==='blue'?'Beginner':'Professional')+' (factor '+pace+').');
   if(blocked.length)notes.push('⚠️ '+blocked.length+' zelf gemelde sluiting(en) meegenomen (niet onafhankelijk gecontroleerd).');
-  if(assignedLunch&&assignedLunch!==scenicTarget)notes.push('Lunch in '+assignedLunch+' is als gewenste stop opgenomen. Exacte bereikbaarheid restaurant controleren.');
-  if(!assignedLunch&&withLunch)notes.push('Lunchgebied: '+preLunchArea+'. Kies een bereikbaar restaurant ter plaatse.');
-  notes.push('⚠️ Kaartverbindingen zijn voorlopig als geopend aangenomen. Liften, pistes, overstappen en wachttijden zijn niet live gecontroleerd.');
-  // Existing times were calibrated only for an average skier. Scale them for
-   // ski level; these are planning estimates, not surveyed piste times.
-   const pace=settings?.skill==='blue'?1.45:settings?.skill==='pro'?0.86:1;
-   for(const part of [...preLunch,...postLunch,...returnSteps])part.minutes=Math.max(12,Math.ceil(part.minutes*pace));
-   if(pace!==1)notes.push('Indicatieve verbindingstijden aangepast aan '+(settings?.skill==='blue'?'Beginner':'Professional')+' (factor '+pace+'). Liftwachtrijen en condities kunnen afwijken.');
-   const steps=[...preLunch,...postLunch,...returnSteps];
-  return {ok:unreachable.length===0,startArea:start,endArea:finish,steps,notes,unreachable,
-   phases:{preLunch,postLunch,return:returnSteps},scenicTarget,preLunchArea,lunchArea:preLunchArea,
+  notes.push('⚠️ Gebiedsverbindingen zijn geen volledige piste-voor-piste navigatie. De piste- en liftstatus is niet live gecontroleerd.');
+  return {ok:true,startArea:start,endArea:finish,steps,notes,unreachable,phases:{preLunch,postLunch,return:returnSteps},
+   scenicTarget:chosen.target,preLunchArea:withLunch?chosen.lunchArea:chosen.target,lunchArea:withLunch?chosen.lunchArea:null,
+   lunchAutomaticallyChosen:withLunch&&!assignedLunch,
    source:SOURCE,provisional:true,closuresApplied:blocked.length,
-   returnEstimate:cost(returnSteps),durationEstimate:cost(steps),minimumMinutes:cost(steps),
-   reason:unreachable.length?'Niet alle gebieden hebben een gedocumenteerde beschikbare verbinding.':'Voorlopig reisvoorstel via officiële gebiedsverbindingen, niet exact van liftstation tot liftstation.'};
+   returnEstimate:chosen.returnCost,durationEstimate:chosen.total,minimumMinutes:chosen.total,
+   reason:'Voorlopig gebiedsroutevoorstel; per piste en lift moeten aansluitingen nog worden gecontroleerd.'};
  }
  return {SOURCE,areas,corridors,areaOf,parseClosures,closedCorridor,shortest,build};
 });

@@ -14,6 +14,14 @@
   set('highlight-best-day',overview.bestKm?fmt(overview.bestKm)+' km · '+overview.bestKmDate:'—');
   set('highlight-hours',fmt(overview.totalMinutes/60)+' uur');
   set('highlight-speed',overview.highestSpeed?fmt(overview.highestSpeed)+' km/u':'—');
+  const badges=[
+   {name:'🎿 Eerste skidag',got:overview.days>=1},
+   {name:'🏔️ 3 skidagen',got:overview.days>=3},
+   {name:'🌄 5 skidagen',got:overview.days>=5},
+   {name:'☀️ 10 uur wintersport',got:overview.totalMinutes>=600}
+  ];
+  const holder=$('highlight-badges');holder.replaceChildren();
+  for(const item of badges){const badge=document.createElement('span');badge.textContent=item.name+(item.got?' ✓':' · nog te ontdekken');badge.classList.toggle('earned',item.got);holder.append(badge);}
   $('highlight-empty').hidden=overview.days>0;
   $('highlight-share-image').disabled=overview.days===0;
   $('highlight-copy').disabled=overview.days===0;

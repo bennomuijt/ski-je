@@ -71,7 +71,7 @@ function connect(u,v,distance,kind='mapped'){
  const key=Math.min(u,v)+'|'+Math.max(u,v);
  if(pairKeys.has(key))return;
  const height=Math.abs(nodes[u][2]-nodes[v][2]);
- if(height>35)return;
+ if(height>(kind==='station-access'||kind==='station-walk'?60:35))return;
  pairKeys.add(key);
  connections.push({u,v,metres:Math.round(distance*10)/10,kind,height:Math.round(height)});
 }
@@ -80,7 +80,7 @@ function connect(u,v,distance,kind='mapped'){
 let automaticJunctions=0,stationConnectors=0,wideConnectors=0;
 for(const part of parts){
  const f=features[part.feature],lift=f.kind==='lift';
- const vertexIndices=lift?[0,part.pointIds.length-1]:[...part.pointIds.keys()];
+ const vertexIndices=[...part.pointIds.keys()]; // Include real middle stations, e.g. Salvistabahn
  for(const i of vertexIndices){
   const vertex=part.pointIds[i],p=nodes[vertex],candidate=[];
   for(const sId of neighbors(p)){
@@ -88,7 +88,7 @@ for(const part of parts){
    if(seg.feature===part.feature||other.kind==='lift')continue;
    const q=project(p,nodes[seg.a],nodes[seg.b]);
    const max=lift?36:12;
-   if(q.distance>max||Math.abs(p[2]-q.point[2])>(lift?32:25))continue;
+   if(q.distance>max||Math.abs(p[2]-q.point[2])>(lift?60:25))continue;
    // Exclude contact of two lines where one is a freeride track and the
    // other ordinary pistes? These still form a junction but route filters level.
    candidate.push({...q,sId,other:seg.feature});

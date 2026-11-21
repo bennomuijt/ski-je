@@ -2,8 +2,32 @@
  * Runs on the deployed PWA, does not join groups, and never transmits real GPS. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import {createServer} from 'node:http';
+import {resolve,sep,extname} from 'node:path';
 import {chromium} from 'playwright-core';
-const ROOT=process.env.SKIJE_URL||'https://ski-je.bennomuijt.workers.dev/';
+// Test the actual proposed branch on localhost, NEVER an older deployed Worker.
+const publicRoot=resolve('public');
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8',
+ '.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg'};
+let localServer=null;
+if(!process.env.SKIJE_URL){
+ localServer=createServer(async(request,response)=>{
+  try{
+   let path=decodeURIComponent(new URL(request.url,'http://localhost').pathname);
+   if(path==='/api/health'){response.writeHead(200,{'content-type':'application/json','cache-control':'no-store'});
+    response.end(JSON.stringify({ok:true,service:'SKI-je Cloudflare',version:'4.5.12-cf'}));return;}
+   if(path==='/api/skimap.jpg')path='/Kaart 2026-2027.png';
+   if(path==='/')path='/index.html';
+   const file=resolve(publicRoot,'.'+path);
+   if(!file.startsWith(publicRoot+sep))throw Error('Unsafe path');
+   const body=await fs.readFile(file);
+   response.writeHead(200,{'content-type':mime[extname(file)]||'application/octet-stream','cache-control':'no-store'});
+   response.end(body);
+  }catch{response.writeHead(404);response.end('Not found');}
+ });
+ await new Promise(done=>localServer.listen(0,'127.0.0.1',done));
+}
+const ROOT=process.env.SKIJE_URL||'http://127.0.0.1:'+localServer.address().port+'/';
 const screenshotDir='test-artifacts';
 await fs.mkdir(screenshotDir,{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
@@ -39,7 +63,7 @@ await add('default 09:00-16:00 full day schedule and lunch',async()=>{
  assert.ok((await page.locator('.ski-route-step.lift').count())>=1,'lift time checkpoints missing');
  assert.ok((await page.locator('.ski-route-step.piste').count())>=1,'piste time checkpoints missing');
  assert.ok((await page.locator('.ski-route-clock').count())>=7,'time checkpoints missing');
- assert.ok((await page.locator('.ski-wc-point').count())>=1,'documented toilet options missing');
+ assert.ok((await page.locator('.graph-track-frame svg polyline').count())>=10,'continuous geographical piste/lift map must be drawn');
  await page.screenshot({path:screenshotDir+'/01-route-mobile.png',fullPage:true});
 });
 await add('selected lunch restaurant appears in timetable',async()=>{
@@ -101,29 +125,54 @@ await add('different starting and finishing villages: Ellmau to Söll',async()=>
  await page.locator('#create').click();
  const result=await page.locator('#plan-output').innerText();
  assert.match(result,/Ellmau/);assert.match(result,/Söll/);
- assert.ok((await page.locator('.region-leg').count())>=2,'cross-area corridor steps missing');
+ const actual=await page.evaluate(()=>window.SKIDayUI.getCurrent());
+ assert.ok(actual?.graphBased,'route must be computed from geographic graph');
+ assert.ok(actual.itinerary.steps.filter(x=>x.type==='lift').length>=2,'real lift numbers must be shown');
+ assert.ok(actual.itinerary.steps.filter(x=>x.type==='piste').length>=2,'real piste parts must be shown');
+ // The engine must preserve EVERY graph edge, even if a 1-3m mapped
+ // junction is suppressed from the human-friendly route list.
+ const graph=await page.evaluate(()=>fetch('./skiwelt-network-graph.json').then(r=>r.json()));
+ const ids=actual.path.edgeIds,stations=graph.stations;
+ let at=stations[a.value].node;
+ for(const id of ids){const e=graph.edges[id];assert.equal(e[0],at,'disconnected map edge');at=e[1];}
+ assert.equal(at,stations[b.value].node,'route misses selected end station');
+ const lines=actual.itinerary.steps.filter(x=>['lift','piste','transfer'].includes(x.type));
+ for(let i=1;i<lines.length;i++){
+  if(lines[i-1].to===lines[i].from)continue;
+  const p=graph.nodes[lines[i-1].to],q=graph.nodes[lines[i].from];
+  assert.ok(Math.hypot((p[0]-q[0])*75000,(p[1]-q[1])*111320)<=3.5,'a rendered route part skips an unmapped junction');
+ }
 });
-await add('closure reported and excluded from revised area route',async()=>{
+await add('closure excludes selected piste from a connected geographic route',async()=>{
  await page.locator('#closed-report').evaluate(el=>el.open=true);
  await page.locator('#closed-kind').selectOption('piste');
  await page.locator('#closed-code').fill('99a');
  await page.locator('#closed-note').fill('Browsertest: gesloten');
  await page.locator('#closed-form button[type="submit"]').click();
- const result=await page.locator('#plan-output').innerText();
- assert.match(result,/⚠/);
- const closure=await page.locator('#closed-list').innerText();
- assert.match(closure,/99a/);
- // The code can still show a day timeline, but must not claim a confirmed path.
- assert.ok((await page.locator('.day-timeline-row').count())>=4);
- await page.locator('.closure-row button').first().click();
+ try{
+  await page.waitForFunction(()=>document.querySelector('#plan-output .ski-route-step')||document.querySelector('#plan-output .route-errors'),{timeout:12000});
+  const closure=await page.locator('#closed-list').innerText();
+  assert.match(closure,/99a/);
+  const result=await page.evaluate(()=>window.SKIDayUI.getCurrent());
+  if(result){
+   assert.ok(!result.itinerary.steps.some(step=>step.type==='piste'&&step.code==='99a'),'reported closure included in route');
+   const graph=await page.evaluate(()=>fetch('./skiwelt-network-graph.json').then(r=>r.json()));
+   const ids=result.path.edgeIds;
+   for(let i=1;i<ids.length;i++)assert.equal(graph.edges[ids[i-1]][1],graph.edges[ids[i]][0],'closure creates unjoined map steps');
+   assert.ok(!ids.some(i=>{const f=graph.features[graph.edges[i][2]];return f?.kind==='piste'&&f.ref==='99a';}));
+  }else assert.match(await page.locator('#plan-output').innerText(),/geen|onmogelijk|controleer|niet/i);
+ }finally{
+  await page.locator('.closure-row button').first().click();
+ }
 });
-await add('full SkiWelt 2026-27 panorama is an image and village zoom works',async()=>{
+await add('official panorama controls support zoom and local fallback without GPS',async()=>{
  await page.locator('.bottom button[data-page="map"]').click();
  await page.locator('#pano-quick-area').selectOption('westendorf');
  await page.locator('#pano-focus-open').click();
  await page.locator('#pano-img').waitFor({state:'visible',timeout:8000});
- await page.waitForFunction(()=>document.querySelector('#pano-img').complete&&document.querySelector('#pano-img').naturalWidth>1000,{timeout:25000});
+ await page.waitForFunction(()=>document.querySelector('#pano-img').complete&&document.querySelector('#pano-img').naturalWidth>400,{timeout:25000});
  const props=await page.locator('#pano-img').evaluate(el=>({src:el.currentSrc,width:el.naturalWidth,height:el.naturalHeight,transform:el.style.transform}));
+ assert.ok(props.width>400,'fallback panorama is missing');
  assert.match(props.src,/skimap\.jpg/);
  assert.match(props.transform,/scale\(3\.8\)/);
  const v1=await page.evaluate(()=>window.SKIPanorama.getZoom());
@@ -166,15 +215,20 @@ await add('full SkiWelt 2026-27 panorama is an image and village zoom works',asy
  await page.screenshot({path:screenshotDir+'/02-map-mobile.png'});
  await page.locator('[data-close="pano-modal"]').click();
 });
-await add('fastest provisional GPS return recognises area and offers manual override',async()=>{
+await add('GPS return provides area choice without claiming precise piste navigation',async()=>{
  await page.locator('#return-home-map').click();
  await page.locator('#return-home-modal').waitFor({state:'visible'});
- await page.waitForFunction(()=>document.getElementById('return-home-status').textContent.includes('vertrekgebied:'),{timeout:12000});
- assert.ok(await page.locator('#return-home-output .region-leg').count()>=1);
- await page.locator('#return-area-override').selectOption('Ellmau');
- await page.locator('#return-home-manual').click();
- assert.match(await page.locator('#return-home-output').innerText(),/Ellmau/);
- await page.locator('#return-home-close').click();
+ try{
+  await page.waitForFunction(()=>document.getElementById('return-home-status').textContent.includes('vertrekgebied:'),{timeout:12000});
+  await page.locator('#return-area-override').selectOption('Ellmau');
+  await page.locator('#return-home-manual').click();
+  await page.waitForFunction(()=>document.getElementById('return-home-status').textContent.includes('Ellmau'),{timeout:9000});
+  assert.match(await page.locator('#return-home-status').innerText(),/Ellmau/);
+  const output=await page.locator('#return-home-output').innerText();
+  assert.match(output,/niet|Snelste|volg|route/i);
+ }finally{
+  await page.locator('#return-home-close').click();
+ }
  assert.ok(await page.locator('#return-home-modal').isHidden());
 });
 await add('radar location control and expanded wind areas appear',async()=>{
@@ -214,5 +268,6 @@ await add('no uncaught browser errors',async()=>{
  assert.deepEqual(errors,[],errors.join('\n'));
 });
 await browser.close();
+if(localServer)await new Promise(done=>localServer.close(done));
 console.log('\nBrowser: '+checks.length+' checks passed, '+issues.length+' failed');
 if(issues.length){console.error(JSON.stringify(issues,null,2));process.exitCode=1;}

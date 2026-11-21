@@ -1,0 +1,44 @@
+name: Import SkiWelt map linework
+on:
+  push:
+    branches: [skije-v4.5.12-map-graph]
+    paths:
+      - 'scripts/build-skiwelt-geometry.mjs'
+      - 'scripts/enrich-skiwelt-elevation.mjs'
+      - 'scripts/build-skiwelt-network.mjs'
+      - '.github/workflows/skiwelt-geometry-import.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import-map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reuse complete offline terrain snapshot, else fetch and validate
+        run: |
+          if node -e "const x=require('./public/skiwelt-geometry.json'); process.exit(x.features.length >= 500 && x.terrainElevation?.missing === 0 ? 0 : 1)"; then
+            echo 'Using checked-in complete SkiWelt geometry, avoiding flaky elevation API.'
+          else
+            node scripts/build-skiwelt-geometry.mjs
+            node scripts/enrich-skiwelt-elevation.mjs
+          fi
+      - name: Construct slope and lift junction graph with directed edges
+        run: node scripts/build-skiwelt-network.mjs
+      - name: Save reproducible offline map data on this branch
+        run: |
+          git config user.name "skije-map-builder"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/skiwelt-geometry.json public/skiwelt-source-summary.json public/skiwelt-network-graph.json public/skiwelt-graph-summary.json
+          if git diff --cached --quiet; then
+            echo "No map geometry changes."
+          else
+            git commit -m "data: import offline OpenSkiData SkiWelt lift and piste linework"
+            git pull --rebase origin skije-v4.5.12-map-graph
+            git push
+          fi

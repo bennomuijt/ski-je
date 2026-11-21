@@ -28,6 +28,7 @@ try{
  // Exercise the NEW route-reference UI on the actual proposed branch.
  await page.locator('#create').click();
  const refs=page.locator('.official-tour-reference');
+ await refs.waitFor({state:'attached',timeout:25000});
  assert.equal(await refs.count(),1,'official tour is not rendered in day planner');
  await refs.evaluate(el=>el.open=true);
  assert.equal(await page.locator('.official-tour-stage').count(),31,'clockwise reference stages omitted');

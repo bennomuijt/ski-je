@@ -1,7 +1,7 @@
-/* SKI-je v4.5.11: online update; existing local user data remain untouched. */
+/* SKI-je v4.5.12: online update; existing local user data remain untouched. */
 (()=>{
  'use strict';
- const CURRENT='4.5.11-cf';
+ const CURRENT='4.5.12-cf';
  const buttons=['app-update-now','check-update'].map(id=>document.getElementById(id)).filter(Boolean);
  const status=document.getElementById('app-update-status');
  let busy=false;

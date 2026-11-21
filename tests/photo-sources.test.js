@@ -34,7 +34,7 @@ test('bronzoeker laadt uitsluitend bij openen en geen externe afbeeldingen',()=>
  const html=read('public/index.html'),script=read('public/ski-photo-sources.js'),sw=read('public/sw.js');
  for(const id of ['ski-photo-sources','ski-photo-sources-search','ski-photo-sources-kind','ski-photo-sources-results','ski-photo-sources-status'])
   assert.match(html,new RegExp('id="'+id+'"'));
- assert.match(html,/ski-photo-sources\.js\?v=4511/);
+ assert.match(html,/ski-photo-sources\.js\?v=4512/);
  assert.match(html,/id="pano-hut-more-sources"/);
  assert.match(read('public/pano-restaurants.js'),/SKIPhotoSources\?\.open\(hut\.name\)/);
  assert.match(script,/panel\.addEventListener\('toggle'/);

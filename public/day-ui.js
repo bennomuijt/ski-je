@@ -6,7 +6,7 @@
  const planner=window.SKI_DayPlanner,network=window.SKIWeltCorridors,detail=window.SKIRouteDetail;
  if(!planner||!network||!detail||!$('create')||!$('plan-output'))return;
  const KEY='skije-local-closures-2026-v1';
- let current=null,readyPdf=null;
+ let current=null,readyPdf=null,renderRequest=0;
  const t=source=>window.SKI_I18N_DATA?.translations?.[window.SKILanguage?.get?.()||'nl']?.[source]||source;
  const el=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=String(text);return node;};
  function getClosures(){
@@ -53,20 +53,32 @@
    row.append(label,remove);list.append(row);
   }
  }
- function render(){
-  const options=inputs(),route=network.build(options,getClosures()),plan=planner.compute({...options,returnEstimate:route.returnEstimate}),output=$('plan-output');output.replaceChildren();readyPdf=null;
-  if(!plan.ok||!route.ok){
+ async function render(){
+  const serial=++renderRequest,options=inputs(),output=$('plan-output');output.replaceChildren();readyPdf=null;current=null;
+  output.append(el('p','hint','Geografisch piste- en liftnetwerk laden; aansluitingen controleren…'));
+  let routeResult;
+  try{
+   if(!window.SKIMapRouter)throw Error('Geografische routeplanner ontbreekt in deze appversie.');
+   await window.SKIMapRouter.load();
+   if(serial!==renderRequest)return;
+   routeResult=window.SKIMapRouter.build(options,getClosures());
+  }catch(error){
+   if(serial!==renderRequest)return;
+   output.replaceChildren(el('strong','','Kaartnetwerk niet beschikbaar'));
+   output.append(el('p','route-errors',String(error?.message||error)));
+   output.append(el('p','hint','Zonder aaneengesloten kaartgegevens geeft SKI-je geen verzonnen piste- of liftroute.'));
+   return;
+  }
+  output.replaceChildren();
+  if(!routeResult.ok){
    output.append(el('strong','',t('Controleer je planning')));
-   output.append(el('p','route-errors',(route.ok?plan.reason:route.reason||plan.reason)));
-   output.append(el('p','hint',t('Kies haalbare tijden; de officiële veiligheid en liftstatus blijven leidend.')));
-   current=null;return;
+   output.append(el('p','route-errors',routeResult.reason));
+   output.append(el('p','hint','Er is geen ononderbroken piste-/liftroute gevonden voor deze keuzes. Ontbrekende aansluitingen worden niet overgeslagen.'));
+   return;
   }
-  if(route.lunchAutomaticallyChosen&&plan.useLunch){
-   const lunch=plan.sections.find(section=>section.type==='lunch');
-   if(lunch){lunch.label='Lunchgebied '+route.lunchArea+' (restaurant nog te kiezen)';lunch.detail='SKI-je heeft een haalbaar gebied gekozen; exacte hut, pisteverbinding en openingstijd ter plaatse controleren.';}
-   plan.lunchRestaurant='Lunchgebied '+route.lunchArea+' (restaurant ter plaatse kiezen)';
-  }
-  const itinerary=detail.buildTimeline(plan,route,options);current={plan,route,options,itinerary};
+  const {plan,route,itinerary}=routeResult;
+  current={plan,route,options,itinerary,graphBased:true,path:routeResult.path};
+
   output.append(el('strong','plan-heading',itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length||itinerary.steps.some(s=>s.unplanned)?'⚠️ Voorlopige skidag — niet alle pistes en liften gecontroleerd':t('Jouw volledige skidag')));
   const intro=el('div','day-intro');
   intro.append(el('span','day-pill',plan.departure+' – '+plan.returnTime));
@@ -97,6 +109,7 @@
    legend.append(el('span','ski-route-tag '+kind,title));
   }
   routeWrap.append(legend);
+  if(routeResult.graphBased&&window.SKIGeometryView?.mount)window.SKIGeometryView.mount(routeWrap,routeResult);
   window.SKIOfficialTourUI?.mount?.(routeWrap,getClosures());
   const detailed=el('div','ski-route-steps');
   for(const [i,step] of itinerary.steps.entries()){
@@ -158,7 +171,7 @@
   const share=el('button','btn secondary',t('Deel skidag via telefoon'));share.id='share-day-plan';share.type='button';
   const sharePdf=el('button','btn secondary',t('Deel PDF'));sharePdf.id='share-day-pdf';sharePdf.type='button';
   const mapRoute=el('button','btn secondary',t('🗺️ Bekijk routegebieden op kaart'));mapRoute.id='show-day-panorama';mapRoute.type='button';
-  mapRoute.addEventListener('click',()=>{if(window.SKIMapRoute?.show)window.SKIMapRoute.show(current);else $('pano-open')?.click();});
+  mapRoute.addEventListener('click',()=>{if(routeResult.graphBased&&document.querySelector('.graph-track-map'))document.querySelector('.graph-track-map').scrollIntoView({behavior:'smooth',block:'center'});else if(window.SKIMapRoute?.show)window.SKIMapRoute.show(current);else $('pano-open')?.click();});
   const status=el('p','hint');status.id='day-export-status';status.setAttribute('role','status');
   actions.append(pdf,share,sharePdf,mapRoute);output.append(actions,status);
   async function getPdf(){
@@ -203,6 +216,36 @@
   $('closed-code').value='';$('closed-note').value='';
   renderClosures();render();
  }
+ // All real lift stations are selectable. Keep village/dalstation choices on top.
+ // The route itself is always computed offline from map lines, never from GPS.
+ function populateLiftStations(data){
+  const mapped=Object.entries(data.stations||{}).filter(([id,v])=>id.startsWith('lift:')&&Number.isInteger(v?.node));
+  mapped.sort((a,b)=>String(a[1].ref).localeCompare(String(b[1].ref),'nl',{numeric:true})||a[0].localeCompare(b[0]));
+  let stored={};
+  try{stored=JSON.parse(localStorage.getItem('skije-preview-v1')||'{}')?.form||{};}catch{}
+  for(const id of ['start','finish']){
+   const select=$(id);if(!select||select.querySelector('optgroup[data-skiwelt-lifts]'))continue;
+   const value=select.value||stored[id];
+   for(const [side,label] of [['bottom','Andere liften · dalstations'],['middle','Andere liften · tussenstations'],['top','Andere liften · bergstations']]){
+    const optgroup=document.createElement('optgroup');optgroup.label=label;optgroup.dataset.skiweltLifts=side;
+    for(const [key,station] of mapped){
+     if(side==='middle'&&!station.side.startsWith('middle')||side!=='middle'&&station.side!==side)continue;
+     const option=document.createElement('option');option.value=key;option.textContent=station.label;
+     optgroup.append(option);
+    }
+    if(optgroup.childElementCount)select.append(optgroup);
+   }
+   const desired=stored[id]&&data.stations[stored[id]]?stored[id]:value;
+   if(desired&&[...select.options].some(option=>option.value===desired))select.value=desired;
+  }
+  if($('same-end')?.checked&&$('start')?.value)$('finish').value=$('start').value;
+ }
+ // Load once in the foreground so choices are ready before route creation.
+ window.SKIMapRouter?.load().then(populateLiftStations).catch(error=>{
+  const hint=$('plan-output');
+  if(hint&&!hint.textContent)hint.append(el('p','hint','De volledige liftstationslijst is offline nog niet geladen. Controleer je internetverbinding.'));
+  console.warn('SkiWelt graph stations unavailable:',error);
+ });
  $('closed-form')?.addEventListener('submit',addClosure);
  renderClosures();
  window.SKIDayUI={render,getCurrent:()=>current,getClosures};

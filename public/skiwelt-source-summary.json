@@ -1,0 +1,1616 @@
+{
+  "tiles": {
+    "546-357": {
+      "areas": 29,
+      "lifts": 107,
+      "runs": 488
+    },
+    "547-357": {
+      "areas": 24,
+      "lifts": 52,
+      "runs": 736
+    },
+    "546-358": {
+      "areas": 16,
+      "lifts": 120,
+      "runs": 1203
+    },
+    "547-358": {
+      "areas": 14,
+      "lifts": 156,
+      "runs": 1392
+    }
+  },
+  "features": 518,
+  "lifts": 80,
+  "pistes": 438,
+  "excluded": 3466,
+  "unknown": 259,
+  "namedLifts": 79,
+  "numberedPistes": 256,
+  "samples": {
+    "lifts": [
+      {
+        "ref": "60",
+        "name": "4EUB Brandstadl",
+        "osm": "way/48389470",
+        "points": 2,
+        "first": [
+          12.24688,
+          47.51965,
+          679
+        ],
+        "last": [
+          12.24602,
+          47.492,
+          1643
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "79",
+        "name": "Übungslift - Dorf",
+        "osm": "way/440355923",
+        "points": 2,
+        "first": [
+          12.24472,
+          47.52704,
+          718
+        ],
+        "last": [
+          12.24607,
+          47.52807,
+          738
+        ],
+        "difficulty": "",
+        "type": "drag_lift"
+      },
+      {
+        "ref": "61",
+        "name": "Brandstadl I",
+        "osm": "way/23443723",
+        "points": 2,
+        "first": [
+          12.24895,
+          47.52002,
+          682
+        ],
+        "last": [
+          12.25056,
+          47.50038,
+          1235
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "90",
+        "name": "Hausberg",
+        "osm": "way/23443729",
+        "points": 2,
+        "first": [
+          12.29425,
+          47.50665,
+          820
+        ],
+        "last": [
+          12.30723,
+          47.50384,
+          1087
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "118",
+        "name": "Windauberg",
+        "osm": "way/4442613",
+        "points": 2,
+        "first": [
+          12.25848,
+          47.3964,
+          1573
+        ],
+        "last": [
+          12.2526,
+          47.40269,
+          1794
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "31",
+        "name": "Kasbichlbahn",
+        "osm": "way/76190832",
+        "points": 2,
+        "first": [
+          12.18953,
+          47.47518,
+          1174
+        ],
+        "last": [
+          12.19085,
+          47.46463,
+          1528
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "23",
+        "name": "Rigibahn",
+        "osm": "way/76195057",
+        "points": 2,
+        "first": [
+          12.18978,
+          47.46672,
+          1438
+        ],
+        "last": [
+          12.20087,
+          47.46497,
+          1754
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "99",
+        "name": "Tanzboden",
+        "osm": "way/23443725",
+        "points": 2,
+        "first": [
+          12.26023,
+          47.49101,
+          1424
+        ],
+        "last": [
+          12.25615,
+          47.48529,
+          1587
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "69",
+        "name": "Kummereralm",
+        "osm": "way/20458232",
+        "points": 2,
+        "first": [
+          12.26476,
+          47.48092,
+          1382
+        ],
+        "last": [
+          12.25375,
+          47.48138,
+          1672
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "110",
+        "name": "Alpenrosenbahn I",
+        "osm": "way/4421733",
+        "points": 2,
+        "first": [
+          12.21406,
+          47.42748,
+          790
+        ],
+        "last": [
+          12.23104,
+          47.42228,
+          1310
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "120",
+        "name": "KiWest",
+        "osm": "way/145634136",
+        "points": 2,
+        "first": [
+          12.30601,
+          47.40437,
+          945
+        ],
+        "last": [
+          12.26778,
+          47.40083,
+          1744
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "45",
+        "name": "Hexen6er",
+        "osm": "way/28927374",
+        "points": 2,
+        "first": [
+          12.19173,
+          47.48037,
+          1098
+        ],
+        "last": [
+          12.19813,
+          47.47049,
+          1465
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "80",
+        "name": "Hartkaiserbahn",
+        "osm": "way/385579386",
+        "points": 2,
+        "first": [
+          12.29313,
+          47.50784,
+          814
+        ],
+        "last": [
+          12.27315,
+          47.49363,
+          1518
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "17",
+        "name": "Schusterbühellift",
+        "osm": "way/155771804",
+        "points": 2,
+        "first": [
+          12.25783,
+          47.4451,
+          804
+        ],
+        "last": [
+          12.25719,
+          47.44365,
+          845
+        ],
+        "difficulty": "",
+        "type": "t-bar"
+      },
+      {
+        "ref": "22",
+        "name": "Salvenbahn II",
+        "osm": "way/28927186",
+        "points": 2,
+        "first": [
+          12.18594,
+          47.45623,
+          1168
+        ],
+        "last": [
+          12.20325,
+          47.46496,
+          1819
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "89b",
+        "name": "Ellmi's Zauberteppich II",
+        "osm": "way/1246397179",
+        "points": 2,
+        "first": [
+          12.27185,
+          47.49298,
+          1508
+        ],
+        "last": [
+          12.27205,
+          47.49345,
+          1520
+        ],
+        "difficulty": "",
+        "type": "magic_carpet"
+      },
+      {
+        "ref": "111",
+        "name": "Alpenrosenbahn II",
+        "osm": "way/117122123",
+        "points": 2,
+        "first": [
+          12.23116,
+          47.42208,
+          1311
+        ],
+        "last": [
+          12.24736,
+          47.41332,
+          1765
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "119",
+        "name": "Gampenkogel",
+        "osm": "way/4442833",
+        "points": 2,
+        "first": [
+          12.25968,
+          47.39623,
+          1572
+        ],
+        "last": [
+          12.2643,
+          47.40196,
+          1804
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "51",
+        "name": "Siller-Keat",
+        "osm": "way/20457678",
+        "points": 2,
+        "first": [
+          12.21874,
+          47.4737,
+          1190
+        ],
+        "last": [
+          12.20969,
+          47.46924,
+          1492
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "66",
+        "name": "Südhang",
+        "osm": "way/29907341",
+        "points": 2,
+        "first": [
+          12.23899,
+          47.48646,
+          1398
+        ],
+        "last": [
+          12.24481,
+          47.49185,
+          1646
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "42",
+        "name": "Hohe Salve",
+        "osm": "way/20457676",
+        "points": 2,
+        "first": [
+          12.19713,
+          47.47986,
+          1150
+        ],
+        "last": [
+          12.2041,
+          47.46533,
+          1828
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "86",
+        "name": "Kirchbichl",
+        "osm": "way/91115548",
+        "points": 2,
+        "first": [
+          12.29768,
+          47.5124,
+          799
+        ],
+        "last": [
+          12.29757,
+          47.50863,
+          866
+        ],
+        "difficulty": "",
+        "type": "t-bar"
+      },
+      {
+        "ref": "89a",
+        "name": "Ellmi's Zauberteppich I",
+        "osm": "way/404312412",
+        "points": 2,
+        "first": [
+          12.27035,
+          47.49276,
+          1498
+        ],
+        "last": [
+          12.27169,
+          47.49333,
+          1510
+        ],
+        "difficulty": "",
+        "type": "magic_carpet"
+      },
+      {
+        "ref": "9a",
+        "name": "Förderband Hochbrixen",
+        "osm": "way/339638923",
+        "points": 2,
+        "first": [
+          12.22878,
+          47.46215,
+          1285
+        ],
+        "last": [
+          12.22926,
+          47.46237,
+          1290
+        ],
+        "difficulty": "",
+        "type": "magic_carpet"
+      },
+      {
+        "ref": "96",
+        "name": "Kaiserexpress",
+        "osm": "way/30072366",
+        "points": 2,
+        "first": [
+          12.26494,
+          47.4947,
+          1364
+        ],
+        "last": [
+          12.27239,
+          47.49366,
+          1524
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "117",
+        "name": "Fleidingbahn",
+        "osm": "way/4442612",
+        "points": 2,
+        "first": [
+          12.23361,
+          47.39621,
+          1267
+        ],
+        "last": [
+          12.24988,
+          47.40282,
+          1865
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "43",
+        "name": "Keat",
+        "osm": "way/20457677",
+        "points": 2,
+        "first": [
+          12.19939,
+          47.48001,
+          1138
+        ],
+        "last": [
+          12.20287,
+          47.46981,
+          1534
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "46",
+        "name": "Rinner",
+        "osm": "way/47679137",
+        "points": 2,
+        "first": [
+          12.1915,
+          47.48003,
+          1099
+        ],
+        "last": [
+          12.18465,
+          47.48116,
+          1248
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "125",
+        "name": "Sammerlift",
+        "osm": "way/391480860",
+        "points": 2,
+        "first": [
+          12.21671,
+          47.43065,
+          794
+        ],
+        "last": [
+          12.21921,
+          47.42918,
+          825
+        ],
+        "difficulty": "",
+        "type": "t-bar"
+      },
+      {
+        "ref": "126",
+        "name": "Schneeberg",
+        "osm": "way/22946445",
+        "points": 2,
+        "first": [
+          12.21673,
+          47.43165,
+          789
+        ],
+        "last": [
+          12.22201,
+          47.42858,
+          872
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "9",
+        "name": "Übungslift Hochbrixen",
+        "osm": "way/391480871",
+        "points": 2,
+        "first": [
+          12.22831,
+          47.46241,
+          1288
+        ],
+        "last": [
+          12.22822,
+          47.46327,
+          1303
+        ],
+        "difficulty": "",
+        "type": "rope_tow"
+      },
+      {
+        "ref": "91",
+        "name": "Ellmi's 6er",
+        "osm": "way/48390127",
+        "points": 2,
+        "first": [
+          12.26199,
+          47.50215,
+          1223
+        ],
+        "last": [
+          12.27245,
+          47.49385,
+          1524
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "112",
+        "name": "Choralmbahn",
+        "osm": "way/29903598",
+        "points": 3,
+        "first": [
+          12.2169,
+          47.4132,
+          912
+        ],
+        "last": [
+          12.24429,
+          47.41912,
+          1800
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "44",
+        "name": "Stöckl",
+        "osm": "way/23443722",
+        "points": 2,
+        "first": [
+          12.19254,
+          47.48018,
+          1100
+        ],
+        "last": [
+          12.19707,
+          47.47669,
+          1224
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "2",
+        "name": "Kälbersalvenbahn",
+        "osm": "way/20457788",
+        "points": 2,
+        "first": [
+          12.22657,
+          47.46074,
+          1271
+        ],
+        "last": [
+          12.20758,
+          47.46214,
+          1639
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "27a",
+        "name": "Zauberteppich Högerfeld",
+        "osm": "way/391480781",
+        "points": 2,
+        "first": [
+          12.1607,
+          47.44718,
+          613
+        ],
+        "last": [
+          12.1615,
+          47.44763,
+          618
+        ],
+        "difficulty": "",
+        "type": "magic_carpet"
+      },
+      {
+        "ref": "7",
+        "name": "Filzbodenbahn",
+        "osm": "way/138963419",
+        "points": 2,
+        "first": [
+          12.22334,
+          47.46691,
+          1254
+        ],
+        "last": [
+          12.24098,
+          47.47687,
+          1666
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "24",
+        "name": "Schernthannbahn",
+        "osm": "way/47679129",
+        "points": 2,
+        "first": [
+          12.18682,
+          47.45542,
+          1144
+        ],
+        "last": [
+          12.2015,
+          47.4607,
+          1531
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "58",
+        "name": "Hexenteppich II",
+        "osm": "way/330194831",
+        "points": 2,
+        "first": [
+          12.196,
+          47.49947,
+          708
+        ],
+        "last": [
+          12.1966,
+          47.49849,
+          715
+        ],
+        "difficulty": "",
+        "type": "magic_carpet"
+      },
+      {
+        "ref": "40",
+        "name": "Hexenwasserbahn",
+        "osm": "way/19049362",
+        "points": 2,
+        "first": [
+          12.19831,
+          47.49629,
+          732
+        ],
+        "last": [
+          12.1979,
+          47.48026,
+          1151
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "",
+        "name": "Tellerlift Salvista",
+        "osm": "way/1238600132",
+        "points": 2,
+        "first": [
+          12.16297,
+          47.48491,
+          671
+        ],
+        "last": [
+          12.16772,
+          47.48301,
+          766
+        ],
+        "difficulty": "",
+        "type": "platter"
+      },
+      {
+        "ref": "20",
+        "name": "Salvenbahn I",
+        "osm": "way/222877978",
+        "points": 2,
+        "first": [
+          12.16252,
+          47.44688,
+          624
+        ],
+        "last": [
+          12.18528,
+          47.45653,
+          1171
+        ],
+        "difficulty": "",
+        "type": "gondola"
+      },
+      {
+        "ref": "65",
+        "name": "Ostlift",
+        "osm": "way/53553814",
+        "points": 2,
+        "first": [
+          12.25326,
+          47.4864,
+          1556
+        ],
+        "last": [
+          12.25277,
+          47.4891,
+          1587
+        ],
+        "difficulty": "",
+        "type": "t-bar"
+      },
+      {
+        "ref": "71",
+        "name": "Aualm",
+        "osm": "way/20458019",
+        "points": 2,
+        "first": [
+          12.24033,
+          47.48487,
+          1384
+        ],
+        "last": [
+          12.2484,
+          47.47754,
+          1672
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      },
+      {
+        "ref": "25",
+        "name": "Foischingbahn",
+        "osm": "way/28927158",
+        "points": 2,
+        "first": [
+          12.19263,
+          47.45277,
+          1250
+        ],
+        "last": [
+          12.20603,
+          47.46129,
+          1623
+        ],
+        "difficulty": "",
+        "type": "chair_lift"
+      }
+    ],
+    "runs": [
+      {
+        "ref": "1a",
+        "name": "",
+        "osm": "way/548282797",
+        "points": 7,
+        "first": [
+          12.24849,
+          47.52659
+        ],
+        "last": [
+          12.24563,
+          47.52074
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "61",
+        "name": "Brandstadl Talabfahrt Bärbichel",
+        "osm": "way/260943597",
+        "points": 19,
+        "first": [
+          12.25121,
+          47.51165
+        ],
+        "last": [
+          12.24688,
+          47.51965
+        ],
+        "difficulty": "freeride",
+        "type": ""
+      },
+      {
+        "ref": "60",
+        "name": "Verbindung Schmiedalm - Scheffau",
+        "osm": "way/424238432",
+        "points": 28,
+        "first": [
+          12.26676,
+          47.51112
+        ],
+        "last": [
+          12.25053,
+          47.52015
+        ],
+        "difficulty": "freeride",
+        "type": ""
+      },
+      {
+        "ref": "79",
+        "name": "Übungslift Dorf - Abfahrt",
+        "osm": "way/440355924",
+        "points": 5,
+        "first": [
+          12.24607,
+          47.52807
+        ],
+        "last": [
+          12.24472,
+          47.52704
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "60",
+        "name": "Brandstadl Talabfahrt Schwarzach",
+        "osm": "way/207174484",
+        "points": 14,
+        "first": [
+          12.25121,
+          47.51165
+        ],
+        "last": [
+          12.24895,
+          47.52002
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "120",
+        "name": "Ki-West Abfahrt",
+        "osm": "way/330857552",
+        "points": 4,
+        "first": [
+          12.29621,
+          47.40621
+        ],
+        "last": [
+          12.29762,
+          47.40402
+        ],
+        "difficulty": "advanced",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/263500518",
+        "points": 3,
+        "first": [
+          12.18724,
+          47.45591
+        ],
+        "last": [
+          12.18682,
+          47.45542
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "31, 31a, 31b",
+        "name": "31, 31a, 31b",
+        "osm": "way/330027374",
+        "points": 5,
+        "first": [
+          12.18998,
+          47.47399
+        ],
+        "last": [
+          12.18953,
+          47.47518
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "1",
+        "name": "Kaslach Abfahrt",
+        "osm": "way/666276556",
+        "points": 3,
+        "first": [
+          12.22474,
+          47.46156
+        ],
+        "last": [
+          12.22491,
+          47.45909
+        ],
+        "difficulty": "advanced",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/391480776",
+        "points": 2,
+        "first": [
+          12.18931,
+          47.4667
+        ],
+        "last": [
+          12.18978,
+          47.46672
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "80b",
+        "name": "Hartkaiserbahn Talabfahrt",
+        "osm": "way/154529935",
+        "points": 4,
+        "first": [
+          12.27744,
+          47.49687
+        ],
+        "last": [
+          12.28287,
+          47.49984
+        ],
+        "difficulty": "advanced",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/391480810",
+        "points": 2,
+        "first": [
+          12.24744,
+          47.41224
+        ],
+        "last": [
+          12.24718,
+          47.41227
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "47",
+        "name": "Salvenmoos",
+        "osm": "way/47679133",
+        "points": 5,
+        "first": [
+          12.19413,
+          47.48367
+        ],
+        "last": [
+          12.19704,
+          47.48065
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "1b",
+        "name": "Brixen Abfahrt",
+        "osm": "way/399314262",
+        "points": 18,
+        "first": [
+          12.24486,
+          47.46022
+        ],
+        "last": [
+          12.24331,
+          47.44948
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "66",
+        "name": "Südhang - Abfahrten",
+        "osm": "way/329703677",
+        "points": 4,
+        "first": [
+          12.2449,
+          47.49049
+        ],
+        "last": [
+          12.23923,
+          47.48633
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "113",
+        "name": "Steindlabfahrt",
+        "osm": "way/400862070",
+        "points": 11,
+        "first": [
+          12.22086,
+          47.41776
+        ],
+        "last": [
+          12.21665,
+          47.41293
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/1576924869",
+        "points": 3,
+        "first": [
+          12.18581,
+          47.47255
+        ],
+        "last": [
+          12.18474,
+          47.47398
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "6",
+        "name": "Joch Abfahrt",
+        "osm": "way/30833951",
+        "points": 24,
+        "first": [
+          12.24891,
+          47.47729
+        ],
+        "last": [
+          12.24402,
+          47.45978
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "43",
+        "name": "Keatabfahrt",
+        "osm": "way/47679135",
+        "points": 3,
+        "first": [
+          12.20017,
+          47.47578
+        ],
+        "last": [
+          12.19713,
+          47.47812
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/28949082",
+        "points": 2,
+        "first": [
+          12.25296,
+          47.48222
+        ],
+        "last": [
+          12.25325,
+          47.4818
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "60",
+        "name": "Brandstadl Talabfahrt",
+        "osm": "way/48390675",
+        "points": 5,
+        "first": [
+          12.24823,
+          47.49089
+        ],
+        "last": [
+          12.25052,
+          47.493
+        ],
+        "difficulty": "advanced",
+        "type": ""
+      },
+      {
+        "ref": "110",
+        "name": "Alpenrosenabfahrt",
+        "osm": "way/156156676",
+        "points": 23,
+        "first": [
+          12.24736,
+          47.41286
+        ],
+        "last": [
+          12.23098,
+          47.42284
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "2",
+        "name": "Kälberalm Abfahrt",
+        "osm": "way/28949261",
+        "points": 14,
+        "first": [
+          12.20699,
+          47.46171
+        ],
+        "last": [
+          12.22474,
+          47.46156
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "91",
+        "name": "91",
+        "osm": "way/440339176",
+        "points": 12,
+        "first": [
+          12.27245,
+          47.49385
+        ],
+        "last": [
+          12.26199,
+          47.50215
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "6a",
+        "name": "Holzalm Abfahrt",
+        "osm": "way/325798454",
+        "points": 22,
+        "first": [
+          12.24279,
+          47.4735
+        ],
+        "last": [
+          12.24539,
+          47.46064
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "65a",
+        "name": "Verbindung Aualm-Osthang",
+        "osm": "way/30680872",
+        "points": 17,
+        "first": [
+          12.24891,
+          47.47729
+        ],
+        "last": [
+          12.25234,
+          47.48624
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/155775245",
+        "points": 2,
+        "first": [
+          12.24789,
+          47.40829
+        ],
+        "last": [
+          12.2484,
+          47.40807
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "21a",
+        "name": "Hohe Salve - Rigi - Mittelstation",
+        "osm": "way/404226063",
+        "points": 3,
+        "first": [
+          12.18908,
+          47.45744
+        ],
+        "last": [
+          12.18752,
+          47.45675
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/391480767",
+        "points": 8,
+        "first": [
+          12.19132,
+          47.46423
+        ],
+        "last": [
+          12.18934,
+          47.46459
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "Geschwindigkeitsmessstrecke",
+        "osm": "way/1354690647",
+        "points": 2,
+        "first": [
+          12.27701,
+          47.48665
+        ],
+        "last": [
+          12.27711,
+          47.48602
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "25c",
+        "name": "Foischingabfahrt c",
+        "osm": "way/1446219282",
+        "points": 6,
+        "first": [
+          12.20652,
+          47.46128
+        ],
+        "last": [
+          12.20282,
+          47.45798
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/145637005",
+        "points": 4,
+        "first": [
+          12.26099,
+          47.3979
+        ],
+        "last": [
+          12.26126,
+          47.39643
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/1246330843",
+        "points": 2,
+        "first": [
+          12.23657,
+          47.47453
+        ],
+        "last": [
+          12.23606,
+          47.47413
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/391480765",
+        "points": 2,
+        "first": [
+          12.24736,
+          47.41332
+        ],
+        "last": [
+          12.24766,
+          47.41316
+        ],
+        "difficulty": "unknown",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/765993195",
+        "points": 2,
+        "first": [
+          12.24988,
+          47.40282
+        ],
+        "last": [
+          12.25003,
+          47.40269
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "97-99",
+        "name": "Verbindung Eiberg - Ellmau/Going",
+        "osm": "way/331453199",
+        "points": 7,
+        "first": [
+          12.25325,
+          47.4818
+        ],
+        "last": [
+          12.26145,
+          47.4856
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "118a",
+        "name": "Windaubergabfahrt I",
+        "osm": "way/397807808",
+        "points": 4,
+        "first": [
+          12.25377,
+          47.40209
+        ],
+        "last": [
+          12.25714,
+          47.39946
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "25",
+        "name": "Foischingabfahrt",
+        "osm": "way/330962421",
+        "points": 13,
+        "first": [
+          12.20227,
+          47.45915
+        ],
+        "last": [
+          12.20029,
+          47.45524
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "80c",
+        "name": "Skiroute 80c nach Ellmau",
+        "osm": "way/196812687",
+        "points": 8,
+        "first": [
+          12.28647,
+          47.49169
+        ],
+        "last": [
+          12.2883,
+          47.49411
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "80c",
+        "name": "Skiroute 80c nach Ellmau",
+        "osm": "way/155182814",
+        "points": 13,
+        "first": [
+          12.2883,
+          47.49411
+        ],
+        "last": [
+          12.29609,
+          47.49458
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/1551210794",
+        "points": 3,
+        "first": [
+          12.21692,
+          47.43185
+        ],
+        "last": [
+          12.21723,
+          47.43216
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "2a",
+        "name": "Zinsbergabfahrt",
+        "osm": "way/155865307",
+        "points": 7,
+        "first": [
+          12.23053,
+          47.46211
+        ],
+        "last": [
+          12.22752,
+          47.46101
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "31",
+        "name": "31",
+        "osm": "way/1244011415",
+        "points": 7,
+        "first": [
+          12.18362,
+          47.47311
+        ],
+        "last": [
+          12.18474,
+          47.47398
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "85",
+        "name": "Bärenlift Abfahrt",
+        "osm": "way/91115533",
+        "points": 5,
+        "first": [
+          12.30039,
+          47.51023
+        ],
+        "last": [
+          12.29768,
+          47.5124
+        ],
+        "difficulty": "easy",
+        "type": ""
+      },
+      {
+        "ref": "",
+        "name": "",
+        "osm": "way/1137971580",
+        "points": 2,
+        "first": [
+          12.24117,
+          47.41975
+        ],
+        "last": [
+          12.24019,
+          47.41971
+        ],
+        "difficulty": "intermediate",
+        "type": ""
+      }
+    ]
+  },
+  "matchedPiste7": [
+    {
+      "ref": "7a",
+      "name": "Filzboden Abfahrt",
+      "osm": "way/766281083"
+    },
+    {
+      "ref": "7",
+      "name": "Filzboden Abfahrt",
+      "osm": "way/766302671"
+    },
+    {
+      "ref": "7a",
+      "name": "Filzboden Abfahrt",
+      "osm": "way/30681126"
+    }
+  ],
+  "sampleLiftHochbrixen": [
+    {
+      "ref": "9a",
+      "name": "Förderband Hochbrixen",
+      "osm": "way/339638923"
+    },
+    {
+      "ref": "9",
+      "name": "Übungslift Hochbrixen",
+      "osm": "way/391480871"
+    },
+    {
+      "ref": "7",
+      "name": "Filzbodenbahn",
+      "osm": "way/138963419"
+    },
+    {
+      "ref": "18",
+      "name": "Sonnenband",
+      "osm": "way/30030178"
+    },
+    {
+      "ref": "10",
+      "name": "Skischullift Hochbrixen",
+      "osm": "way/391480868"
+    },
+    {
+      "ref": "1",
+      "name": "Hochbrixen",
+      "osm": "way/23249316"
+    }
+  ]
+}

@@ -41,10 +41,13 @@ test('minute-perfect lunch and timed itinerary, 60 minute lunch',()=>{
   assert.equal(p.itinerary.steps.at(-1).end,'17:00');
   for(const step of p.itinerary.steps)assert.ok(step.startMinute<step.endMinute);
  }
- // A late lunch must not force an unsafe return when the scenic route needs more time.
+ // A late lunch is valid only if the route engine finds a shorter feasible alternative.
  const late=sample({departure:'08:00',returnTime:'17:00',lunchTime:'13:14'});
- assert.equal(late.plan.ok,false);
- assert.match(late.plan.reason,/lunch en terugweg passen niet samen/);
+ assert.equal(late.route.ok,true,late.route.reason);
+ assert.equal(late.plan.ok,true,late.plan.reason);
+ assert.equal(late.itinerary.steps.find(x=>x.type==='lunch').start,'13:14');
+ const back=late.plan.sections.find(x=>x.type==='return');
+ assert.ok(back.minutes>=late.route.returnEstimate+15);
 });
 test('early departure, afternoon break and restaurants retain end of day',()=>{
  const p=sample({departure:'08:00',returnTime:'17:00',morningBreak:true,afternoonBreak:true,lunchRestaurantLabel:'Gipfelrestaurant Hohe Salve Söll',date:'2026-12-22',lunchTime:'11:47',lunchDuration:55});

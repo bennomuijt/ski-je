@@ -177,7 +177,7 @@
   "areaKey": "itter"
  },
  {
-  "number": "40",
+  "number": "26",
   "name": "10er Gondelbahn Hexenwasser",
   "area": "Söll",
   "areaKey": "soll"
@@ -237,14 +237,8 @@
   "areaKey": "soll"
  },
  {
-  "number": "58a",
-  "name": "Hexenteppich 2",
-  "area": "Söll",
-  "areaKey": "soll"
- },
- {
   "number": "59",
-  "name": "Mühlbichl (Übungsbereich im Dorf)",
+  "name": "Hexenteppich 2",
   "area": "Söll",
   "areaKey": "soll"
  },

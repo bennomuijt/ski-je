@@ -328,3 +328,7 @@ body.utility-open{overflow:hidden}
   font-size:12px;font-weight:900;touch-action:manipulation;white-space:nowrap;z-index:4}
 .pano-numbered-lift[hidden]{display:none!important}
 .pano-numbered-lift:focus-visible{outline:3px solid #ffab2e;outline-offset:3px}
+
+/* Put both cluster types on separate lanes in overview so either is clickable. */
+.pano-hut-layer{z-index:3}
+.pano-lift-layer{z-index:4}

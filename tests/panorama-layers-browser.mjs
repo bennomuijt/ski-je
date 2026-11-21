@@ -25,6 +25,24 @@ try{
  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
  await page.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'domcontentloaded'});
  await page.addStyleTag({content:'#ski-intro,#legal-gate{display:none!important}'});
+ // Exercise the NEW route-reference UI on the actual proposed branch.
+ await page.locator('#create').click();
+ const refs=page.locator('.official-tour-reference');
+ assert.equal(await refs.count(),1,'official tour is not rendered in day planner');
+ await refs.evaluate(el=>el.open=true);
+ assert.equal(await page.locator('.official-tour-stage').count(),31,'clockwise reference stages omitted');
+ assert.match(await page.locator('.official-tour-rows').innerText(),/Sonnenband/);
+ assert.match(await page.locator('.official-tour-rows').innerText(),/Sonnenlift/);
+ await page.locator('#reference-tour-direction').selectOption('counter');
+ assert.equal(await page.locator('.official-tour-stage').count(),33,'counter-clockwise reference stages omitted');
+ await page.locator('#reference-tour-search').fill('Filzbodenbahn');
+ assert.equal(await page.locator('.official-tour-stage').count(),1);
+ assert.match(await page.locator('.official-tour-rows').innerText(),/6a/);
+ await page.locator('#reference-tour-search').fill('');
+ await refs.evaluate(el=>el.open=false);
+ await mkdir('test-artifacts',{recursive:true});
+ await page.screenshot({path:'test-artifacts/official-tour-390.png'});
+ console.log('PASS local mobile day planner official tour 31+33 stages, Hochbrixen and search');
  await page.locator('#pano-open').evaluate(el=>el.click());
  await page.waitForFunction(()=>document.getElementById('pano-img')?.naturalWidth>0,{timeout:20000});
  await page.locator('#pano-lifts .pano-lift-group').first().waitFor();

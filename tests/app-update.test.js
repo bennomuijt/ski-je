@@ -4,7 +4,7 @@ import {readFileSync,existsSync} from 'node:fs';
 const read=(file)=>readFileSync(new URL('../'+file,import.meta.url),'utf8');
 const js=read('public/app-update.js'),html=read('public/index.html'),sw=read('public/sw.js'),manifest=read('public/manifest.webmanifest');
 test('visible header version, manual update button and safe version-check route',()=>{
-  assert.match(html,/v4\.5\.7/);assert.match(html,/id="app-update-now"/);assert.match(html,/id="check-update"/);
+  assert.match(html,/v4\.5\.8/);assert.match(html,/id="app-update-now"/);assert.match(html,/id="check-update"/);
   assert.match(html,/app-update\.js/);assert.match(js,/\/api\/health\?versioncheck=/);assert.match(js,/cache:'no-store'/);
   assert.match(js,/reg\.update\(\)/);assert.match(js,/controllerchange/);assert.match(js,/needsRefresh/);assert.match(js,/location\.replace\(url\.href\)/);
   assert.doesNotMatch(js,/localStorage\.(clear|removeItem)/);assert.match(js,/setState\('is-updating'\)/);assert.match(js,/setState\('is-current'\)/);assert.match(js,/setState\('is-failed'\)/);
@@ -17,11 +17,11 @@ test('original image on intro, header and fresh app icons',()=>{
   assert.match(manifest,/icon-192-v455\.png/);
 });
 
-test('4.5.7 PWA update and PDF watermark are in sync',()=>{
+test('4.5.8 PWA update and PDF watermark are in sync',()=>{
  const pdf=read('public/day-pdf.js'),api=read('src/index.js'),pkg=JSON.parse(read('package.json'));
- assert.equal(pkg.version,'4.5.7');
- assert.match(html,/v4\.5\.7/);assert.match(js,/4\.5\.7-cf/);assert.match(api,/4\.5\.7-cf/);
- assert.match(sw,/v4-5-7-ski-highlights/);
- assert.match(html,/app-update\.js\?v=457/);assert.match(html,/day-pdf\.js\?v=457/);
+ assert.equal(pkg.version,'4.5.8');
+ assert.match(html,/v4\.5\.8/);assert.match(js,/4\.5\.8-cf/);assert.match(api,/4\.5\.8-cf/);
+ assert.match(sw,/v4-5-8-photo-sources/);
+ assert.match(html,/app-update\.js\?v=458/);assert.match(html,/day-pdf\.js\?v=458/);
  assert.match(pdf,/globalAlpha=0\.12/);
 });

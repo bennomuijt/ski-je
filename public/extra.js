@@ -454,7 +454,7 @@
     const end=engine.clock($('return-time').value),t=engine.clock(localTime());
     if(end!==null&&t!==null&&t>=end-90&&lastReturnHintDay!==dateISO()){lastReturnHintDay=dateISO();showToast('Terugweg controleren: je streeft naar '+engine.hhmm(end-30)+' bij '+$('finish').value+'.');}
     updateTrackUI();if(now()-lastTrackPersist>60000)persistActive();
-  },15000);
+  },30000);
   persistActive();trackingMessage('Tracking gestart. Alleen voorgrond, GPS en afstand zijn schattingen.');updateTrackUI();
  }
  function saveDay(){
@@ -471,6 +471,7 @@
  $('track-gpx').addEventListener('change',()=>{if(session&&session.paused){session.saveRoute=$('track-gpx').checked;persistActive();}});
  function renderDays(){
   $('day-count').textContent=store.days.length+' dagen';
+  document.dispatchEvent(new CustomEvent('skije:dayschanged',{detail:{days:store.days.slice(0,80)}}));
   $('saved-days').innerHTML=store.days.slice(0,40).map(d=>`<div class="compact-item"><strong>${formatDate(d.startAt)} | ${num(d.distanceKm,2)} km GPS</strong><small>Top ${num(d.speedMax,1)} km/u | ${Math.round((d.elapsedMs||0)/60000)} min | ${d.saveRoute&&d.points?.length?'GPX-punten bewaard':'Geen GPS-spoor bewaard'}</small><div class="toolbar"><button class="btn secondary" data-day-gpx="${escape(d.id)}" ${d.points?.length?'':'disabled'}>GPX</button><button class="btn clear" data-day-delete="${escape(d.id)}">Wissen</button></div></div>`).join('')||'<p class="hint">Nog geen skidagen opgeslagen.</p>';
  }
  function dayGPX(day){const points=(day.points||[]).map(p=>`<trkpt lat="${p.lat.toFixed(7)}" lon="${p.lng.toFixed(7)}"><time>${new Date(p.time).toISOString()}</time></trkpt>`).join('');

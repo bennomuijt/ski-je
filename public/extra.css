@@ -318,3 +318,27 @@ body.utility-open{overflow:hidden}
  #pano-modal .pano-target-grid{max-height:80px}
  #pano-modal .pano-hut-info,#pano-modal .pano-lift-info{max-height:42dvh}
 }
+
+/* 4.5.10 - individual picture-number placement, not geographic/GPS mapping. */
+.pano-review-directory{flex:none;margin:0!important;padding:5px 9px!important;border-radius:0!important;border-left:0!important;border-right:0!important;background:#f0f8ff}
+.pano-review-directory summary{font-size:13px;min-height:40px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.pano-review-directory[open]{max-height:min(37dvh,295px);overflow:auto;overscroll-behavior:contain}
+.pano-review-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:5px 0}
+.pano-review-controls label{font-size:12px;font-weight:800}
+.pano-review-controls select,.pano-review-controls input{flex:1 1 115px;min-width:0;min-height:42px;border-radius:9px;border:1px solid #a9c9dc;background:white;color:#0b557f;padding:7px}
+.pano-review-controls input{flex:2 1 150px}
+.pano-review-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:5px;max-height:118px;overflow-y:auto;overscroll-behavior:contain}
+.pano-review-entry{min-width:0;min-height:42px;text-align:left;border:1px solid #b7d2e3;border-radius:8px;padding:5px 8px;background:white;color:#165576;font-size:12px;overflow-wrap:anywhere}
+.pano-review-entry[aria-pressed="true"]{background:#d4f1ff;border-color:#0b7cb4;box-shadow:inset 0 0 0 1px #0b7cb4}
+.pano-review-tools{display:flex;gap:6px;flex-wrap:wrap;margin:5px 0}
+.pano-review-tools button{font-size:12px;min-height:44px;flex:1 1 145px;padding:7px 9px}
+.pano-review-directory .tiny{margin:5px 0}
+.pano-review-pins{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:hidden}
+.pano-reviewed-pin{position:absolute;pointer-events:auto;transform:translate(-50%,-50%);min-height:40px;min-width:40px;padding:4px 6px;border:2px solid #fff;border-radius:12px;background:#076eae;color:#fff;font-size:12px;font-weight:850;box-shadow:0 2px 9px #0b2c5280;touch-action:manipulation;white-space:nowrap}
+.pano-reviewed-restaurant{background:#efb047;color:#472500}
+.pano-reviewed-pin:focus-visible{outline:3px solid #fb8500;outline-offset:2px}
+.pano-viewport.pano-placement-active{cursor:crosshair;box-shadow:inset 0 0 0 4px #ebad3a}
+.pano-source-links{display:flex;gap:5px;flex-wrap:wrap;padding:5px 0;align-items:center;font-size:12px;min-width:0}
+.pano-source-links strong,.pano-source-links small{flex:1 1 100%;font-size:11px}
+.pano-source-links a{display:inline-flex;align-items:center;min-height:43px;border:1px solid #bbd6e8;background:white;color:#075a84;text-decoration:none;border-radius:8px;padding:7px;font-weight:750;font-size:11px;overflow-wrap:anywhere}
+@media(max-height:550px){.pano-review-directory[open]{max-height:34dvh}.pano-review-items{max-height:74px}}

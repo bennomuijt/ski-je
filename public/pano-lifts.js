@@ -9,7 +9,8 @@
  const select=$('pano-lift-select'),search=$('pano-lift-search'),info=$('pano-lift-info');
  const name=$('pano-lift-name'),status=$('pano-lift-photo-status'),photo=$('pano-lift-photo'),link=$('pano-lift-link');
  if(!data||!layer||!view||!img||!toggle||!select||!search||!info)return;
- const areas=data.areas, lifts=data.lifts;
+ const areas=data.areas, lifts=data.lifts,connections=window.SKILiftConnections?.byNumber||{};
+ const buttons=$('pano-lift-buttons'),areaInfo=$('pano-lift-area'),linked=$('pano-lift-connections'),pistes=$('pano-lift-pistes');
  const norm=s=>String(s||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
  const srcMap={
   'Hartkaiserbahn':'Hartkaiserbahn','Brandstadlbahn I':'Brandstadlbahn I',
@@ -36,6 +37,10 @@
   if(!lift)return;
   select.value=lift.number;
   name.textContent='Lift '+lift.number+' · '+lift.name;
+  areaInfo.textContent='Skigebied: '+lift.area+'. De markering op de illustratie is indicatief.';
+  const connection=connections[lift.number];
+  linked.textContent=connection?'Gebiedsverbinding: '+connection.to+'. '+connection.details:'Verbindingen met andere gebieden: nog niet voor deze lift geverifieerd.';
+  pistes.textContent=connection?'Genoemde pistes: '+connection.pistes.join(', ')+'. Aansluitende liften: '+connection.via+'.':'Aansluitende pistes: nog niet voor deze lift geverifieerd.';
   const approved=window.SKIPublicPhotos?.getFor?.('lift',lift.name);
   photo.hidden=!approved;
   photo.removeAttribute('src');
@@ -44,12 +49,20 @@
   link.href=data.source;
   link.textContent='Officiële liftstatus bekijken';
   info.hidden=false;
+  for(const b of buttons.querySelectorAll('button[data-lift-number]'))b.setAttribute('aria-pressed',String(b.dataset.liftNumber===lift.number));
  }
  function fillOptions(areaKey){
   const list=areaKey?lifts.filter(l=>l.areaKey===areaKey):lifts;
   select.replaceChildren();
   for(const lift of list){
    const opt=document.createElement('option');opt.value=lift.number;opt.textContent=lift.number+' · '+lift.name+' ('+lift.area+')';select.append(opt);
+  }
+  buttons.replaceChildren();
+  for(const lift of list){
+   const b=document.createElement('button');b.type='button';b.className='pano-target-button';
+   b.dataset.liftNumber=lift.number;b.textContent=lift.number+' · '+lift.name;
+   b.setAttribute('aria-label','Lift '+lift.number+' '+lift.name+', '+lift.area);
+   b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>setLift(lift));buttons.append(b);
   }
   return list;
  }
@@ -63,7 +76,7 @@
   b.setAttribute('aria-label','Liften rond '+area.name+', '+members.length+' liften; open nummers en namen');
   b.addEventListener('pointerdown',e=>e.stopPropagation());
   b.addEventListener('pointerup',e=>e.stopPropagation());
-  b.addEventListener('click',e=>{e.stopPropagation();search.value='';const first=fillOptions(area.key)[0];if(first)setLift(first);});
+  b.addEventListener('click',e=>{e.stopPropagation();search.value='';const first=fillOptions(area.key)[0];if(first)setLift(first);$('pano-hut-info').hidden=true;});
   layer.append(b);points.push({b,area});
  }
  function searchLifts(){
@@ -72,10 +85,14 @@
   fillOptions(null);
   if(needle){
    select.replaceChildren();
-   for(const lift of matches.slice(0,82)){const option=document.createElement('option');option.value=lift.number;option.textContent=lift.number+' · '+lift.name+' ('+lift.area+')';select.append(option);}
+   buttons.replaceChildren();
+   for(const lift of matches){const option=document.createElement('option');option.value=lift.number;option.textContent=lift.number+' · '+lift.name+' ('+lift.area+')';select.append(option);
+    const b=document.createElement('button');b.type='button';b.className='pano-target-button';b.dataset.liftNumber=lift.number;
+    b.textContent=lift.number+' · '+lift.name;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>setLift(lift));buttons.append(b);
+   }
   }
   if(matches[0])setLift(matches[0]);
-  else {name.textContent='Geen lift gevonden';info.hidden=false;status.textContent='Probeer een ander liftnummer of deel van de naam.';photo.hidden=true;}
+  else {name.textContent='Geen lift gevonden';info.hidden=false;status.textContent='Probeer een ander liftnummer of deel van de naam.';photo.hidden=true;linked.textContent='';pistes.textContent='';}
  }
  search.addEventListener('input',searchLifts);
  select.addEventListener('change',()=>setLift(lifts.find(l=>l.number===select.value)));

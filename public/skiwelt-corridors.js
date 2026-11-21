@@ -156,6 +156,7 @@
   const direct=shortest(start,finish,blocked);
   if(direct===null){
    unreachable.push(start+' → '+finish);
+   notes.push('⚠️ Geen gedocumenteerde verbinding door de huidige sluitingen of ontbrekende aansluitingen.');
    return {...empty,unreachable,reason:'Geen gedocumenteerde verbinding tussen start en eindpunt. Controleer je gemelde sluitingen.'};
   }
   const baseline=travel(direct),breaks=earlyBreak+lateBreak;
@@ -188,7 +189,7 @@
      // After lunch: allow the day planner to reserve the entire return route.
      const finalReturnStart=safe-returnReserve;
      if(lunchStart+lunchMinutes+10>finalReturnStart)continue;
-     if(lunchStart+lunchMinutes+lateBreak+after>finalReturnStart)continue;
+     if(lunchStart+lunchMinutes+lateBreak+after+10>finalReturnStart)continue;
     }else if(dayStart+breaks+total+15>safe)continue;
     if(total+breaks+lunchMinutes+15>safe-dayStart)continue;
     const steps=[...pre,...post,...back];

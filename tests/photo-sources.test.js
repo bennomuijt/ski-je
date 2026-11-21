@@ -36,7 +36,7 @@ test('bronzoeker laadt uitsluitend bij openen en geen externe afbeeldingen',()=>
   assert.match(html,new RegExp('id="'+id+'"'));
  assert.match(html,/ski-photo-sources\.js\?v=459/);
  assert.match(html,/id="pano-hut-more-sources"/);
- assert.match(read('public/pano-restaurants.js'),/SKIPhotoSources\\?\\.open\\(hut\\.name\\)/);
+ assert.match(read('public/pano-restaurants.js'),/SKIPhotoSources\?\.open\(hut\.name\)/);
  assert.match(script,/panel\.addEventListener\('toggle'/);
  assert.match(script,/fetch\('\.\/skiwelt-fotobronnen-2026\.json'/);
  assert.match(script,/rel='noopener noreferrer'/);

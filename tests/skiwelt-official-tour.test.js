@@ -64,3 +64,16 @@ test('static resources and route UI include tour, gap audit, offline caching and
  assert.match(js,/unverifiedTransitions/);
  assert.match(pdf,/itinerary\?\.warnings/);
 });
+
+test('Brixen–Westendorf gebiedsverbinding noemt alle pistes 110/111/117 én Fleiding 117',()=>{
+ const segment=detail.catalog['brixen-westendorf'].ab;
+ const names=segment.filter(s=>s.type==='piste').map(s=>s.code);
+ assert.deepEqual(names,['110','111','117']);
+ assert.ok(segment.some(s=>s.type==='lift'&&s.code==='117'));
+ const incoming=detail.catalog['brixen-westendorf'].ba;
+ assert.ok(incoming.some(s=>s.type==='lift'&&s.code==='18'));
+ assert.ok(incoming.some(s=>s.type==='lift'&&s.code==='12'));
+ const edge=graph.corridors.find(s=>s.id==='brixen-westendorf');
+ assert.ok(graph.closedCorridor(edge,[{kind:'lift',code:'18'}]));
+ assert.ok(graph.closedCorridor(edge,[{kind:'piste',code:'110'}]));
+});

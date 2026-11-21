@@ -129,8 +129,19 @@ await add('different starting and finishing villages: Ellmau to Söll',async()=>
  assert.ok(actual?.graphBased,'route must be computed from geographic graph');
  assert.ok(actual.itinerary.steps.filter(x=>x.type==='lift').length>=2,'real lift numbers must be shown');
  assert.ok(actual.itinerary.steps.filter(x=>x.type==='piste').length>=2,'real piste parts must be shown');
+ // The engine must preserve EVERY graph edge, even if a 1-3m mapped
+ // junction is suppressed from the human-friendly route list.
+ const graph=await page.evaluate(()=>fetch('./skiwelt-network-graph.json').then(r=>r.json()));
+ const ids=actual.path.edgeIds,stations=graph.stations;
+ let at=stations[a.value].node;
+ for(const id of ids){const e=graph.edges[id];assert.equal(e[0],at,'disconnected map edge');at=e[1];}
+ assert.equal(at,stations[b.value].node,'route misses selected end station');
  const lines=actual.itinerary.steps.filter(x=>['lift','piste','transfer'].includes(x.type));
- for(let i=1;i<lines.length;i++)assert.equal(lines[i-1].to,lines[i].from,'no disconnected lift/piste row allowed');
+ for(let i=1;i<lines.length;i++){
+  if(lines[i-1].to===lines[i].from)continue;
+  const p=graph.nodes[lines[i-1].to],q=graph.nodes[lines[i].from];
+  assert.ok(Math.hypot((p[0]-q[0])*75000,(p[1]-q[1])*111320)<=3.5,'a rendered route part skips an unmapped junction');
+ }
 });
 await add('closure excludes selected piste from a connected geographic route',async()=>{
  await page.locator('#closed-report').evaluate(el=>el.open=true);
@@ -145,20 +156,23 @@ await add('closure excludes selected piste from a connected geographic route',as
   const result=await page.evaluate(()=>window.SKIDayUI.getCurrent());
   if(result){
    assert.ok(!result.itinerary.steps.some(step=>step.type==='piste'&&step.code==='99a'),'reported closure included in route');
-   for(let i=1,rows=result.itinerary.steps.filter(step=>['piste','lift','transfer'].includes(step.type));i<rows.length;i++)
-    assert.equal(rows[i-1].to,rows[i].from);
+   const graph=await page.evaluate(()=>fetch('./skiwelt-network-graph.json').then(r=>r.json()));
+   const ids=result.path.edgeIds;
+   for(let i=1;i<ids.length;i++)assert.equal(graph.edges[ids[i-1]][1],graph.edges[ids[i]][0],'closure creates unjoined map steps');
+   assert.ok(!ids.some(i=>{const f=graph.features[graph.edges[i][2]];return f?.kind==='piste'&&f.ref==='99a';}));
   }else assert.match(await page.locator('#plan-output').innerText(),/geen|onmogelijk|controleer|niet/i);
  }finally{
   await page.locator('.closure-row button').first().click();
  }
 });
-await add('full SkiWelt 2026-27 panorama is an image and village zoom works',async()=>{
+await add('official panorama controls support zoom and local fallback without GPS',async()=>{
  await page.locator('.bottom button[data-page="map"]').click();
  await page.locator('#pano-quick-area').selectOption('westendorf');
  await page.locator('#pano-focus-open').click();
  await page.locator('#pano-img').waitFor({state:'visible',timeout:8000});
- await page.waitForFunction(()=>document.querySelector('#pano-img').complete&&document.querySelector('#pano-img').naturalWidth>1000,{timeout:25000});
+ await page.waitForFunction(()=>document.querySelector('#pano-img').complete&&document.querySelector('#pano-img').naturalWidth>400,{timeout:25000});
  const props=await page.locator('#pano-img').evaluate(el=>({src:el.currentSrc,width:el.naturalWidth,height:el.naturalHeight,transform:el.style.transform}));
+ assert.ok(props.width>400,'fallback panorama is missing');
  assert.match(props.src,/skimap\.jpg/);
  assert.match(props.transform,/scale\(3\.8\)/);
  const v1=await page.evaluate(()=>window.SKIPanorama.getZoom());

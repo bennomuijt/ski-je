@@ -252,3 +252,19 @@ body.utility-open{overflow:hidden}
 .community-photo-item small{display:block;font-size:11px;color:#536d81;line-height:1.4}
 .community-photo-item .toolbar{margin:7px 0 0}
 .community-photo-item button{min-height:45px}
+
+/* Personal ski-highlights: readable with gloves; no animated charts or polling. */
+.ski-highlights-card{background:linear-gradient(145deg,#effaff,#fff 70%);border:1px solid #cee5ee}
+.ski-highlights-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.ski-highlight{border:1px solid #d2e6f1;border-radius:13px;padding:13px 12px;background:#fff;min-width:0}
+.ski-highlight small{color:#56748b;font-size:11px;display:block;line-height:1.4}
+.ski-highlight strong{display:block;color:#115782;font-size:23px;margin-top:5px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ski-highlight:nth-child(3){grid-column:1/-1}
+.ski-highlights-card .toolbar .btn{min-height:51px;flex:1 1 160px}
+#highlight-photo{width:100%;min-height:50px}
+@media(max-width:380px){.ski-highlight{padding:10px}.ski-highlight strong{font-size:20px}}
+@media print{#highlight-share-options,#highlight-copy,#highlight-share-image{display:none!important}}
+
+.ski-highlights-badges{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ski-highlights-badges span{border-radius:25px;padding:9px 12px;font-size:12px;font-weight:750;background:#f0f4f7;color:#6b8090;border:1px solid #d9e4ec}
+.ski-highlights-badges span.earned{color:#0b644f;background:#e3f8ee;border-color:#8ed8b8}

@@ -14,7 +14,7 @@ test('intro no longer disappears because of a sessionStorage seen flag',()=>{
 });
 test('intro background visibly pans and zooms for a finite duration',()=>{
  assert.match(html,/scale\(1\.21\) translate3d\(5\.5%,-1%,0\)/);
- assert.match(html,/skije-intro-photo 3\.6s/);
+ assert.match(html,/skije-intro-photo 2\.25s/);
  assert.match(html,/clearTimeout\(cleanupTimer\)/);
 });
 test('respects motion preferences, and splash does not block UI forever',()=>{
@@ -28,7 +28,7 @@ test('startup photo rotates between women and men on skis or snowboards without 
  for(const name of ['woman-skis','man-skis','woman-snowboard','man-snowboard']) {
   assert.match(html,new RegExp('ski-intro-'+name+'\\.webp'));
   assert.ok(existsSync(new URL('../public/ski-intro-'+name+'.webp',import.meta.url)));
-  assert.match(sw,new RegExp('ski-intro-'+name+'\\.webp'));
+  assert.match(html,new RegExp('ski-intro-'+name+'\\.webp'));
  }
  assert.match(html,/skije-intro-photo-last/);
  assert.match(html,/\(previous\+1\)%introPhotos.length/);

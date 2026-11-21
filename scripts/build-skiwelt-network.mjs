@@ -194,6 +194,20 @@ for(const[name,ref,side]of stationSpecs){
  const node=side==='top'?part.pointIds.at(-1):part.pointIds[0];
  stations[name]={node,ref,side,point:nodes[node],label:name};
 }
+// Every mapped lift can now be used as a distinct departure / arrival station.
+// Keep well-known valley stations first; store stable ID separate from display label.
+// Only map lift midpoints explicitly drawn with >=3 geometry vertices.
+for(const part of parts){
+ const f=features[part.feature];if(f.kind!=='lift'||!f.ref)continue;
+ const number=String(f.ref).toLowerCase(),name=f.name||'Lift '+number;
+ const kinds=[['bottom',part.pointIds[0],'dalstation'],['top',part.pointIds.at(-1),'bergstation']];
+ if(part.pointIds.length>2)for(let k=1;k<part.pointIds.length-1;k++)
+  kinds.push(['middle'+k,part.pointIds[k],'tussenstation '+k]);
+ for(const [side,node,desc]of kinds){
+  const id='lift:'+number+':'+side;
+  stations[id]={node,ref:f.ref,side,point:nodes[node],label:'Lift '+f.ref+' · '+name+' · '+desc,source:'mapped-lift-station'};
+ }
+}
 const report={
  sourceFeatures:features.length,sourceLiftCount:features.filter(x=>x.kind==='lift').length,
  sourcePisteCount:features.filter(x=>x.kind==='piste').length,

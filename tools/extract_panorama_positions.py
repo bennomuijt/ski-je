@@ -47,3 +47,12 @@ for number in ["1","2","6","11","20","26","30","40","42","43","51","58","59","60
     print("PDF_NUMBER",json.dumps({"number":number,"candidates":x[:15],"total_occurrences":len(x)},ensure_ascii=False))
 # PDF text may be flattened into a picture. Never assert that missing labels are absent on image.
 print("PDF_TEXT_ONLY_NOT_VALIDATED",True)
+
+# Candidate shape matches a characteristic typeface, but remains subject to
+# comparing against official SkiWelt numbered entity lists and visual spot check.
+for typ, pred in [
+    ("LIFT_STYLE_DARK", lambda p: p["color"]=="#231f20" and p["font"]=="MyriadPro-BlackCond"),
+    ("HUT_STYLE_WHITE_REGULAR", lambda p: p["color"]=="#ffffff" and p["font"]=="MyriadPro-Regular"),
+]:
+    entries=[p for p in number_candidates if pred(p)]
+    print("PDF_CLASSIFIED",json.dumps({"type":typ,"count":len(entries),"entries":entries},ensure_ascii=False))

@@ -134,7 +134,7 @@
   const renderedWidth=Math.min(box.width,box.height*iw/ih);
   const renderedHeight=Math.min(box.height,box.width*ih/iw);
   for(const {button,anchor} of points){
-   const x=box.width/2+(anchor.x-.5)*renderedWidth*zoom+panX;
+   const x=box.width/2+(anchor.x-.5)*renderedWidth*zoom+panX-28;
    const y=box.height/2+(anchor.y-.5)*renderedHeight*zoom+panY;
    button.style.left=x+'px';button.style.top=y+'px';
    button.hidden=x<0||x>box.width||y<0||y>box.height;

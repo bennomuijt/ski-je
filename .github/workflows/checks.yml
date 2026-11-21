@@ -35,6 +35,8 @@ jobs:
         run: |
           command -v google-chrome
           npm install --no-save --no-package-lock playwright-core
+      - name: Test safe-area and bottom navigation across mobile viewport matrix (local code)
+        run: node tests/mobile-safe-area-browser.mjs
       - name: Test actual SKI-je UI, PDF, map and webcam on mobile viewport
         run: node tests/browser-smoke.mjs
       - name: Save browser screenshots and PDF for QA

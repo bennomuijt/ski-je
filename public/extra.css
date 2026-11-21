@@ -295,3 +295,26 @@ body.utility-open{overflow:hidden}
 .pano-lift-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .pano-lift-actions a,.pano-lift-actions button{min-height:42px;padding:9px;border:1px solid #b5cedd;border-radius:9px;background:white;color:#0a5686;font-weight:750;font-size:12px;text-decoration:none}
 #pano-lift-close{background:white;border:1px solid #b5cedd;border-radius:9px;min-width:40px;min-height:40px;font-size:22px}
+
+/* 4.5.9: individual numbered hut and lift choices inside lightweight area markers */
+.pano-target-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:6px;max-height:min(20dvh,150px);overflow-y:auto;overscroll-behavior:contain;padding:3px 0}
+.pano-target-button{display:block;text-align:left;min-width:0;min-height:45px;border:1px solid #bed9e5;border-radius:9px;padding:7px 10px;background:white;color:#115276;font-size:12px;font-weight:760;overflow-wrap:anywhere;touch-action:manipulation}
+.pano-target-button[aria-pressed="true"]{background:#0c649b;color:white;border-color:#0c649b}
+.pano-target-button:focus-visible{outline:3px solid #f6a33c;outline-offset:2px}
+.pano-hut-info,.pano-lift-info{min-height:0;max-height:min(46dvh,360px);overflow-y:auto;overscroll-behavior:contain}
+.pano-hut-info{align-items:flex-start}
+.pano-hut-info .pano-hut-details{min-width:0;overflow-wrap:anywhere}
+.pano-hut-info #pano-hut-search{width:100%;min-height:43px;border:1px solid #b9cad8;border-radius:9px;padding:7px;background:white}
+.pano-lift-group{white-space:nowrap}
+.pano-hut{border-radius:20px;font-size:13px;font-weight:850;min-width:48px}
+.pano-linked-areas,.pano-linked-pistes{font-size:12px;line-height:1.45;margin:2px 0;overflow-wrap:anywhere}
+@media(max-width:760px){
+ #pano-modal .pano-panel{max-height:100dvh}
+ #pano-modal .pano-route-box{max-height:18dvh;overflow-y:auto}
+ #pano-modal .pano-hut-info,#pano-modal .pano-lift-info{max-height:36dvh}
+ #pano-modal .pano-target-grid{max-height:13dvh}
+}
+@media(max-height:550px){
+ #pano-modal .pano-target-grid{max-height:80px}
+ #pano-modal .pano-hut-info,#pano-modal .pano-lift-info{max-height:42dvh}
+}

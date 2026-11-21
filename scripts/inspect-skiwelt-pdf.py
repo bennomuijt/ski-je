@@ -16,6 +16,17 @@ def main():
   print("MAP_NOT_PDF",len(content),repr(content[:70]));return
  doc=fitz.open(stream=content,filetype="pdf");page=doc[0]
  print("PDF_PAGE_GEOMETRY",json.dumps({"pages":len(doc),"width":page.rect.width,"height":page.rect.height,"bytes":len(content)}))
+ try:
+  jpg_url=URL[:-4]+'.jpg'
+  with urllib.request.urlopen(urllib.request.Request(jpg_url,headers={"User-Agent":"SKI-je-map-data-verification/1.0","Accept":"image/jpeg"}),timeout=40) as jpeg:
+   bitmap=jpeg.read()
+  pic=fitz.Pixmap(bitmap)
+  ratio=pic.width/pic.height
+  pdf_ratio=page.rect.width/page.rect.height
+  print("JPG_GEOMETRY",json.dumps({"width":pic.width,"height":pic.height,"ratio":ratio,"pdfRatio":pdf_ratio,"relativeDifference":round(abs(ratio/pdf_ratio-1),6),"bytes":len(bitmap)}))
+ except Exception as exc:
+  print("JPG_GEOMETRY_FAILED",repr(exc))
+
  spans=[]
  for block in page.get_text("dict",sort=False)["blocks"]:
   if "lines" not in block:continue

@@ -28,6 +28,14 @@ def main():
  styles=collections.Counter((s["font"],s["color"],s["size"]) for s in nums)
  print("PDF_STYLES",json.dumps([{"style":k,"count":v,"sample":[{"v":s["text"],"x":s["x"],"y":s["y"]} for s in nums if (s["font"],s["color"],s["size"])==k][:8]} for k,v in styles.most_common(24)],ensure_ascii=False))
  print("PDF_NUMERIC_COUNTS",json.dumps({"spans":len(spans),"numbers":len(nums),"unique":len(set(s["text"] for s in nums))}))
+ black=[s for s in nums if s["font"]=="MyriadPro-BlackCond" and s["color"]=="231f20" and s["size"] in (6.34,7.93,7.05)]
+ print("LIFT_STYLE_CANDIDATES",json.dumps(black,ensure_ascii=False,separators=(',',':')))
+ print("LIFT_STYLE_COUNT",len(black),"UNIQUE",len(set(s["text"] for s in black)))
+ for style,cnt in styles.most_common(8):
+  if style[1]=="ffffff" and cnt>=8:
+   values=[s for s in nums if (s["font"],s["color"],s["size"])==style]
+   print("WHITE_STYLE_SAMPLE",json.dumps({"style":style,"numbers":values[:20]},ensure_ascii=False))
+
  for n in ["1","2","6","11","26","40","42","58","59","61","62","80","99","110","120"]:
   matches=[s for s in nums if s["text"]==n]
   print("NUMBER",n,json.dumps(matches[:20],ensure_ascii=False))

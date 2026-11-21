@@ -4,6 +4,7 @@ on:
     branches: [skije-v4.5.12-map-graph]
     paths:
       - 'scripts/build-skiwelt-geometry.mjs'
+      - 'scripts/enrich-skiwelt-elevation.mjs'
       - '.github/workflows/skiwelt-geometry-import.yml'
   workflow_dispatch:
 permissions:
@@ -20,6 +21,8 @@ jobs:
           node-version: '22'
       - name: Fetch fixed-zoom OpenSkiData geometry and inspect coverage
         run: node scripts/build-skiwelt-geometry.mjs
+      - name: Derive downhill direction using Copernicus terrain DEM
+        run: node scripts/enrich-skiwelt-elevation.mjs
       - name: Save reproducible offline map data on this branch
         run: |
           git config user.name "skije-map-builder"

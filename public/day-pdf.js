@@ -247,7 +247,9 @@
   const pages=[{kind:'schedule'}];
   for(let i=0;i<events.length;i+=9)pages.push({kind:'detail',rows:events.slice(i,i+9)});
   // Keep area source and closure notes. Existing pagination handles longer notices.
-  const regions=layoutPages(data.route?.steps||[],[...(data.route?.notes||[]),...(data.plan?.notes||[]),...(data.itinerary?.warnings||[])]);
+  const missing=(data.itinerary?.missingSteps||[]).map(s=>'ONTBREKEND '+s.phase+': '+(s.code?s.code+' ':'')+s.name+' - '+s.reason);
+   const gaps=(data.itinerary?.unverifiedTransitions||[]).map(s=>'ONBEVESTIGD '+s.corridor+': lift '+s.from+' naar lift '+s.to+' - '+s.reason);
+   const regions=layoutPages(data.route?.steps||[],[...(data.route?.notes||[]),...(data.plan?.notes||[]),...(data.itinerary?.warnings||[]),...missing,...gaps]);
   pages.push(...regions.slice(1));
   for(let i=0;i<wc.length;i+=5)pages.push({kind:'wc',rows:wc.slice(i,i+5)});
   pages.push({kind:'summary'});

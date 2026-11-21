@@ -3,9 +3,9 @@
 PDF vector text extraction recovers 8 of 69 numbers, the other 61 are shapes.
 This diagnostic does not generate unverified live coordinates.
 """
-import io,json,re,subprocess,urllib.request,collections
+import io,json,re,subprocess,urllib.request,collections,base64
 import fitz
-from PIL import Image,ImageOps,ImageFilter
+from PIL import Image,ImageOps,ImageFilter,ImageDraw
 URL='https://media.skiwelt.at/media/panorama/winter/SkiWelt-Panorama-26-27-NL.pdf'
 request=urllib.request.Request(URL,headers={'User-Agent':'SKI-je-map-verify/1.0'})
 try:
@@ -69,3 +69,20 @@ print('HUT_BADGE_COUNT',len(result))
 print('HUT_RECOGNITION',json.dumps(result,ensure_ascii=False,separators=(',',':')))
 conf=collections.Counter(x['method']+(':valid' if x['number'] else ':missing') for x in result)
 print('HUT_RECOGNITION_SUMMARY',dict(conf))
+# Human visual verification of original badge artwork; rows intentionally
+# include each identifier separately. This supplements, not replaces, OCR.
+for start in range(0,len(green),20):
+ batch=green[start:start+20]
+ sheet=Image.new('RGB',(5*245,4*165),'#edf1f4')
+ draw=ImageDraw.Draw(sheet)
+ for k,r in enumerate(batch):
+  badge=page.get_pixmap(matrix=fitz.Matrix(16,16),clip=fitz.Rect(r.x0-.7,r.y0-.5,r.x1+.7,r.y1+.5),alpha=False)
+  tile=Image.frombytes('RGB',(badge.width,badge.height),badge.samples)
+  # Display at original rendering resolution; no thresholding.
+  tile.thumbnail((218,120))
+  x=(k%5)*245+13;y=(k//5)*165+13
+  draw.text((x,y),'BADGE '+str(start+k),fill='black')
+  sheet.paste(tile,(x,y+22))
+ io_buf=io.BytesIO();sheet.save(io_buf,format='JPEG',quality=87,optimize=True)
+ print('HUT_CONTACT_SHEET_'+str(start//20)+' '+base64.b64encode(io_buf.getvalue()).decode('ascii'))
+

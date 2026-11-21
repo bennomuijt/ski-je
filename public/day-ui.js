@@ -216,6 +216,36 @@
   $('closed-code').value='';$('closed-note').value='';
   renderClosures();render();
  }
+ // All real lift stations are selectable. Keep village/dalstation choices on top.
+ // The route itself is always computed offline from map lines, never from GPS.
+ function populateLiftStations(data){
+  const mapped=Object.entries(data.stations||{}).filter(([id,v])=>id.startsWith('lift:')&&Number.isInteger(v?.node));
+  mapped.sort((a,b)=>String(a[1].ref).localeCompare(String(b[1].ref),'nl',{numeric:true})||a[0].localeCompare(b[0]));
+  let stored={};
+  try{stored=JSON.parse(localStorage.getItem('skije-preview-v1')||'{}')?.form||{};}catch{}
+  for(const id of ['start','finish']){
+   const select=$(id);if(!select||select.querySelector('optgroup[data-skiwelt-lifts]'))continue;
+   const value=select.value||stored[id];
+   for(const [side,label] of [['bottom','Andere liften · dalstations'],['middle','Andere liften · tussenstations'],['top','Andere liften · bergstations']]){
+    const optgroup=document.createElement('optgroup');optgroup.label=label;optgroup.dataset.skiweltLifts=side;
+    for(const [key,station] of mapped){
+     if(side==='middle'&&!station.side.startsWith('middle')||side!=='middle'&&station.side!==side)continue;
+     const option=document.createElement('option');option.value=key;option.textContent=station.label;
+     optgroup.append(option);
+    }
+    if(optgroup.childElementCount)select.append(optgroup);
+   }
+   const desired=stored[id]&&data.stations[stored[id]]?stored[id]:value;
+   if(desired&&[...select.options].some(option=>option.value===desired))select.value=desired;
+  }
+  if($('same-end')?.checked&&$('start')?.value)$('finish').value=$('start').value;
+ }
+ // Load once in the foreground so choices are ready before route creation.
+ window.SKIMapRouter?.load().then(populateLiftStations).catch(error=>{
+  const hint=$('plan-output');
+  if(hint&&!hint.textContent)hint.append(el('p','hint','De volledige liftstationslijst is offline nog niet geladen. Controleer je internetverbinding.'));
+  console.warn('SkiWelt graph stations unavailable:',error);
+ });
  $('closed-form')?.addEventListener('submit',addClosure);
  renderClosures();
  window.SKIDayUI={render,getCurrent:()=>current,getClosures};

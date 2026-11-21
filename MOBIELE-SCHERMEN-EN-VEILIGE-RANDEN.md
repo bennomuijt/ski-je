@@ -12,6 +12,10 @@ De onderste zes navigatieknoppen moeten bereikbaar blijven boven de systeembedie
 | Samsung | Galaxy S26 Ultra: 6,9 inch, 3120 × 1440 fysieke pixels | https://www.samsung.com/nl/mobile-phone-buying-guide/introducing-samsung-galaxy-s26/ |
 | Google | Pixel 10 Pro: 161 mm diagonaal, 1280 × 2856 fysieke pixels; Pixel 10 Pro XL: 171 mm, 1344 × 2992 | https://store.google.com/nl/product/pixel_10_pro_specs?hl=nl |
 
+| OnePlus | OnePlus 15: 6,78 inch, 2772 × 1272 fysieke pixels | https://www.oneplus.com/global/15/specs |
+| Motorola | Edge 60 Pro: 6,7 inch, 2712 × 1220 fysieke pixels | https://en-gb.support.motorola.com/app/answers/detail/a_id/185971/p/11090 |
+| Samsung | Galaxy Z Fold7: 6,5 inch coverscherm (2520 × 1080), 8,0 inch hoofdscherm (2184 × 1968) | https://news.samsung.com/nl/samsung-galaxy-z-fold7-de-lat-hoger-leggen-voor-smartphones |
+
 **LET OP:** fysieke schermpixels zijn niet hetzelfde als CSS-pixels. Door weergaveschaal, browserbalken, lettergrootte, zoom, PWA-standalone, split-screen en toestelrotatie kan dezelfde telefoon een andere bruikbare viewport hebben. Daarom geen hardcoded afmetingen per model.
 
 ## OS en webplatform

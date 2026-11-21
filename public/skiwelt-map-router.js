@@ -206,6 +206,19 @@
      (lunchClock===null||lunchClock<705||lunchClock>795||!Number.isInteger(Number(options.lunchDuration??60))||
       Number(options.lunchDuration??60)<30||Number(options.lunchDuration??60)>120))
    return{ok:false,reason:'Ongeldige vertrek-, lunch- of terugkeertijd.'};
+  // Each full-day choice reuses the same station-to-station Dijkstra results.
+  // On mobile this avoids hundreds of redundant graph searches.
+  const routeCache=new Map(),groupCache=new Map();
+  const find=(a,b)=>{
+   const key=a+'|'+b;
+   if(!routeCache.has(key))routeCache.set(key,shortest(a,b,opts,closures));
+   return routeCache.get(key);
+  };
+  const groupsFor=route=>{
+   const key=route.edgeIds.join(',');
+   if(!groupCache.has(key))groupCache.set(key,group(route,opts));
+   return groupCache.get(key);
+  };
   const start=graph.stations[options.start]?.node,finish=graph.stations[options.finish]?.node;
   if(!Number.isInteger(start)||!Number.isInteger(finish))return{ok:false,reason:'Start- of eindstation ontbreekt in het geografische liftnetwerk.'};
   const wanted=Array.isArray(options.wishes)?options.wishes.filter(Boolean):[];
@@ -250,35 +263,38 @@
    const id=graph.stations[station]?.node;
    if(Number.isInteger(id)&&!lunchLabels.has(id))lunchLabels.set(id,title);
   }
-  const candidates=useLunch?(requestedLunch!==null?[requestedLunch]:[...lunchLabels.keys()]):[start];
+  const autoStations=['Brandstadl bergstation','Hartkaiser bergstation','Hohe Salve',
+   'lift:30:middle1','lift:40:top','lift:112:top','lift:114:top'];
+  const autoLunch=autoStations.map(id=>graph.stations[id]?.node).filter(id=>Number.isInteger(id)&&lunchLabels.has(id));
+  const candidates=useLunch?(requestedLunch!==null?[requestedLunch]:autoLunch):[start];
   const scenic=['Brandstadl bergstation','Hartkaiser bergstation','Hohe Salve','Hopfgarten tussenstation',
    'Brixen dalstation','Söll dalstation'].map(x=>graph.stations[x]?.node).filter(Number.isInteger);
   const breakMinutes=(options.morningBreak?Number(options.morningDuration??30):0)+(options.afternoonBreak?Number(options.afternoonDuration??30):0);
-  const direct=shortest(start,finish,opts,closures);
+  const direct=find(start,finish,opts,closures);
   if(!direct)return{ok:false,reason:'Geen aaneengesloten kaartverbinding tussen deze stations. De planner verzint geen pistes of liften.'};
   const bestOptions=[];
   const firstStops=selectedTarget!==null?[selectedTarget]:[null,...scenic];
   for(const lunch of candidates)for(const beforeTarget of firstStops){
-   let before=shortest(start,beforeTarget??lunch,opts,closures);
+   let before=find(start,beforeTarget??lunch,opts,closures);
    if(!before)continue;
-   if(beforeTarget!==null){const a=shortest(beforeTarget,lunch,opts,closures);before=combine(before,a);}
+   if(beforeTarget!==null){const a=find(beforeTarget,lunch,opts,closures);before=combine(before,a);}
    if(!before)continue;
-   const beforeGroups=group(before,opts),beforeMin=beforeGroups.reduce((n,s)=>n+s.minutes,0);
+   const beforeGroups=groupsFor(before,opts),beforeMin=beforeGroups.reduce((n,s)=>n+s.minutes,0);
    if(useLunch&&begin+beforeMin+Math.max(10,options.morningBreak?Number(options.morningDuration??30):0)>lunchClock)continue;
    for(const afterTarget of [null,...scenic]){
-    let post=shortest(lunch,afterTarget??finish,opts,closures);
+    let post=find(lunch,afterTarget??finish,opts,closures);
     if(!post)continue;
     let back={edgeIds:[],minutes:0,metres:0};
-    if(afterTarget!==null){back=shortest(afterTarget,finish,opts,closures);if(!back)continue;}
-    const postMin=group(post,opts).reduce((n,s)=>n+s.minutes,0);
-    const backMin=group(back,opts).reduce((n,s)=>n+s.minutes,0);
+    if(afterTarget!==null){back=find(afterTarget,finish,opts,closures);if(!back)continue;}
+    const postMin=groupsFor(post,opts).reduce((n,s)=>n+s.minutes,0);
+    const backMin=groupsFor(back,opts).reduce((n,s)=>n+s.minutes,0);
     const afterTime=(useLunch?lunchClock+Number(options.lunchDuration??60):begin+beforeMin)+postMin+backMin;
     if(afterTime+breakMinutes>limit)continue;
     const all=[...before.edgeIds,...post.edgeIds,...back.edgeIds];
     if(!all.length)continue;
     const chain={edgeIds:all};
     if(!validateRoute(chain,start,finish))continue;
-    const grouped=group(chain,opts);
+    const grouped=groupsFor(chain,opts);
     const distinctRuns=new Set(grouped.filter(x=>x.type==='piste').map(x=>x.code).filter(Boolean));
     const distinctLifts=new Set(grouped.filter(x=>x.type==='lift').map(x=>x.code).filter(Boolean));
     const duplicates=grouped.length-distinctRuns.size-distinctLifts.size;
@@ -324,7 +340,7 @@
    minutes:itinerary.routeMinutes}],notes,estimated:true,graphBased:true,
    phases:{preLunch:chosen.before,postLunch:chosen.post,return:chosen.back},
    coordinates:[graph.nodes[start].slice(0,2),...path.edgeIds.map(i=>graph.nodes[graph.edges[i][1]].slice(0,2))],
-   returnEstimate:group(chosen.back,opts).reduce((n,s)=>n+s.minutes,0)};
+   returnEstimate:groupsFor(chosen.back,opts).reduce((n,s)=>n+s.minutes,0)};
   return{ok:true,plan:made.plan,itinerary,route,path,features:steps,
    graphBased:true,notes,options};
  }

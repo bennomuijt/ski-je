@@ -25,7 +25,7 @@
   {id:'brixen-westendorf',a:'Brixen',b:'Westendorf',
     ab:'Hochbrixen-gondel 1 en SkiWeltbahn 11 naar Westendorf',
     ba:'Windau-afdaling 111, Choralmbahn 112 en Kandleralm 11 richting Brixen',
-    codes:['lift:1','lift:11','piste:111','lift:112','piste:11','piste:18','lift:12'],minutes:50},
+    codes:['lift:1','lift:11','piste:110','piste:111','piste:117','lift:117','lift:112','piste:11','lift:18','lift:12'],minutes:50},
   {id:'brixen-hopfgarten',a:'Brixen',b:'Hopfgarten',
     ab:'Via Kälbersalvenbahn 2 richting Hopfgarten; controleer vervolg op de pistekaart',
     ba:'Foischingbahn 25 en Kälberalm-afdalingen 2/2b richting Brixen',

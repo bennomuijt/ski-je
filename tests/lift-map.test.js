@@ -24,8 +24,8 @@ test('genummerde liften zijn uniek, benoemd en per deelgebied bereikbaar',()=>{
 test('op panorama zelfstandige liftlaag, zoekveld, select en aparte schakelaar',()=>{
  const html=read('public/index.html'),css=read('public/extra.css'),script=read('public/pano-lifts.js');
  for(const id of ['pano-lifts','pano-lifts-visible','pano-lift-count','pano-lift-info','pano-lift-name','pano-lift-search','pano-lift-select','pano-lift-photo','pano-lift-more-sources'])assert.ok(html.includes('id="'+id+'"'),id);
- assert.match(html,/lift-catalogue\.js\?v=459/);
- assert.match(html,/pano-lifts\.js\?v=459/);
+ assert.match(html,/lift-catalogue\.js\?v=4510/);
+ assert.match(html,/pano-lifts\.js\?v=4510/);
  assert.match(css,/\.pano-lift-group/);
  assert.match(script,/sourceSearch\(lift\)/);
  assert.match(script,/new MutationObserver\(position\)/);
@@ -36,6 +36,6 @@ test('PWA haalt liftcatalogus en liftlaag offline binnen',()=>{
  const sw=read('public/sw.js'),packageJson=JSON.parse(read('package.json'));
  assert.match(sw,/lift-catalogue\.js/);
  assert.match(sw,/pano-lifts\.js/);
- assert.match(sw,/v4-5-9-lift-hut-panorama/);
- assert.equal(packageJson.version,'4.5.9');
+ assert.match(sw,/v4-5-10-tour-stage-audit/);
+ assert.equal(packageJson.version,'4.5.10');
 });

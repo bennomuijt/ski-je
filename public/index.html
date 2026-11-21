@@ -161,6 +161,7 @@ body.legal-open{overflow:hidden}
 <link rel="stylesheet" href="i18n.css">
 <link rel="stylesheet" href="extra.css">
 <link rel="stylesheet" href="group-cloudflare.css">
+<link rel="stylesheet" href="mobile-safe-area.css?v=screen1">
 </head>
 <body>
 <div class="ski-intro" id="ski-intro" role="region" aria-label="Korte SKI-je openingsanimatie" hidden>
@@ -540,6 +541,10 @@ body.legal-open{overflow:hidden}
       <p class="tiny">Deze tekst is een concept voor gebruiksvoorwaarden; een disclaimer kan wettelijk niet alle aansprakelijkheid opheffen. Laat deze voorwaarden voor publieke verspreiding juridisch toetsen.</p>
     </details>
     <details class="feature-fold" id="settings-section"><summary>&#9889; Zuinigheid, opslag &amp; privacy</summary>
+      <div class="field"><label for="screen-bottom-clearance">📱 Onderste bedieningsbalk vrijhouden</label>
+      <input id="screen-bottom-clearance" type="range" min="0" max="96" step="8" value="0" aria-label="Extra ruimte boven Android navigatiebalk of iPhone home-indicator">
+      <span class="tiny" id="screen-bottom-clearance-value">Automatisch</span>
+      <p class="hint">Standaard past SKI-je zich vanzelf aan. Vallen de onderste knoppen achter de systeemnavigatie? Zet hier extra ruimte aan. Alleen op deze telefoon opgeslagen.</p></div>
       <div class="field"><label for="power-setting">Verbruik</label><select id="power-setting"><option value="auto">Automatisch (aanbevolen)</option><option value="eco">Extra zuinig</option><option value="full">Normaal</option></select></div>
       <p class="hint" id="power-explanation">Kaart, radar en webcams laden alleen wanneer nodig.</p>
       <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
@@ -1145,6 +1150,7 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 }));
 </script>
 
+<script src="mobile-safe-area.js?v=screen1" defer></script>
 <script src="i18n-data.js" defer></script>
 <script src="i18n.js" defer></script>
 <script src="app-update.js?v=458" defer></script>

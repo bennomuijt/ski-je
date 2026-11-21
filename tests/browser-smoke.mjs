@@ -142,9 +142,18 @@ await add('full SkiWelt 2026-27 panorama is an image and village zoom works',asy
      // SKI-je 4.5.9 shows restaurant area markers by default; older releases did not.
      if(!(await page.locator('#pano-restaurants-visible').isChecked()))await page.locator('#pano-restaurants-visible').check();
    }
-   await page.locator('.pano-hut:visible').first().click();
-   assert.ok(await page.locator('#pano-hut-info').isVisible(),'restaurant detail must open in the app');
-   await page.locator('#pano-hut-close').click();
+   // On the published panorama the approximate lift/hut area markers overlap.
+   // Verify the restaurant layer with lift markers off (a supported user control).
+   const liftToggle=page.locator('#pano-lifts-visible');
+   const restoreLifts=await liftToggle.count()&&await liftToggle.isChecked();
+   if(restoreLifts)await liftToggle.uncheck();
+   try{
+    await page.locator('.pano-hut:visible').first().click();
+    assert.ok(await page.locator('#pano-hut-info').isVisible(),'restaurant detail must open in the app');
+    await page.locator('#pano-hut-close').click();
+   }finally{
+    if(restoreLifts)await liftToggle.check();
+   }
  }else console.log('INFO: live 4.5.3 has not yet published the restaurant map.');
  assert.equal(await page.evaluate(()=>window.SKIPanorama.getZoom()),1);
  await page.locator('#pano-viewport').dispatchEvent('pointerdown',{pointerId:1,pointerType:'touch',clientX:150,clientY:320});

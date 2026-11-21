@@ -147,7 +147,9 @@
    b.hidden=!precise||x<0||x>box.width||y<0||y>box.height;
   }
   for(const {b,area} of points){
-   const x=box.width/2+(area.x-.5)*renderedWidth*zoom+panX;
+   // Area buttons are navigational clusters, not exact lift positions. Offset
+   // alongside hut clusters so neither type blocks the other on small screens.
+   const x=box.width/2+(area.x-.5)*renderedWidth*zoom+panX+28;
    const y=box.height/2+(area.y-.5)*renderedHeight*zoom+panY;
    b.style.left=x+'px';b.style.top=y+'px';
    b.hidden=precise||x<0||x>box.width||y<0||y>box.height;

@@ -1,0 +1,122 @@
+/* SKI-je: numbered clickable lifts on the drawn (non-georeferenced) panorama.
+   Pins are deliberately clustered by AREA, not assigned fake lift coordinates. */
+(()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const data=window.SKILiftCatalogue;
+ const layer=$('pano-lifts'),view=$('pano-viewport'),img=$('pano-img');
+ const toggle=$('pano-lifts-visible'),count=$('pano-lift-count');
+ const select=$('pano-lift-select'),search=$('pano-lift-search'),info=$('pano-lift-info');
+ const name=$('pano-lift-name'),status=$('pano-lift-photo-status'),photo=$('pano-lift-photo'),link=$('pano-lift-link');
+ if(!data||!layer||!view||!img||!toggle||!select||!search||!info)return;
+ const areas=data.areas, lifts=data.lifts;
+ const norm=s=>String(s||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const srcMap={
+  'Hartkaiserbahn':'Hartkaiserbahn','Brandstadlbahn I':'Brandstadlbahn I',
+  'Brandstadlbahn II':'Brandstadlbahn II','Salvistabahn':'Salvistabahn Itter',
+  'Salvenbahn I':'Salvenbahn I','Salvenbahn II':'Salvenbahn II',
+  'Choralmbahn':'Choralmbahn','SkiWeltbahn':'SkiWeltbahn Brixen',
+  'Alpenrosenbahn':'Alpenrosenbahn','Hohe Salve':'Hohe Salve Gondelbahn Söll'
+ };
+ function sourceSearch(lift){
+  const text=lift.name.toLocaleLowerCase('nl-NL');
+  if(text.includes('hartkaiser'))return srcMap.Hartkaiserbahn;
+  if(text.includes('brandstadl')&&text.includes('ii'))return srcMap['Brandstadlbahn II'];
+  if(text.includes('brandstadl')&&text.includes(' i'))return srcMap['Brandstadlbahn I'];
+  if(text.includes('salvista'))return srcMap.Salvistabahn;
+  if(text.includes('salvenbahn ii'))return srcMap['Salvenbahn II'];
+  if(text.includes('salvenbahn i'))return srcMap['Salvenbahn I'];
+  if(text.includes('choralm'))return srcMap.Choralmbahn;
+  if(text.includes('skiweltbahn'))return srcMap.SkiWeltbahn;
+  if(text.includes('alpenrosen'))return srcMap.Alpenrosenbahn;
+  if(text.includes('hohe salve'))return srcMap['Hohe Salve'];
+  return lift.name;
+ }
+ function setLift(lift){
+  if(!lift)return;
+  select.value=lift.number;
+  name.textContent='Lift '+lift.number+' · '+lift.name;
+  const approved=window.SKIPublicPhotos?.getFor?.('lift',lift.name);
+  photo.hidden=!approved;
+  photo.removeAttribute('src');
+  if(approved?.image){photo.src=approved.image;photo.alt='Goedgekeurde foto van '+lift.name;}
+  status.textContent=approved?'Goedgekeurde SKI-je liftfoto'+(approved.gpsVerified?' · GPS gecontroleerd':''):'Nog geen goedgekeurde liftfoto. Bekijk fotobronnen op naam.';
+  link.href=data.source;
+  link.textContent='Officiële liftstatus bekijken';
+  info.hidden=false;
+ }
+ function fillOptions(areaKey){
+  const list=areaKey?lifts.filter(l=>l.areaKey===areaKey):lifts;
+  select.replaceChildren();
+  for(const lift of list){
+   const opt=document.createElement('option');opt.value=lift.number;opt.textContent=lift.number+' · '+lift.name+' ('+lift.area+')';select.append(opt);
+  }
+  return list;
+ }
+ const points=[];
+ for(const area of areas){
+  const members=lifts.filter(l=>l.areaKey===area.key);
+  // Never scatter invented positions per lift: all lift labels are accessible
+  // after tapping this AREA marker and in the numbered search menu.
+  const b=document.createElement('button');b.type='button';b.className='pano-lift-group';
+  b.textContent='🚡 '+members.length;b.title=area.name+' · '+members.length+' liften';
+  b.setAttribute('aria-label','Liften rond '+area.name+', '+members.length+' liften; open nummers en namen');
+  b.addEventListener('pointerdown',e=>e.stopPropagation());
+  b.addEventListener('pointerup',e=>e.stopPropagation());
+  b.addEventListener('click',e=>{e.stopPropagation();search.value='';const first=fillOptions(area.key)[0];if(first)setLift(first);});
+  layer.append(b);points.push({b,area});
+ }
+ function searchLifts(){
+  const needle=norm(search.value.trim());
+  const matches=lifts.filter(l=>!needle||norm(l.number+' '+l.name+' '+l.area).includes(needle));
+  fillOptions(null);
+  if(needle){
+   select.replaceChildren();
+   for(const lift of matches.slice(0,82)){const option=document.createElement('option');option.value=lift.number;option.textContent=lift.number+' · '+lift.name+' ('+lift.area+')';select.append(option);}
+  }
+  if(matches[0])setLift(matches[0]);
+  else {name.textContent='Geen lift gevonden';info.hidden=false;status.textContent='Probeer een ander liftnummer of deel van de naam.';photo.hidden=true;}
+ }
+ search.addEventListener('input',searchLifts);
+ select.addEventListener('change',()=>setLift(lifts.find(l=>l.number===select.value)));
+ photo?.addEventListener('error',()=>{photo.hidden=true;status.textContent='De foto is niet beschikbaar. Bekijk fotobronnen.';});
+ $('pano-lift-close')?.addEventListener('click',()=>{info.hidden=true;});
+ $('pano-lift-more-sources')?.addEventListener('click',()=>{
+  const lift=lifts.find(l=>l.number===select.value);
+  if(!lift)return;
+  document.querySelector('[data-close="pano-modal"]')?.click();
+  window.SKIApi?.goPage('more');
+  window.SKIPhotoSources?.open(sourceSearch(lift));
+ });
+ function position(){
+  if($('pano-modal')?.hidden)return;
+  const box=view.getBoundingClientRect(),iw=img.naturalWidth,ih=img.naturalHeight;
+  const fallback=/Kaart(?:%20| )2026-2027\.png(?:\?|$)/i.test(img.currentSrc||img.src);
+  const enabled=toggle.checked&&!fallback&&iw&&ih;
+  layer.hidden=!enabled;
+  if(!enabled)return;
+  const shape=img.style.transform.match(/translate3d\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px\s*,\s*0(?:px)?\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
+  const panX=shape?Number(shape[1]):0,panY=shape?Number(shape[2]):0,zoom=shape?Number(shape[3]):1;
+  const renderedWidth=Math.min(box.width,box.height*iw/ih),renderedHeight=Math.min(box.height,box.width*ih/iw);
+  for(const {b,area} of points){
+   const x=box.width/2+(area.x-.5)*renderedWidth*zoom+panX;
+   const y=box.height/2+(area.y-.5)*renderedHeight*zoom+panY;
+   b.style.left=x+'px';b.style.top=y+'px';
+   b.hidden=x<0||x>box.width||y<0||y>box.height;
+  }
+ }
+ function update(){
+  layer.hidden=!toggle.checked;
+  count.textContent=toggle.checked?lifts.length+' liften in '+areas.length+' gebiedsgroepen':'Liftmarkeringen verborgen';
+  if(!toggle.checked)info.hidden=true;
+  if(toggle.checked)requestAnimationFrame(position);
+ }
+ toggle.addEventListener('change',update);
+ img.addEventListener('load',position);
+ new MutationObserver(position).observe(img,{attributes:true,attributeFilter:['style','src']});
+ if(typeof ResizeObserver!=='undefined')new ResizeObserver(position).observe(view);
+ $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));
+ document.addEventListener('skije-photo-list-updated',()=>{if(!info.hidden&&select.value)setLift(lifts.find(l=>l.number===select.value));});
+ fillOptions(null);update();
+ window.SKILiftMap={lifts:()=>lifts.map(l=>({...l})),precision:'area-only'};
+})();

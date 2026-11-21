@@ -36,6 +36,6 @@ test('PWA haalt liftcatalogus en liftlaag offline binnen',()=>{
  const sw=read('public/sw.js'),packageJson=JSON.parse(read('package.json'));
  assert.match(sw,/lift-catalogue\.js/);
  assert.match(sw,/pano-lifts\.js/);
- assert.match(sw,/v4-5-9-lift-overlay/);
+ assert.match(sw,/v4-5-9-lift-hut-panorama/);
  assert.equal(packageJson.version,'4.5.9');
 });

@@ -1,0 +1,603 @@
+/* Official SkiWelt Tour 2026/27: transcription of operator-published stage tables.
+ * Every slope code listed after a lift is retained in its published ORDER.
+ * An array within pistes indicates alternatives (e.g. 51a OR 51b).
+ * Empty pistes = official table did not name a slope; do not guess a transfer.
+ * Entries are REFERENCE stages, not a verified full junction graph.
+ * Source: https://www.skiwelt.at/media/gruppen-info-busfolder/Infofolder-fuer-Reisebueros.pdf
+ * Source: https://www.skiwelt.at/nl/skiwelt-tour.html
+ */
+(function(root,factory){
+ const module=factory();
+ if(typeof module==='object'&&module.exports)module.exports=module;
+ if(root)root.SKIOfficialTours=module;
+})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ const SOURCE='https://www.skiwelt.at/media/gruppen-info-busfolder/Infofolder-fuer-Reisebueros.pdf';
+ const TOUR='https://www.skiwelt.at/nl/skiwelt-tour.html';
+ const CONNECTIONS='https://www.skiwelt.at/nl/verbindingen.html';
+ const entries={
+  "clockwise": [
+    [
+      "Going",
+      "100",
+      "Astberg",
+      [
+        "102a"
+      ]
+    ],
+    [
+      "Going",
+      "102",
+      "Sonnenlift",
+      [
+        "90"
+      ]
+    ],
+    [
+      "Ellmau",
+      "80",
+      "Hartkaiserbahn",
+      [
+        "97b"
+      ]
+    ],
+    [
+      "Ellmau",
+      "97",
+      "Köglbahn",
+      [
+        "99"
+      ]
+    ],
+    [
+      "Ellmau",
+      "99",
+      "Tanzboden",
+      [
+        "64a"
+      ]
+    ],
+    [
+      "Scheffau",
+      "67",
+      "Eiberg",
+      [
+        "70"
+      ]
+    ],
+    [
+      "Scheffau",
+      "70",
+      "Muldenbahn",
+      [
+        "6",
+        "1b"
+      ]
+    ],
+    [
+      "Brixen",
+      "11",
+      "SkiWeltbahn",
+      [
+        "110",
+        "111",
+        "117"
+      ]
+    ],
+    [
+      "Westendorf",
+      "117",
+      "Fleiding",
+      [
+        "118"
+      ]
+    ],
+    [
+      "Westendorf",
+      "119",
+      "Gampenkogel",
+      [
+        "120"
+      ]
+    ],
+    [
+      "Westendorf",
+      "120",
+      "KiWest",
+      [
+        "119a"
+      ]
+    ],
+    [
+      "Westendorf",
+      "118",
+      "Windauberg",
+      [
+        "117b"
+      ]
+    ],
+    [
+      "Westendorf",
+      "114",
+      "Talkaser",
+      [
+        "110",
+        "110b"
+      ]
+    ],
+    [
+      "Westendorf",
+      "110",
+      "Alpenrosenbahn I",
+      [
+        "110a",
+        "113"
+      ]
+    ],
+    [
+      "Westendorf",
+      "112",
+      "Choralmbahn",
+      [
+        "11"
+      ]
+    ],
+    [
+      "Brixen",
+      "18",
+      "Sonnenband",
+      []
+    ],
+    [
+      "Brixen",
+      "12",
+      "Sonnenlift",
+      []
+    ],
+    [
+      "Brixen",
+      "1",
+      "Hochbrixen",
+      []
+    ],
+    [
+      "Brixen",
+      "2",
+      "Kälbersalvenbahn",
+      [
+        "24",
+        "20a"
+      ]
+    ],
+    [
+      "Hopfgarten / Itter",
+      "20/22",
+      "Salvenbahn I & II",
+      [
+        "22",
+        [
+          "30",
+          "31"
+        ],
+        "30"
+      ]
+    ],
+    [
+      "Hopfgarten / Itter",
+      "30",
+      "Salvistabahn",
+      [
+        "30a",
+        "40",
+        "40"
+      ]
+    ],
+    [
+      "Söll",
+      "45",
+      "Hexen6er",
+      [
+        "43",
+        "40a"
+      ]
+    ],
+    [
+      "Söll",
+      "40",
+      "Hexenwasser",
+      []
+    ],
+    [
+      "Söll",
+      "43",
+      "Keat",
+      [
+        "51"
+      ]
+    ],
+    [
+      "Söll",
+      "51",
+      "Siller-Keat",
+      [
+        "7a"
+      ]
+    ],
+    [
+      "Brixen",
+      "7",
+      "Filzbodenbahn",
+      [
+        "71"
+      ]
+    ],
+    [
+      "Scheffau",
+      "71",
+      "Aualm",
+      [
+        "65a"
+      ]
+    ],
+    [
+      "Scheffau",
+      "64",
+      "Osthang",
+      [
+        "60",
+        "61",
+        "60"
+      ]
+    ],
+    [
+      "Scheffau",
+      "61/62",
+      "Brandstadl I & II",
+      [
+        "99",
+        "96b"
+      ]
+    ],
+    [
+      "Ellmau",
+      "96",
+      "Kaiserexpress",
+      [
+        "80a"
+      ]
+    ],
+    [
+      "Ellmau",
+      "90",
+      "Hausberg",
+      [
+        "100d"
+      ]
+    ]
+  ],
+  "counter": [
+    [
+      "Going",
+      "100",
+      "Astberg",
+      [
+        "102a"
+      ]
+    ],
+    [
+      "Going",
+      "102",
+      "Sonnenlift",
+      [
+        "90"
+      ]
+    ],
+    [
+      "Ellmau",
+      "80",
+      "Hartkaiserbahn",
+      [
+        "97b"
+      ]
+    ],
+    [
+      "Ellmau",
+      "97",
+      "Köglbahn",
+      [
+        "99"
+      ]
+    ],
+    [
+      "Ellmau",
+      "99",
+      "Tanzboden",
+      [],
+      "Officiële tabel noemt alleen 'Verbindung', zonder nummer"
+    ],
+    [
+      "Scheffau",
+      "64",
+      "Osthang",
+      [
+        "61a",
+        "61",
+        "60"
+      ]
+    ],
+    [
+      "Scheffau",
+      "61/62",
+      "Brandstadl I & II",
+      [
+        "64"
+      ]
+    ],
+    [
+      "Scheffau",
+      "67",
+      "Eiberg",
+      [
+        "71a",
+        "71"
+      ]
+    ],
+    [
+      "Scheffau",
+      "71",
+      "Aualm",
+      [
+        "6",
+        "1b"
+      ]
+    ],
+    [
+      "Brixen",
+      "1",
+      "Hochbrixen",
+      []
+    ],
+    [
+      "Brixen",
+      "2",
+      "Kälbersalvenbahn",
+      [
+        [
+          "51a",
+          "51b"
+        ]
+      ]
+    ],
+    [
+      "Söll",
+      "51",
+      "Siller-Keat",
+      [
+        "43a",
+        "40a"
+      ]
+    ],
+    [
+      "Söll",
+      "40",
+      "Hexenwasser",
+      []
+    ],
+    [
+      "Söll",
+      "42",
+      "Hohe Salve",
+      [
+        "22",
+        "30",
+        "30",
+        "30"
+      ]
+    ],
+    [
+      "Hopfgarten / Itter",
+      "30",
+      "Salvistabahn",
+      [
+        "31a"
+      ]
+    ],
+    [
+      "Hopfgarten / Itter",
+      "31",
+      "Kasbichlbahn",
+      [
+        "21c",
+        "20a"
+      ]
+    ],
+    [
+      "Hopfgarten / Itter",
+      "20",
+      "Salvenbahn I",
+      []
+    ],
+    [
+      "Scheffau",
+      "69",
+      "Kummereralm",
+      [
+        "97"
+      ]
+    ],
+    [
+      "Ellmau",
+      "98",
+      "Almbahn",
+      [
+        "80"
+      ]
+    ],
+    [
+      "Ellmau",
+      "90",
+      "Hausberg",
+      [
+        "100d"
+      ]
+    ],
+    [
+      "Westendorf",
+      "110/111",
+      "Alpenrosenbahn I & II",
+      [
+        "111",
+        "117"
+      ]
+    ],
+    [
+      "Westendorf",
+      "117",
+      "Fleiding",
+      [
+        "118"
+      ]
+    ],
+    [
+      "Westendorf",
+      "119",
+      "Gampenkogel",
+      [
+        "120"
+      ]
+    ],
+    [
+      "Westendorf",
+      "120",
+      "KiWest",
+      [
+        "119a"
+      ]
+    ],
+    [
+      "Westendorf",
+      "118",
+      "Windauberg",
+      [
+        "117a",
+        "111"
+      ]
+    ],
+    [
+      "Westendorf",
+      "112",
+      "Choralmbahn",
+      [
+        "11"
+      ]
+    ],
+    [
+      "Brixen",
+      "7",
+      "Filzbodenbahn",
+      [
+        "6a",
+        "1b"
+      ]
+    ],
+    [
+      "Brixen",
+      "11",
+      "SkiWeltbahn",
+      [
+        "110",
+        "110b"
+      ]
+    ],
+    [
+      "Brixen",
+      "18",
+      "Sonnenband",
+      []
+    ],
+    [
+      "Brixen",
+      "12",
+      "Sonnenlift",
+      []
+    ],
+    [
+      "Brixen",
+      "1",
+      "Hochbrixen",
+      []
+    ],
+    [
+      "Brixen",
+      "3",
+      "Zinsbergbahn",
+      [
+        "6a"
+      ]
+    ],
+    [
+      "Brixen",
+      "6",
+      "Jochbahn",
+      [
+        "70",
+        "69"
+      ]
+    ]
+  ]
+};
+ function normalized(input,direction){
+  return input.map(([area,liftNumber,liftName,pistes,note],i)=>({
+   id:direction+'-'+(i+1),
+   area,liftNumber,liftName,
+   pistes:(pistes||[]).map(p=>Array.isArray(p)?{alternatives:p}:p),
+   note:note||'',source:SOURCE,position:i+1,
+   // Without a named slope, the next stage cannot be treated as a proven
+   // continuous skiable connection based on this table alone.
+   continuousToNextVerified:false
+  }));
+ }
+ const tours={clockwise:normalized(entries.clockwise,'clockwise'),counter:normalized(entries.counter,'counter')};
+ function stages(direction,startingLift){
+  const rows=tours[direction];
+  if(!rows)return [];
+  const index=startingLift?rows.findIndex(x=>x.id===startingLift):-1;
+  const rotation=Math.max(0,index);
+  return [...rows.slice(rotation),...rows.slice(0,rotation)];
+ }
+ function tokens(stage){
+  const result=[{type:'lift',code:stage.liftNumber,label:stage.liftName,area:stage.area}];
+  for(const piste of stage.pistes){
+   if(typeof piste==='string')result.push({type:'piste',code:piste,label:'Piste '+piste});
+   else result.push({type:'choice',codes:piste.alternatives,label:'Piste '+piste.alternatives.join(' óf ')});
+  }
+  return result;
+ }
+ function closureFlags(stages,closures=[]){
+  const flagged=[];
+  for(const stage of stages){
+   const codes=stage.liftNumber.split('/').map(x=>x.trim());
+   const slopes=stage.pistes.flatMap(p=>typeof p==='string'?[p]:p.alternatives);
+   const blocked=(closures||[]).filter(row=>(row.kind==='lift'&&codes.includes(row.code))||
+     (row.kind==='piste'&&slopes.includes(row.code)));
+   if(blocked.length)flagged.push({id:stage.id,stage,blocked});
+  }
+  return flagged;
+ }
+ const namedConnection={
+  id:'westendorf-brixen-return',
+  name:'Westendorf → Brixen via Hochbrixen',
+  source:CONNECTIONS,
+  // This stage order is explicitly stated by SkiWelt's official connections
+  // page. Connecting paths between them are not supplied in that source.
+  sequence:[
+   {type:'piste',code:'111',name:'Windau-afdaling'},
+   {type:'lift',code:'112',name:'Choralmbahn'},
+   {type:'piste',code:'11',name:'Kandleralm-afdaling'},
+   {type:'lift',code:'18',name:'Sonnenband'},
+   {type:'lift',code:'12',name:'Sonnenlift'},
+   {type:'lift',code:'1',name:'Hochbrixen-gondel'}
+  ]
+ };
+ return {SOURCE,TOUR,CONNECTIONS,tours,stages,tokens,closureFlags,namedConnection,verifiedJunctions:false};
+});

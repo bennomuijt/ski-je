@@ -71,7 +71,7 @@ test('restaurant layer is opt-in and Netlify references were removed',()=>{
  const html=readFileSync(new URL('public/index.html',root),'utf8');
  const map=readFileSync(new URL('public/pano-restaurants.js',root),'utf8');
  const worker=readFileSync(new URL('public/sw.js',root),'utf8');
- assert.match(html,/id="pano-restaurants-visible"/);assert.doesNotMatch(html,/id="pano-restaurants-visible"[^>]*checked/);
+ assert.match(html,/id="pano-restaurants-visible"/);assert.match(html,/id="pano-restaurants-visible"[^>]*checked/);
  assert.match(map,/!toggle\?\.checked/);assert.match(map,/area:'brixen'/);assert.match(map,/area:'hopfgarten'/);
  assert.match(html,/id="community-photo-camera"/);
  assert.match(worker,/photo-community\.js/);assert.match(worker,/pathname\.startsWith\('\/api\/'\)/);

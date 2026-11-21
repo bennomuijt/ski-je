@@ -72,6 +72,12 @@
    photo.hidden=true;photoStatus.textContent='Binnenfoto is momenteel niet bereikbaar; open de restaurantinformatie.';
  });
  select.addEventListener('change',()=>showRestaurant(select.value));
+ $('pano-hut-more-sources')?.addEventListener('click',()=>{
+  const name=select.value;
+  document.querySelector('[data-close="pano-modal"]')?.click();
+  window.SKIApi?.goPage('more');
+  window.SKIPhotoSources?.open(name);
+ });
  const points=[];
  function updateVisibility(){
   const enabled=toggle?.checked===true;

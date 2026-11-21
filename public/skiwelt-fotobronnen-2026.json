@@ -1,0 +1,792 @@
+{
+  "meta": {
+    "version": "2026-11-21",
+    "status": "source-research-not-image-license",
+    "restaurantCount": 26,
+    "liftCount": 10,
+    "sourceCount": 66,
+    "copyright": "Bronnen bieden GEEN automatisch hergebruiksrecht. Toon links naar oorspronkelijke bron; importeer foto's uitsluitend met toestemming of gebruikerslicentie.",
+    "map": "Locaties op panoramakaart zijn globaal, geen GPS-ijkpunten.",
+    "battery": "Laad deze JSON alleen op aanvraag en nooit externe foto's vooraf."
+  },
+  "restaurants": [
+    {
+      "name": "Brantlalm",
+      "area": "Brixen im Thale",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "interieur",
+          "url": "https://www.kitzbueheler-alpen.com/nl/bri/infra/a-z/brantlalm.html",
+          "details": "Binnenfoto van de Stube duidelijk benoemd",
+          "image": "https://www.kitzbueheler-alpen.com/feratel/info/large/brixen-im-thale-brantlalm-stube-2.jpg",
+          "usage": "permission-required"
+        },
+        {
+          "name": "Frühstück am Berg",
+          "type": "interieur",
+          "url": "https://www.fruehstueckamberg.at/de/huetten/brixen-im-thale/brantlalm.html",
+          "details": "Binnenfoto van de Stube",
+          "image": "https://tourism.fruehstueckamberg.at/media/infrastructure/gallery/stube-17.jpg",
+          "usage": "permission-required"
+        },
+        {
+          "name": "Brantlalm eigen website",
+          "type": "website",
+          "url": "https://www.brantlalm.at/",
+          "details": "Restaurant en foto's"
+        },
+        {
+          "name": "Brantlalm Instagram",
+          "type": "sociaal",
+          "url": "https://www.instagram.com/brantlalm/",
+          "details": "@brantlalm vermeld bij Restaurant Guru"
+        }
+      ]
+    },
+    {
+      "name": "Sonnalm",
+      "area": "Westendorf",
+      "aliases": [
+        "Berggasthaus Sonnalm"
+      ],
+      "sources": [
+        {
+          "name": "Sonnalm eigen fotogalerij",
+          "type": "interieur",
+          "url": "https://www.berggasthaus-sonnalm.at/de/bildergalerie.html",
+          "details": "Binnen- en buitenbeelden van de eigen horecagelegenheid",
+          "image": "https://www.berggasthaus-sonnalm.at/media/zoombilder/dsc-0465-1.jpg",
+          "usage": "permission-required"
+        },
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "interieur",
+          "url": "https://www.kitzbueheler-alpen.com/de/bri/infra/a-z/berggasthaus-sonnalm.html",
+          "details": "Binnenfoto Stube",
+          "image": "https://www.kitzbueheler-alpen.com/feratel/info/large/westendorf-berggasthaus-sonnalm-stube-1_1.jpg",
+          "usage": "permission-required"
+        },
+        {
+          "name": "SkiWelt",
+          "type": "interieur",
+          "url": "https://www.skiwelt.at/westendorf/en/info/sonnalm/",
+          "details": "Binnenfoto in bronarchief",
+          "image": "https://sgm.skiwelt.at/media/facility/cimg2248.jpg",
+          "usage": "permission-required"
+        }
+      ]
+    },
+    {
+      "name": "KRAFTalm",
+      "area": "Itter / Kleine Salve",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "Booking.com KRAFTalm",
+          "type": "boeking",
+          "url": "https://www.booking.com/hotel/at/kraftalm.nl.html",
+          "details": "Meer dan 90 foto's; bar, lounge, restaurant en kamers; gastfoto's niet kopiëren"
+        },
+        {
+          "name": "HolidayCheck KRAFTalm",
+          "type": "boeking",
+          "url": "https://www.holidaycheck.de/hm/bilder-videos-kraftalm/c393e864-6612-3fc8-b757-e6f7ae68200c/-/m/picture",
+          "details": "176 foto's, inclusief restaurant ('Gastro') en interieur"
+        },
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "vvv",
+          "url": "https://www.kitzbueheler-alpen.com/nl/hosa/accommodatie/boeken/kraftalm.html",
+          "details": "Hotel en horecagalerij"
+        },
+        {
+          "name": "Restaurant Guru",
+          "type": "interieur",
+          "url": "https://restaurantguru.com/Kraft-Alm-Austria",
+          "details": "Gecategoriseerde interieur- en buitenfoto's"
+        }
+      ]
+    },
+    {
+      "name": "Bergrestaurant Brandstadl",
+      "area": "Scheffau",
+      "aliases": [
+        "Brandstadl"
+      ],
+      "sources": [
+        {
+          "name": "Brandstadl eigen restaurantgalerij",
+          "type": "galerie",
+          "url": "https://www.bergrestaurant-brandstadl.at/Bergrestaurant-Brandstadl-Impressionen_pid%2C65543%2Cgid%2C15812%2Ctype%2Cgalerie.html",
+          "details": "Restaurantfoto's en 360° rondleiding"
+        },
+        {
+          "name": "Restaurant Guru",
+          "type": "galerie",
+          "url": "https://de.restaurantguru.com/Restaurant-Brandstadl-Austria",
+          "details": "179 foto's, filter 'Innenbereich'"
+        },
+        {
+          "name": "Brandstadl copyrightverklaring",
+          "type": "rechten",
+          "url": "https://www.bergrestaurant-brandstadl.at/Bergrestaurant-Brandstadl-Impressum_pid%2C65525%2Ctype%2Cfirmeninfo.html",
+          "details": "Uitdrukkelijke toestemming nodig voor overname van foto's"
+        }
+      ]
+    },
+    {
+      "name": "Rübezahl-Alm",
+      "area": "Ellmau",
+      "aliases": [
+        "Rübezahl - Alm",
+        "Rübezahl Alm"
+      ],
+      "sources": [
+        {
+          "name": "Rübezahl-Alm originele interieurcollectie",
+          "type": "interieur",
+          "url": "https://www.ruebezahlalm.at/links-downloads/",
+          "details": "Download ‘Innenansichten Rübezahl-Alm’ (ZIP, ca. 19,7 MB); ook winter- en zomerarchief"
+        },
+        {
+          "name": "Rübezahl-Alm eigen website",
+          "type": "website",
+          "url": "https://www.ruebezahlalm.at/",
+          "details": "Alm met sfeer- en binnenbeelden"
+        },
+        {
+          "name": "Rübezahl-Alm Instagram",
+          "type": "sociaal",
+          "url": "https://www.instagram.com/ruebezahlalm/",
+          "details": "@ruebezahlalm"
+        },
+        {
+          "name": "Restaurant Guru",
+          "type": "galerie",
+          "url": "https://restaurantguru.com/Ruebezahl-alm-Ellmau",
+          "details": "Foto's en reacties"
+        }
+      ]
+    },
+    {
+      "name": "Kaiserlounge",
+      "area": "Ellmau",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "Restaurant Guru Kaiserlounge",
+          "type": "galerie",
+          "url": "https://restaurantguru.com/KaiserLounge-Ellmau",
+          "details": "74 foto's met interieurcategorie"
+        },
+        {
+          "name": "VVV Ellmau-Going",
+          "type": "vvv",
+          "url": "https://www.ellmau-going.at/",
+          "details": "Toeristisch bronarchief"
+        },
+        {
+          "name": "Kaiserlounge Instagram",
+          "type": "sociaal",
+          "url": "https://www.instagram.com/kaiserlounge/",
+          "details": "@kaiserlounge"
+        }
+      ]
+    },
+    {
+      "name": "Jochstubn",
+      "area": "Scheffau / Brixen",
+      "aliases": [
+        "Alpengasthof Jochstubn",
+        "Bergrestaurant Jochstubn"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt Jochstubn",
+          "type": "interieur",
+          "url": "https://www.skiwelt.at/de/brixen-im-thale/info/bergrestaurant-jochstubn.html",
+          "details": "Herkenbare houten eethoek",
+          "image": "https://tourism.skiwelt.at/media/infrastructure/detail/innen-25.jpg",
+          "usage": "permission-required"
+        },
+        {
+          "name": "Snowplaza",
+          "type": "galerie",
+          "url": "https://www.snowplaza.nl/weblog/van-vroeg-tot-laat-in-skiwelt-dit-wil-je-allemaal-doen/",
+          "details": "Fotoreportage over eten in de Jochstubn"
+        }
+      ]
+    },
+    {
+      "name": "Stöcklalm",
+      "area": "Söll",
+      "aliases": [
+        "Gasthof Stöcklalm"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt Stöcklalm",
+          "type": "interieur",
+          "url": "https://www.skiwelt.at/en/info/gasthof-stoecklalm-soell/",
+          "details": "Binnenfoto horeca en bar",
+          "image": "https://sgm.skiwelt.at/media/facility/stoecklalm-innen-soell-6.webp",
+          "usage": "permission-required"
+        }
+      ]
+    },
+    {
+      "name": "Alpengasthof Hochsöll",
+      "area": "Söll",
+      "aliases": [
+        "Hochsöll"
+      ],
+      "sources": [
+        {
+          "name": "Alpengasthof Hochsöll eigen fotogalerij",
+          "type": "galerie",
+          "url": "https://www.alpengasthof-hochsoell.at/galerie",
+          "details": "Meerdere tientallen horeca-/winterfoto's"
+        },
+        {
+          "name": "Restaurant Guru",
+          "type": "galerie",
+          "url": "https://restaurantguru.com/Alpengasthof-Hochsoll-Austria",
+          "details": "148 foto's; categorie Interior"
+        }
+      ]
+    },
+    {
+      "name": "Gasthof Gründlalm",
+      "area": "Söll",
+      "aliases": [
+        "Gründlalm",
+        "Bergrestaurant Gründlalm"
+      ],
+      "sources": [
+        {
+          "name": "Österreichs Wanderdörfer",
+          "type": "vvv",
+          "url": "https://huetten.wanderdoerfer.at/huette/bergrestaurant-gruendlalm/",
+          "details": "Hutdetail met foto"
+        }
+      ]
+    },
+    {
+      "name": "Kummereralm",
+      "area": "Scheffau / Ellmau",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "Kummereralm eigen website",
+          "type": "website",
+          "url": "https://kummereralm.at/",
+          "details": "Wintertuin, restaurant en hutdetail; officiële hut nr. 33"
+        },
+        {
+          "name": "VVV Wilder Kaiser",
+          "type": "vvv",
+          "url": "https://www.wilderkaiser.info/de/ellmau/info/kummereralm.html",
+          "details": "Toeristisch detail en foto's; km en pistelocatie"
+        }
+      ]
+    },
+    {
+      "name": "SkiWelt Hütte",
+      "area": "Brixen im Thale",
+      "aliases": [
+        "SkiWelt Hütte Hochbrixen"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt Hütte eigen website",
+          "type": "website",
+          "url": "https://skiwelt-huette.at/nl",
+          "details": "Nederlandse restaurantdetails en horecafoto's"
+        },
+        {
+          "name": "SkiWelt",
+          "type": "vvv",
+          "url": "https://www.skiwelt.at/nl/brixen-im-thale/info/skiwelt-huette-hochbrixen.html",
+          "details": "Hut nr. 1"
+        },
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "interieur",
+          "url": "https://www.kitzbueheler-alpen.com/de/bri/infra/a-z/skiwelt-huette-hochbrixen.html",
+          "details": "Binnenfoto Hochbrixen",
+          "image": "https://www.kitzbueheler-alpen.com/feratel/info/large/brixen-im-thale-skiwelt-huette-hochbrixen-innen-2.jpg",
+          "usage": "permission-required"
+        }
+      ]
+    },
+    {
+      "name": "Filzalm",
+      "area": "Brixen im Thale",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "vvv",
+          "url": "https://www.kitzbueheler-alpen.com/nl/bri/infra/a-z/filzalm.html",
+          "details": "Fotogalerij en hutdetail"
+        }
+      ]
+    },
+    {
+      "name": "Jausenstation Frankalm",
+      "area": "Brixen im Thale",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "SkiWelt Frankalm",
+          "type": "interieur",
+          "url": "https://www.skiwelt.at/de/brixen-im-thale/info/jausenstation-frankalm.html",
+          "details": "Interieurfoto bij de officiële hut",
+          "image": "https://tourism.skiwelt.at/media/infrastructure/detail/innen-7.jpg",
+          "usage": "permission-required"
+        }
+      ]
+    },
+    {
+      "name": "Jägerhütte",
+      "area": "Ellmau",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "VVV Wilder Kaiser",
+          "type": "vvv",
+          "url": "https://www.wilderkaiser.info/de/ellmau/info/jaegerhuette.html",
+          "details": "Galerij en hutinformatie"
+        },
+        {
+          "name": "Jägerhütte eigen website",
+          "type": "website",
+          "url": "https://www.jaegerhuette.at/",
+          "details": "Eigen website"
+        }
+      ]
+    },
+    {
+      "name": "Gipfelalm Hohe Salve",
+      "area": "Söll / Hopfgarten",
+      "aliases": [
+        "Gipfelrestaurant Hohe Salve"
+      ],
+      "sources": [
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "interieur",
+          "url": "https://www.kitzbueheler-alpen.com/de/bri/infra/a-z/gipfelrestaurant-hohe-salve.html",
+          "details": "Gipfelrestaurant interieurs",
+          "image": "https://www.kitzbueheler-alpen.com/feratel/info/large/westendorf-gipfelrestaurant-hohe-salve-innen2.jpg",
+          "usage": "permission-required"
+        }
+      ]
+    },
+    {
+      "name": "Bergrestaurant Talkaser",
+      "area": "Westendorf",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "Tripadvisor",
+          "type": "galerie",
+          "url": "https://www.tripadvisor.nl/Restaurant_Review-g608681-d7744953-Reviews-Bergrestaurant_Talkaser-Westendorf_Tirol_Austrian_Alps.html",
+          "details": "19 reizigersfoto's; bekijk bij bron, niet kopiëren"
+        },
+        {
+          "name": "Restaurant Guru",
+          "type": "galerie",
+          "url": "https://restaurantguru.com/Bergrestaurant-Talkaser-Westendorf-Tyrol-2",
+          "details": "20 foto's; food/buiten"
+        }
+      ]
+    },
+    {
+      "name": "Panorama Restaurant Choralpe",
+      "area": "Westendorf",
+      "aliases": [
+        "Panorama Restaurant Choralpe"
+      ],
+      "sources": [
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "vvv",
+          "url": "https://www.kitzbueheler-alpen.com/de/bri/infra/a-z/panorama-restaurant-choralpe.html",
+          "details": "Hutdetail met contact en foto's"
+        },
+        {
+          "name": "HolidayCheck",
+          "type": "galerie",
+          "url": "https://www.holidaycheck.de/pi/panoramarestaurant-choralpe/5ef14e39-a54d-3d70-b526-03ee8d4872b7",
+          "details": "Reizigersfoto's; rechten bij fotograaf"
+        }
+      ]
+    },
+    {
+      "name": "Berggasthaus Brechhornhaus",
+      "area": "Westendorf",
+      "aliases": [
+        "Brechhornhaus"
+      ],
+      "sources": [
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "vvv",
+          "url": "https://www.kitzbueheler-alpen.com/nl/bri/infra/a-z/brechhornhaus-berggasthaus-1.html",
+          "details": "Galerij en accommodatie-/restaurantinfo"
+        },
+        {
+          "name": "Eigen website Brechhornhaus",
+          "type": "website",
+          "url": "https://www.alpengasthof.co.at/",
+          "details": "Hut en restaurant"
+        }
+      ]
+    },
+    {
+      "name": "Tanzbodenalm",
+      "area": "Scheffau",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "SkiWelt officiële huttenkaart",
+          "type": "officieel",
+          "url": "https://skimap.skiwelt.at/de/",
+          "details": "Hut nr. 31, link vanuit officiële kaart"
+        }
+      ]
+    },
+    {
+      "name": "Berggasthof Nieding",
+      "area": "Brixen im Thale",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "SkiWelt officiële huttenkaart",
+          "type": "officieel",
+          "url": "https://skimap.skiwelt.at/de/",
+          "details": "Hut nr. 7; fotocontrole op bron nog nodig"
+        },
+        {
+          "name": "Brixental toerisme",
+          "type": "vvv",
+          "url": "https://www.kitzbueheler-alpen.com/nl/bri/",
+          "details": "Toerismevereniging voor extra fotomateriaal"
+        }
+      ]
+    },
+    {
+      "name": "Brixner Stadl",
+      "area": "Brixen im Thale",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "SkiWelt officiële huttenkaart",
+          "type": "officieel",
+          "url": "https://skimap.skiwelt.at/de/",
+          "details": "Hut nr. 10"
+        },
+        {
+          "name": "Brixental toerisme",
+          "type": "vvv",
+          "url": "https://www.kitzbueheler-alpen.com/nl/bri/",
+          "details": "VVV fotobron"
+        }
+      ]
+    },
+    {
+      "name": "Salvenalm",
+      "area": "Hopfgarten",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "SkiWelt officiële huttenkaart",
+          "type": "officieel",
+          "url": "https://skimap.skiwelt.at/de/",
+          "details": "Hut nr. 19"
+        },
+        {
+          "name": "Hohe Salve toerisme",
+          "type": "vvv",
+          "url": "https://www.kitzbueheler-alpen.com/nl/hosa/",
+          "details": "VVV fotobron"
+        }
+      ]
+    },
+    {
+      "name": "Berggasthof Rigi",
+      "area": "Hopfgarten",
+      "aliases": [
+        "Alpengasthof Rigi"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt officiële huttenkaart",
+          "type": "officieel",
+          "url": "https://skimap.skiwelt.at/de/",
+          "details": "Hut nr. 21"
+        }
+      ]
+    },
+    {
+      "name": "Salvistastadl",
+      "area": "Itter",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "SkiWelt officiële huttenkaart",
+          "type": "officieel",
+          "url": "https://skimap.skiwelt.at/de/",
+          "details": "Hut nr. 22"
+        }
+      ]
+    },
+    {
+      "name": "Berggasthaus Holzalm",
+      "area": "Brixen im Thale",
+      "aliases": [
+        "Holzalm"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt officiële huttenkaart",
+          "type": "officieel",
+          "url": "https://skimap.skiwelt.at/de/",
+          "details": "Hut nr. 4"
+        }
+      ]
+    }
+  ],
+  "lifts": [
+    {
+      "name": "Hartkaiserbahn",
+      "area": "Ellmau",
+      "aliases": [
+        "Hartkaiser",
+        "Hartkaiserbahn 80"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt officieel",
+          "type": "foto",
+          "url": "https://www.skiwelt.at/en/new-hartkaiserbahn-in-ellmau.html",
+          "details": "Zwarte Hartkaiser-gondels; cabines sinds 2015",
+          "image": "https://www.skiwelt.at/media/system/gallery/neue-hartkaiserbahn-gondel-skiwelt-ellmau-2.webp",
+          "usage": "permission-required"
+        }
+      ]
+    },
+    {
+      "name": "Brandstadlbahn I",
+      "area": "Scheffau",
+      "aliases": [
+        "Brandstadl I",
+        "Brandstadlbahn 61"
+      ],
+      "sources": [
+        {
+          "name": "Alpintreff Brandstadl I",
+          "type": "foto",
+          "url": "https://www.alpintreff.de/regionen/200113-8EUB-Brandstadl-I/",
+          "details": "Herkenningsfoto cabine in instapstation",
+          "image": "https://www.alpintreff.de/Bilder/poi/678/brandstadl-8er-eub-I-scheffau.jpg",
+          "usage": "permission-required"
+        },
+        {
+          "name": "SkiWelt Brandstadlbahn",
+          "type": "foto",
+          "url": "https://www.skiwelt.at/de/scheffau/info/bergbahn-scheffau-brandstadlbahn.html",
+          "details": "Algemeen winterbeeld I/II",
+          "image": "https://tourism.skiwelt.at/media/infrastructure/brandstadlbahn-winter.jpg",
+          "usage": "permission-required"
+        }
+      ]
+    },
+    {
+      "name": "Brandstadlbahn II",
+      "area": "Scheffau",
+      "aliases": [
+        "Brandstadl II",
+        "Brandstadlbahn 62"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt.de Brandstadl II",
+          "type": "foto",
+          "url": "https://www.skiwelt.de/regionen/200114-8EUB-Brandstadl-II/",
+          "details": "Foto's afzonderlijke tweede sectie",
+          "image": "https://www.skiwelt.de/Bilder/poi/678/brandstadl-8er-eub-II-scheffau.jpg",
+          "usage": "permission-required"
+        },
+        {
+          "name": "Lift-World Brandstadlbahn II",
+          "type": "galerie",
+          "url": "https://lift-world.info/en/lifts/2083/datas.htm",
+          "details": "Liftdata, foto's en cabine-vergelijking"
+        }
+      ]
+    },
+    {
+      "name": "Salvistabahn Itter",
+      "area": "Itter",
+      "aliases": [
+        "Salvistabahn"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt persarchief",
+          "type": "foto",
+          "url": "https://media.skiwelt.at/en/new-salvista-cable-car-at-skiwelt-itter-with-technical-innovations.html",
+          "details": "Nieuwere cabine Salvistabahn sinds 2020",
+          "image": "https://media.skiwelt.at/media/zoombild/salvistabahn-3.jpg",
+          "usage": "permission-required"
+        }
+      ]
+    },
+    {
+      "name": "Hohe Salve Gondelbahn Söll",
+      "area": "Söll / Hohe Salve",
+      "aliases": [
+        "Hohe Salve"
+      ],
+      "sources": [
+        {
+          "name": "SkiWelt nieuwe cabine 2026",
+          "type": "2026",
+          "url": "https://www.skiwelt.at/nl/verbeterde-gondelbaan-naar-de-top-van-de-hohe-salve.html",
+          "details": "Cabines vervangen juni 2026, sterrenbeelden"
+        },
+        {
+          "name": "SkiWelt Salvenzon fotoreportage",
+          "type": "2026",
+          "url": "https://www.skiwelt.at/nl/salvenzon-hohe-salve.html",
+          "details": "2026 nieuw gondeldesign; oude rode gondelfoto niet als actueel gebruiken"
+        }
+      ]
+    },
+    {
+      "name": "Salvenbahn I",
+      "area": "Hopfgarten",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "Snowplaza Hohe Salve reportage",
+          "type": "foto",
+          "url": "https://www.snowplaza.nl/weblog/16735-hohe-salve-skiwelt-wilder-kaiser-brixental/",
+          "details": "Rode Salvenbahn-foto, alleen hergebruiken na controle van de exacte sectie"
+        }
+      ]
+    },
+    {
+      "name": "Salvenbahn II",
+      "area": "Hopfgarten",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "Liftinformatie SkiWelt",
+          "type": "lift",
+          "url": "https://www.wilderkaiser.info/de/geoeffnete-lifte.html",
+          "details": "Liftinformatie op officiële toerismesite; cabine-afbeelding nog niet afzonderlijk gevalideerd"
+        }
+      ]
+    },
+    {
+      "name": "Choralmbahn",
+      "area": "Westendorf",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "foto",
+          "url": "https://www.kitzbueheler-alpen.com/nl/bri/infra/a-z/liften-westendorf-bv.html",
+          "details": "Algemene panoramafoto bergbanen; kabinetype nog controleren"
+        }
+      ]
+    },
+    {
+      "name": "SkiWeltbahn Brixen",
+      "area": "Brixen im Thale",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "SkiWelt pistekaart",
+          "type": "officieel",
+          "url": "https://skimap.skiwelt.at/de/",
+          "details": "Lift- en kaartinformatie; foto nog te bevestigen"
+        }
+      ]
+    },
+    {
+      "name": "Alpenrosenbahn",
+      "area": "Westendorf",
+      "aliases": [],
+      "sources": [
+        {
+          "name": "VVV Kitzbüheler Alpen",
+          "type": "vvv",
+          "url": "https://www.kitzbueheler-alpen.com/nl/bri/",
+          "details": "Bergbahnen Westendorf fotobron; juiste sectie nog controleren"
+        }
+      ]
+    }
+  ],
+  "globalSources": [
+    {
+      "name": "SkiWelt persfotobank",
+      "type": "officieel",
+      "url": "https://media.skiwelt.at/en/search.html",
+      "details": "Zoekfilter Lifts / Huts; bibliotheek vereist account en fotovergunning"
+    },
+    {
+      "name": "SkiWelt contact",
+      "type": "officieel",
+      "url": "https://www.skiwelt.at/nl/skiwelt-direct.html",
+      "details": "Via SkiWelt rechten en betere foto’s aanvragen"
+    },
+    {
+      "name": "SkiWelt Instagram",
+      "type": "sociaal",
+      "url": "https://www.instagram.com/skiweltwilderkaiserbrixental/",
+      "details": "Officieel profiel genoemd door Tirol Presse"
+    },
+    {
+      "name": "SkiWelt Facebook",
+      "type": "sociaal",
+      "url": "https://www.facebook.com/SkiWelt/",
+      "details": "Officiële Facebookpagina"
+    },
+    {
+      "name": "VVV Wilder Kaiser",
+      "type": "vvv",
+      "url": "https://www.wilderkaiser.info/de/huetten-bergrestaurants.html",
+      "details": "Huttenbeelden en galerieën voor Ellmau, Söll, Scheffau, Going"
+    },
+    {
+      "name": "VVV Kitzbüheler Alpen",
+      "type": "vvv",
+      "url": "https://www.kitzbueheler-alpen.com/nl/bri/",
+      "details": "Huttenbeelden Brixen, Westendorf, Hopfgarten, Itter"
+    },
+    {
+      "name": "Tripadvisor / bezoekersfoto's",
+      "type": "galerie",
+      "url": "https://www.tripadvisor.nl/",
+      "details": "Alleen link naar originelen en verifieer locatie; geen automatisch hergebruik"
+    },
+    {
+      "name": "HolidayCheck / gastfoto's",
+      "type": "galerie",
+      "url": "https://www.holidaycheck.de/",
+      "details": "Rechten bij fotografen en het platform; niet kopiëren"
+    },
+    {
+      "name": "Booking.com / horecafoto's",
+      "type": "galerie",
+      "url": "https://www.booking.com/",
+      "details": "Accommodatie- en horecafoto's: niet kopiëren zonder toestemming"
+    }
+  ]
+}

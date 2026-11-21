@@ -145,9 +145,9 @@
      now+=step.minutes;index++;
     }
     if(now<slot.endMinute){
-     add('free',location||'Skiën en uitzicht',now,slot.endMinute,
-       'Vrij skiën in verder gelegen gebied; kies een geopende piste en voorkom herhaalde rondjes bij je vertrekpunt.',
-       {phase:kind});
+     add('free','Nog geen piste-voor-piste route beschreven',now,slot.endMinute,
+       'Dit tijdsblok is niet als aaneengesloten skiroute gecontroleerd. Volg de officiële borden en kies ter plaatse veilige, geopende pistes.',
+       {phase:kind,unplanned:true});
     }
    }
    if(index<parts.length){
@@ -198,6 +198,7 @@
      unverifiedTransitions.push({corridor:leg.id,from:parts[i-1].code,to:parts[i].code,reason:'Geen afzonderlijke piste of loopverbinding vermeld tussen deze liften'});
    }
   }
+  if(events.some(e=>e.unplanned))warnings.push('⚠️ Een of meer ski-tijdvakken hebben geen gecontroleerde pistes. De route is niet volledig ingevuld.');
   if(unverifiedTransitions.length)warnings.push('⚠️ '+unverifiedTransitions.length+' liftoverstappen hebben nog geen gecontroleerde tussenliggende piste of wandelverbinding. De route is NIET aaneengesloten geverifieerd.');
   if(!pois.length)warnings.push('Er zijn voor deze route nog geen officieel onderbouwde WC-locaties bekend; vraag ter plaatse.');
   else warnings.push('🚻 WC-locaties zijn mogelijke stops nabij de route, niet automatisch gegarandeerde toiletten op jouw piste.');

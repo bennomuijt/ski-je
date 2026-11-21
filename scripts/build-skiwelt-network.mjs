@@ -203,6 +203,7 @@ const report={
  liftRefs:[...lifts].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})),
  pisteCodes:[...new Set(features.filter(f=>f.kind==='piste'&&f.ref).map(f=>f.ref))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})),
  stations,geometryPrecision:'OpenSkiData 2D paths + interpolated GLO-90 terrain height; transfers <=36 metres remain estimated'};
+if(missingElevation)throw new Error('Missing elevation for '+missingElevation+' pistes. Refuse an incomplete ski network; fetch complete source first.');
 const output={version:1,source:src.source,geometryAt:src.generatedAt,stations,nodes,features,edges,
  disclaimer:'Map geometry and 90 m terrain approximations; official resort signage, status, closing times and correct lift boarding take precedence.',
  attribution:src.attribution+'; Copernicus DEM from Open-Meteo'};

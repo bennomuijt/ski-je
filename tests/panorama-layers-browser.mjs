@@ -48,6 +48,16 @@ try{
  await page.locator('#pano-hut-search').fill('KRAFTalm');
  assert.match(await page.locator('#pano-hut-name').innerText(),/KRAFTalm/i);
  await page.locator('#pano-hut-search').fill('');
+ // Use an image with the exact printed PDF aspect to verify vector hotspots.
+ assert.equal(await page.locator('.pano-numbered-lift').count(),79);
+ await page.locator('#pano-img').evaluate(img=>{
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1698" height="1174"/>');
+ });
+ await page.waitForFunction(()=>document.querySelector('#pano-img').naturalWidth===1698);
+ await page.locator('#pano-plus').evaluate(el=>el.click());
+ await page.locator('#pano-plus').evaluate(el=>el.click());
+ await page.waitForFunction(()=>document.querySelectorAll('.pano-numbered-lift:not([hidden])').length>0);
+ assert.ok(await page.locator('.pano-numbered-lift:visible').count()>0,'PDF lift numbers are visible on exact image ratio');
  await page.locator('#pano-lifts-visible').uncheck();
  assert.equal(await page.locator('#pano-lifts').isHidden(),true);
  await page.locator('#pano-lifts-visible').check();

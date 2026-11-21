@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url);
+import vm from 'node:vm';
+
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-const {lifts,areas,precision,source}=require('../public/lift-catalogue.js');
+const sandbox={module:{exports:{}},globalThis:{}};
+vm.runInNewContext(read('public/lift-catalogue.js'),sandbox);
+const {lifts,areas,precision,source}=sandbox.module.exports;
 
 test('genummerde liften zijn uniek, benoemd en per deelgebied bereikbaar',()=>{
  assert.ok(lifts.length>=80);

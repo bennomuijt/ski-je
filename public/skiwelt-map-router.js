@@ -119,7 +119,7 @@
  }
  function labelFeature(row){
   const f=row[2]<0?null:graph.features[row[2]];
-  if(!f)return{type:'transfer',code:'',name:row[4]==='station-walk'?'Loopverbinding bij liftstation':'Pisteovergang op kaart',level:'unknown',confidence:row[4]};
+  if(!f)return{type:'transfer',code:'',name:row[4]==='village-walk'?'Loopoverstap tussen Going en Hartkaiserbahn':row[4]==='station-walk'?'Loopverbinding bij liftstation':'Pisteovergang op kaart',level:'unknown',confidence:row[4]};
   const level={novice:'blue',easy:'blue',intermediate:'red',advanced:'black',expert:'black'}[f.difficulty]||'unknown';
   return{type:f.kind,code:f.ref,name:f.name||'Piste '+(f.ref||'zonder nummer'),
    level,confidence:row[4],feature:row[2]};
@@ -158,7 +158,7 @@
    departure:options.departure||'09:00',returnTime:options.returnTime||'16:00',
    safeArrival:hhmm(limit),margin,useLunch:options.useLunch!==false,
    lunchRestaurant:lunchLabel||'',lunchMinutes:options.useLunch!==false?Number(options.lunchDuration??60):0,
-   sections:[],notes:[],wishes:options.wishes||[],morningBreak:false,afternoonBreak:false};
+   sections:[],notes:[],wishes:options.wishes||[],morningBreak:!!options.morningBreak,afternoonBreak:!!options.afternoonBreak};
   let at=startTime;const itinerary=[];
   function insert(type,label,duration,detail='',rest={}){
    const minutes=Math.round(duration);if(minutes<=0)return;
@@ -172,12 +172,14 @@
   };
   const lunchAt=clock(options.lunchTime||'12:30');
   addRoute(segments.pre,'Voor de lunch');
+  if(options.morningBreak)insert('break','Ochtendpauze',clamp(Number(options.morningDuration??30),5,120),'Pauze bij het laatst bereikte punt van de route.');
   if(result.useLunch){
    if(at>lunchAt){result.reason='De aaneengesloten route bereikt de lunchlocatie te laat.';return{plan:result,itinerary};}
    insert('break','Reserve vóór lunch',lunchAt-at,'Geen fictieve pistes ingevuld; ruimte voor wachttijden en korte pauze.');
    insert('lunch',lunchLabel,Number(options.lunchDuration??60),'Controleer openingstijd en de exacte ligging van het restaurant.');
   }
   addRoute(segments.post,'Na de lunch');
+  if(options.afternoonBreak)insert('break','Middagpauze',clamp(Number(options.afternoonDuration??30),5,120),'Pauze bij het laatst bereikte punt vóór de terugweg.');
   addRoute(segments.back,'Terugweg');
   if(at>limit){result.reason='De aaneengesloten piste- en liftroute past niet vóór de veilige terugkeertijd.';return{plan:result,itinerary};}
   insert('return','Reserve na aankomst',limit-at,'Werkelijke reistijden en liftwachtrijen kunnen afwijken; reserve is geen extra piste.');
@@ -282,6 +284,7 @@
    '⚠️ Terreinhoogtes zijn afgeleid uit een 90 m hoogtemodel; voor kleine paden en kruisingen kan de richting afwijken.'
   ];
   if(steps.some(s=>s.type==='transfer'))notes.push('⚠️ '+steps.filter(s=>s.type==='transfer').length+' kaartovergangen zijn slechts op afstand gekoppeld. Controleer deze overstappen ter plaatse.');
+  if(steps.some(s=>s.confidence==='village-walk'))notes.push('⚠️ Going–Ellmau: circa 80 meter aparte loopoverstap. SkiWelt bevestigt de gebiedsroute, niet deze exacte looproute; oversteek ter plaatse controleren.');
   if(steps.some(s=>s.level==='unknown'&&s.type==='piste'))notes.push('⚠️ Een of meer pistekleuren zijn niet bevestigd. Controleer of het niveau geschikt is.');
   const allItinerary=made.itinerary;
   const total=allItinerary.filter(x=>x.type==='lift'||x.type==='piste');

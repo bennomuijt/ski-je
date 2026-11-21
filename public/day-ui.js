@@ -62,7 +62,7 @@
    current=null;return;
   }
   const itinerary=detail.buildTimeline(plan,route,options);current={plan,route,options,itinerary};
-  output.append(el('strong','plan-heading',t('Jouw volledige skidag')));
+  output.append(el('strong','plan-heading',itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length||itinerary.steps.some(s=>s.unplanned)?'⚠️ Voorlopige skidag — niet alle pistes en liften gecontroleerd':t('Jouw volledige skidag')));
   const intro=el('div','day-intro');
   intro.append(el('span','day-pill',plan.departure+' – '+plan.returnTime));
   intro.append(el('span','day-pill',t('Streefaankomst')+' '+plan.safeArrival+' · marge '+plan.margin+' min'));

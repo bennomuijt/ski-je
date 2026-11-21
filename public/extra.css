@@ -264,3 +264,7 @@ body.utility-open{overflow:hidden}
 #highlight-photo{width:100%;min-height:50px}
 @media(max-width:380px){.ski-highlight{padding:10px}.ski-highlight strong{font-size:20px}}
 @media print{#highlight-share-options,#highlight-copy,#highlight-share-image{display:none!important}}
+
+.ski-highlights-badges{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ski-highlights-badges span{border-radius:25px;padding:9px 12px;font-size:12px;font-weight:750;background:#f0f4f7;color:#6b8090;border:1px solid #d9e4ec}
+.ski-highlights-badges span.earned{color:#0b644f;background:#e3f8ee;border-color:#8ed8b8}

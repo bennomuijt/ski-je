@@ -177,7 +177,7 @@
   "areaKey": "itter"
  },
  {
-  "number": "40",
+  "number": "26",
   "name": "10er Gondelbahn Hexenwasser",
   "area": "Söll",
   "areaKey": "soll"

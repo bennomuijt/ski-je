@@ -92,6 +92,7 @@
    legend.append(el('span','ski-route-tag '+kind,title));
   }
   routeWrap.append(legend);
+  window.SKIOfficialTourUI?.mount?.(routeWrap,getClosures());
   const detailed=el('div','ski-route-steps');
   for(const [i,step] of itinerary.steps.entries()){
    const row=el('div','ski-route-step '+step.type);
@@ -104,6 +105,19 @@
    row.append(when,info);detailed.append(row);
   }
   routeWrap.append(detailed);
+  if(itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length){
+   const gaps=el('details','route-gap-audit');
+   gaps.append(el('summary','', '⚠️ Nog ontbrekende of niet-gecontroleerde routeonderdelen ('+
+    ((itinerary.missingSteps?.length||0)+(itinerary.unverifiedTransitions?.length||0))+')'));
+   gaps.append(el('p','hint','Geen ongenoemde piste wordt automatisch overgeslagen of verzonnen. De hieronder genoemde gaten moeten worden opgelost voordat dit een bruikbare, complete route is.'));
+   for(const part of itinerary.missingSteps||[]){
+    gaps.append(el('p','route-gap-line','⏳ '+part.phase+': '+(part.code?part.code+' · ':'')+part.name+' — '+part.reason));
+   }
+   for(const gap of itinerary.unverifiedTransitions||[]){
+    gaps.append(el('p','route-gap-line','⇄ '+gap.corridor+': lift '+gap.from+' → lift '+gap.to+' — '+gap.reason));
+   }
+   routeWrap.append(gaps);
+  }
   const checkpoints=el('p','hint','⚠️ '+t('Richttijden zijn geen garantie. Liftwachttijd, pauzes en weer kunnen het schema veranderen.'));
   routeWrap.append(checkpoints);
   const toilets=el('details','ski-route-wc');

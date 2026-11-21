@@ -26,6 +26,12 @@ jobs:
         run: |
           python -m pip install --quiet pymupdf
           python scripts/inspect-skiwelt-pdf.py
+      - name: Read small green hut-number badges in official panorama (research only)
+        if: github.event_name == 'pull_request'
+        run: |
+          command -v tesseract || (sudo apt-get update -qq && sudo apt-get install -y tesseract-ocr)
+          python -m pip install --quiet pillow
+          python scripts/recognize-skiwelt-huts.py
       - name: Probe public Cloudflare release (informational)
         shell: bash
         run: |

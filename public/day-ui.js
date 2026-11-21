@@ -77,7 +77,7 @@
    return;
   }
   const {plan,route,itinerary}=routeResult;
-  current={plan,route,options,itinerary,graphBased:true};
+  current={plan,route,options,itinerary,graphBased:true,path:routeResult.path};
 
   output.append(el('strong','plan-heading',itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length||itinerary.steps.some(s=>s.unplanned)?'⚠️ Voorlopige skidag — niet alle pistes en liften gecontroleerd':t('Jouw volledige skidag')));
   const intro=el('div','day-intro');

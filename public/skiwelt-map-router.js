@@ -218,23 +218,39 @@
   // Candidate huts are near known lift stations. Without verified restaurant
   // coordinates, do NOT claim that the chosen lift station is the hut entrance.
   const rest=String(options.lunchRestaurantLabel||'');
+  // Restaurant stops are paired with a nearby mapped lift station, not a
+  // fabricated exact entrance; the user sees this uncertainty.
   const restaurantPairs=[
-   [/brandstadl|tanzboden|kummereralm|jochstub/i,'Brandstadl bergstation'],
-   [/hohe salve|gipfelalm|gipfelrestaurant/i,'Hohe Salve'],
-   [/kaiserlounge|hartkaiser|rübezahl/i,'Hartkaiser bergstation'],
-   [/hochbrixen|brantlalm|filzalm|skiwelt hütte/i,'Brixen dalstation'],
-   [/kraftalm|salvista/i,'Itter dalstation']
+   [/kraftalm/i,'lift:30:middle1','KRAFTalm · Salvistabahn tussenstation'],
+   [/tanzboden/i,'lift:99:top','Tanzbodenalm · bij Tanzbodenbahn'],
+   [/brandstadl/i,'Brandstadl bergstation','Bergrestaurant Brandstadl'],
+   [/kummereralm/i,'lift:69:top','Kummereralm · Kummereralmbahn'],
+   [/jochstub/i,'lift:6:top','Jochstubn · Jochbahn'],
+   [/au alm/i,'lift:71:top','Au Alm · Aualmbahn'],
+   [/hohe salve|gipfelalm|gipfelrestaurant/i,'Hohe Salve','Gipfelrestaurant Hohe Salve'],
+   [/kaiserlounge|hartkaiser|rübezahl/i,'Hartkaiser bergstation','Kaiserlounge · Hartkaiser'],
+   [/filzalm|skiwelt hütte|brantlalm|hochbrixen/i,'lift:1:top','Hochbrixen · restaurantomgeving'],
+   [/hochsöll|gründlalm|stöcklalm/i,'lift:40:top','Hochsöll · restaurantomgeving'],
+   [/salvenalm/i,'lift:20:top','Salvenalm · Salvenbahn I'],
+   [/talkaser/i,'lift:114:top','Bergrestaurant Talkaser'],
+   [/choralpe/i,'lift:112:top','Panorama Restaurant Choralpe'],
+   [/salvista/i,'lift:30:middle1','KRAFTalm · Salvistabahn tussenstation']
   ];
   let requestedLunch=null;
   if(rest){
    const mapped=restaurantPairs.find(([pattern])=>pattern.test(rest));
-   if(!mapped)return{ok:false,reason:'De exacte aansluiting naar '+rest+' is nog niet bekend; ik geef geen verzonnen lunchroute.'};
+   if(!mapped)return{ok:false,reason:'De aansluiting naar '+rest+' is nog niet aan een passend liftstation gekoppeld.'};
    requestedLunch=graph.stations[mapped[1]]?.node;
+   if(!Number.isInteger(requestedLunch))return{ok:false,reason:'Liftstation bij '+rest+' ontbreekt in de kaartgrafiek.'};
   }
-  const candidates=useLunch?(requestedLunch!==null?[requestedLunch]:
-   ['Hartkaiser bergstation','Brandstadl bergstation','Hohe Salve',
-    'Hopfgarten tussenstation','Brixen dalstation','Söll dalstation']
-   .map(x=>graph.stations[x]?.node).filter(Number.isInteger)):[start];
+  // No restaurant name is invented: automatic choices are sourced from huts
+  // mentioned in the SkiWelt catalogue near mapped lift boarding points.
+  const lunchLabels=new Map();
+  for(const [,station,title] of restaurantPairs){
+   const id=graph.stations[station]?.node;
+   if(Number.isInteger(id)&&!lunchLabels.has(id))lunchLabels.set(id,title);
+  }
+  const candidates=useLunch?(requestedLunch!==null?[requestedLunch]:[...lunchLabels.keys()]):[start];
   const scenic=['Brandstadl bergstation','Hartkaiser bergstation','Hohe Salve','Hopfgarten tussenstation',
    'Brixen dalstation','Söll dalstation'].map(x=>graph.stations[x]?.node).filter(Number.isInteger);
   const breakMinutes=(options.morningBreak?Number(options.morningDuration??30):0)+(options.afternoonBreak?Number(options.afternoonDuration??30):0);
@@ -281,7 +297,7 @@
   const chosen=bestOptions[0];
   if(!chosen)return{ok:false,reason:'Geen volledige route met alle gewenste pistes, lunch en terugweg binnen de beschikbare tijd. Er zijn geen aansluitingen overgeslagen.'};
   const lunchName=useLunch?(rest?'Lunch bij '+rest+' (exacte huttoegang controleren)':
-   'Lunchstop bij liftstation (restaurant nog kiezen)'):'';
+   'Lunch bij '+(lunchLabels.get(chosen.lunch)||'restaurantomgeving')+' (exacte toegang controleren)'):'';
   const made=makePlan(options,{pre:chosen.before,post:chosen.post,back:chosen.back},lunchName,begin,limit,margin);
   if(!made.plan.ok)return{ok:false,reason:made.plan.reason};
   const path={edgeIds:[...chosen.before.edgeIds,...chosen.post.edgeIds,...chosen.back.edgeIds]};

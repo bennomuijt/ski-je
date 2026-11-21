@@ -29,16 +29,24 @@ green.sort(key=lambda r:(r.y0,r.x0))
 result=[]
 for i,r in enumerate(green):
  direct=[str(n) for n,x,y,font,color in numbers if font=='MyriadPro-Regular' and color==0xffffff and r.x0-1<=x<=r.x1+1 and r.y0-1<=y<=r.y1+1]
- if direct:
-  result.append({'index':i,'number':direct[0],'method':'vector-text','confidence':100,'x':round((r.x0+r.x1)/2/page.rect.width,5),'y':round((r.y0+r.y1)/2/page.rect.height,5)})
-  continue
+ # Always probe OCR, including the eight glyphs with known vector-text labels, to measure its reliability.
+
  # High-resolution crop of the EXACT green hut badge; does not OCR the map.
- clip=fitz.Rect(r.x0-1,r.y0-1,r.x1+1,r.y1+1)
- pix=page.get_pixmap(matrix=fitz.Matrix(14,14),clip=clip,alpha=False)
- image=Image.frombytes('RGB',(pix.width,pix.height),pix.samples)
- # Threshold white digits against the filled green badge; enlarge and pad.
- image=image.convert('L').point(lambda p:0 if p>190 else 255)
- expanded=Image.new('L',(image.width+70,image.height+45),255);expanded.paste(image,(35,20))
+ # Read only INNER green badge: outer white map pixels previously caused
+ # a heavy black border after thresholding, obscuring the tiny white digits.
+ clip=fitz.Rect(r.x0+0.25,r.y0+0.20,r.x1-0.25,r.y1-0.20)
+ pix=page.get_pixmap(matrix=fitz.Matrix(20,20),clip=clip,alpha=False)
+ source=Image.frombytes('RGB',(pix.width,pix.height),pix.samples)
+ image=Image.new('L',source.size,255)
+ rgb=source.load();dst=image.load()
+ count=0
+ for yy in range(source.height):
+  for xx in range(source.width):
+   red,green,blue=rgb[xx,yy]
+   if min(red,green,blue)>205:
+    dst[xx,yy]=0
+    count+=1
+ expanded=Image.new('L',(image.width+80,image.height+65),255);expanded.paste(image,(40,30))
  buf=io.BytesIO();expanded.save(buf,format='PNG')
  try:
   run=subprocess.run(['tesseract','stdin','stdout','--psm','7','-l','eng','-c','tessedit_char_whitelist=0123456789','tsv'],
@@ -54,8 +62,9 @@ for i,r in enumerate(green):
   value=match[0].strip()
  except Exception as e:value='';match=('ERROR',-1)
  if not re.fullmatch(r'\d{1,3}',value):value=None
- result.append({'index':i,'number':value,'method':'ocr','confidence':round(match[1],1),
-  'x':round((r.x0+r.x1)/2/page.rect.width,5),'y':round((r.y0+r.y1)/2/page.rect.height,5)})
+ result.append({'index':i,'number':direct[0] if direct else value,'method':'vector-text' if direct else 'ocr',
+  'ocrProbe':value,'ocrProbeConfidence':round(match[1],1),'confidence':100 if direct else round(match[1],1),
+  'whitePixels':count,'x':round((r.x0+r.x1)/2/page.rect.width,5),'y':round((r.y0+r.y1)/2/page.rect.height,5)})
 print('HUT_BADGE_COUNT',len(result))
 print('HUT_RECOGNITION',json.dumps(result,ensure_ascii=False,separators=(',',':')))
 conf=collections.Counter(x['method']+(':valid' if x['number'] else ':missing') for x in result)

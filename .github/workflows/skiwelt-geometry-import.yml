@@ -35,5 +35,6 @@ jobs:
             echo "No map geometry changes."
           else
             git commit -m "data: import offline OpenSkiData SkiWelt lift and piste linework"
+            git pull --rebase origin skije-v4.5.12-map-graph
             git push
           fi

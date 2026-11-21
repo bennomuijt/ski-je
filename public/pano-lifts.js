@@ -49,7 +49,6 @@
   link.href=data.source;
   link.textContent='Officiële liftstatus bekijken';
   info.hidden=false;
-  document.dispatchEvent(new CustomEvent('skije-panorama-selection',{detail:{kind:'lift',id:lift.number,name:sourceSearch(lift),label:lift.name,areaKey:lift.areaKey}}));
   for(const b of buttons.querySelectorAll('button[data-lift-number]'))b.setAttribute('aria-pressed',String(b.dataset.liftNumber===lift.number));
  }
  function fillOptions(areaKey){
@@ -136,5 +135,5 @@
  $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));
  document.addEventListener('skije-photo-list-updated',()=>{if(!info.hidden&&select.value)setLift(lifts.find(l=>l.number===select.value));});
  fillOptions(null);update();
- window.SKILiftMap={lifts:()=>lifts.map(l=>({...l})),openLift:number=>{const lift=lifts.find(l=>l.number===String(number));if(!lift)return false;search.value='';fillOptions(lift.areaKey);setLift(lift);$('pano-hut-info').hidden=true;return true;},precision:'area-only'};
+ window.SKILiftMap={lifts:()=>lifts.map(l=>({...l})),precision:'area-only'};
 })();

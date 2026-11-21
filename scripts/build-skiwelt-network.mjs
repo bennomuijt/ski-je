@@ -134,6 +134,23 @@ for(let i=0;i<segments.length;i++){
   connect(na,nb,0,'map-crossing');crossed++;
  }
 }
+// SkiWelt Tour explicitly lists Going → Ellmau via piste 90 / Hartkaiserbahn 80.
+// The OSM line ends 80 m short of the gondola entrance at valley level.
+// Model that distance as an UNKNOWN walking transfer, never as a ski piste.
+// https://www.skiwelt.at/nl/skiwelt-tour.html
+const lift80=parts.find(p=>features[p.feature].kind==='lift'&&features[p.feature].ref==='80');
+const piste90=parts.filter(p=>features[p.feature].kind==='piste'&&features[p.feature].ref==='90');
+if(lift80){
+ const bottom=lift80.pointIds[0],p=nodes[bottom];
+ const candidates=piste90.flatMap(piste=>[piste.pointIds[0],piste.pointIds.at(-1)])
+  .map(node=>({node,d:euclid(nodes[node],p),dz:Math.abs(nodes[node][2]-p[2])}))
+  .filter(x=>x.d>=35&&x.d<=110&&x.dz<=30)
+  .sort((a,b)=>a.d-b.d);
+ if(candidates.length){
+  const best=candidates[0];
+  connect(best.node,bottom,best.d,'village-walk');
+ }
+}
 function addEdge(from,to,feature,metres,kind='mapped'){
  if(from===to)return;
  const m=Math.max(1,Math.round(metres));

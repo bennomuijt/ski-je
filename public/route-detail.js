@@ -119,7 +119,7 @@
  function buildTimeline(plan,route,options={}){
   if(!plan?.ok)return {steps:[],warnings:['Ongeldige dagplanning'],pois:[]};
   const phases=route?.phases||{preLunch:route?.steps||[],postLunch:[],return:[]};
-  const warnings=[],events=[];
+  const warnings=[],events=[],missingSteps=[],unverifiedTransitions=[];
   const add=(type,label,start,end,detail='',more={})=>{
    if(end<=start)return;
    events.push({type,label,start:hh(start),end:hh(end),startMinute:start,endMinute:end,minutes:end-start,detail,...more});
@@ -150,7 +150,10 @@
        {phase:kind});
     }
    }
-   if(index<parts.length)warnings.push('⚠️ Niet alle '+kind+'-stappen passen in het opgegeven tijdvenster. Verander je lunch of eindtijd.');
+   if(index<parts.length){
+     for(const step of parts.slice(index))missingSteps.push({...step,phase:kind,reason:'Geen tijd in planning'});
+     warnings.push('⚠️ '+(parts.length-index)+' benoemde '+kind+'-routeonderdelen zijn nog niet ingepland wegens tijdgebrek; zie lijst ontbrekende stappen.');
+    }
   }
   const lunchStart=lunch?.startMinute??null,lunchEnd=lunch?.endMinute??null;
   const skiSections=plan.sections.filter(s=>s.type==='ski');
@@ -163,9 +166,10 @@
    const start=returnSlot.startMinute;
    const returnParts=buildSegments(phases.return,options);
    let now=start;
-   for(const step of returnParts){
+   for(const [index,step] of returnParts.entries()){
     if(now+step.minutes>safe){
-     warnings.push('⚠️ Terugweg past niet binnen de beschikbare terugreistijd.');
+     for(const remainder of returnParts.slice(index))missingSteps.push({...remainder,phase:'Terugweg',reason:'Te laat voor streefaankomst'});
+     warnings.push('⚠️ Terugweg past niet binnen de beschikbare terugreistijd; zie alle ontbrekende stappen.');
      break;
     }
     add(step.type,(step.code?step.code+' · ':'')+step.name,now,now+step.minutes,
@@ -185,9 +189,19 @@
    return {...p,estimatedNearTime:nearby?.end||null};
   });
   if(events.some(x=>x.type==='transfer'&&/kleur onbekend|niet passend bij jouw pistekeuze/.test(x.label)))warnings.push('Sommige pisteverbindingen zijn niet automatisch voorgesteld wegens onbekende pistekleur of gekozen skiniveau. De dagroute is op die punten nog niet compleet gecontroleerd.');
+  // A chain of lift numbers is not proof that a skier can directly transfer.
+  // Never hide missing pistes between consecutive lifts or area corridors.
+  for(const leg of route?.steps||[]){
+   const parts=buildSegments([leg],options);
+   for(let i=1;i<parts.length;i++){
+    if(parts[i-1].type==='lift'&&parts[i].type==='lift')
+     unverifiedTransitions.push({corridor:leg.id,from:parts[i-1].code,to:parts[i].code,reason:'Geen afzonderlijke piste of loopverbinding vermeld tussen deze liften'});
+   }
+  }
+  if(unverifiedTransitions.length)warnings.push('⚠️ '+unverifiedTransitions.length+' liftoverstappen hebben nog geen gecontroleerde tussenliggende piste of wandelverbinding. De route is NIET aaneengesloten geverifieerd.');
   if(!pois.length)warnings.push('Er zijn voor deze route nog geen officieel onderbouwde WC-locaties bekend; vraag ter plaatse.');
   else warnings.push('🚻 WC-locaties zijn mogelijke stops nabij de route, niet automatisch gegarandeerde toiletten op jouw piste.');
-  return {steps:events,pois,warnings,routeMinutes:estimate(route?.steps),liftMinutes:events.filter(x=>x.type==='lift').reduce((sum,x)=>sum+x.minutes,0),
+  return {steps:events,pois,warnings,missingSteps,unverifiedTransitions,routeMinutes:estimate(route?.steps),liftMinutes:events.filter(x=>x.type==='lift').reduce((sum,x)=>sum+x.minutes,0),
    pisteMinutes:events.filter(x=>x.type==='piste').reduce((sum,x)=>sum+x.minutes,0)};
  }
  function haversine(a,b){

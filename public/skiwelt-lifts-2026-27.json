@@ -1,0 +1,901 @@
+{
+  "meta": {
+    "season": "2026/27",
+    "source": "https://skimap.skiwelt.at/de/winter/kaiserexpress.html",
+    "sourceEn": "https://skimap.skiwelt.at/en/",
+    "statusSource": "https://www.skiwelt.at/nl/liftstatus-winter.html",
+    "count": 83,
+    "precision": "AREA_CLUSTER_ONLY",
+    "summary": "Liftlijst op officiële SkiWelt kaart (83). De markerpositie is een indicatieve selectie per gebied, GEEN afzonderlijk GPS-ijkpunt; foto's zijn pas in-app zichtbaar na beheerdergoedkeuring.",
+    "discrepancy": "Söll Hexenwasser lift staat op Duitstalige kaart als 40, op nieuwere Engelse kaart als 26. Verificatie vereist.",
+    "checked": "2026-11-21"
+  },
+  "areas": [
+    {
+      "id": "brixen",
+      "name": "Brixen im Thale",
+      "marker": {
+        "x": 0.67,
+        "y": 0.65
+      },
+      "liftCount": 13
+    },
+    {
+      "id": "hopfgarten",
+      "name": "Hopfgarten - Itter",
+      "marker": {
+        "x": 0.52,
+        "y": 0.79
+      },
+      "liftCount": 13
+    },
+    {
+      "id": "soll",
+      "name": "Söll",
+      "marker": {
+        "x": 0.35,
+        "y": 0.73
+      },
+      "liftCount": 12
+    },
+    {
+      "id": "ellmau",
+      "name": "Ellmau - Going",
+      "marker": {
+        "x": 0.31,
+        "y": 0.41
+      },
+      "liftCount": 19
+    },
+    {
+      "id": "scheffau",
+      "name": "Scheffau",
+      "marker": {
+        "x": 0.23,
+        "y": 0.56
+      },
+      "liftCount": 15
+    },
+    {
+      "id": "westendorf",
+      "name": "Westendorf",
+      "marker": {
+        "x": 0.8,
+        "y": 0.65
+      },
+      "liftCount": 11
+    }
+  ],
+  "lifts": [
+    {
+      "number": "1",
+      "name": "6er Gondelbahn Hochbrixen",
+      "area": "brixen",
+      "lengthM": 1800,
+      "verticalM": 499,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "2",
+      "name": "Kälbersalvenbahn",
+      "area": "brixen",
+      "lengthM": 1470,
+      "verticalM": 371,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "3",
+      "name": "Zinsbergbahn",
+      "area": "brixen",
+      "lengthM": 1843,
+      "verticalM": 378,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "4",
+      "name": "Poldangerlift",
+      "area": "brixen",
+      "lengthM": 300,
+      "verticalM": 72,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "6",
+      "name": "Jochbahn",
+      "area": "brixen",
+      "lengthM": 2002,
+      "verticalM": 538,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "7",
+      "name": "Filzbodenbahn",
+      "area": "brixen",
+      "lengthM": 1750,
+      "verticalM": 413,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "8",
+      "name": "Würstlexpress",
+      "area": "brixen",
+      "lengthM": 160,
+      "verticalM": 23,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "9",
+      "name": "Übungslift Hochbrixen",
+      "area": "brixen",
+      "lengthM": 120,
+      "verticalM": 13,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "10",
+      "name": "Skischullift Hochbrixen",
+      "area": "brixen",
+      "lengthM": 100,
+      "verticalM": 10,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "11",
+      "name": "8er SkiWeltbahn",
+      "area": "brixen",
+      "lengthM": 3410,
+      "verticalM": 1008,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "12",
+      "name": "Sonnenlift",
+      "area": "brixen",
+      "lengthM": 205,
+      "verticalM": 5,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "17",
+      "name": "Schusterbühellift",
+      "area": "brixen",
+      "lengthM": 170,
+      "verticalM": 38,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "18",
+      "name": "Sonnenband",
+      "area": "brixen",
+      "lengthM": 23,
+      "verticalM": 4,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "20",
+      "name": "8er Gondelbahn Salvenbahn I",
+      "area": "hopfgarten",
+      "lengthM": 2120,
+      "verticalM": 548,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "21",
+      "name": "Hohe Salve I",
+      "area": "hopfgarten",
+      "lengthM": 1100,
+      "verticalM": 375,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "22",
+      "name": "8er Gondelbahn Salvenbahn II",
+      "area": "hopfgarten",
+      "lengthM": 1775,
+      "verticalM": 651,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "23",
+      "name": "Rigibahn",
+      "area": "hopfgarten",
+      "lengthM": 916,
+      "verticalM": 319,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "24",
+      "name": "Schernthannbahn",
+      "area": "hopfgarten",
+      "lengthM": 1272,
+      "verticalM": 387,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "25",
+      "name": "Foischingbahn",
+      "area": "hopfgarten",
+      "lengthM": 1415,
+      "verticalM": 373,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "27a",
+      "name": "Zauberteppich Högerfeld",
+      "area": "hopfgarten",
+      "lengthM": 55,
+      "verticalM": 20,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "27b",
+      "name": "Zauberteppich Bodenschmied",
+      "area": "hopfgarten",
+      "lengthM": 75,
+      "verticalM": 20,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "30",
+      "name": "10er Gondelbahn Salvistabahn",
+      "area": "hopfgarten",
+      "lengthM": 2781,
+      "verticalM": 896,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "31",
+      "name": "Kasbichlbahn",
+      "area": "hopfgarten",
+      "lengthM": 1232,
+      "verticalM": 355,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "33",
+      "name": "Tellerschlepplift Salvista",
+      "area": "hopfgarten",
+      "lengthM": 438,
+      "verticalM": 89,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "36",
+      "name": "Förderband Kelchsau",
+      "area": "hopfgarten",
+      "lengthM": 63,
+      "verticalM": 0,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "39",
+      "name": "Pfaringlift",
+      "area": "hopfgarten",
+      "lengthM": 160,
+      "verticalM": 30,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "40",
+      "name": "10er Gondelbahn Hexenwasser",
+      "area": "soll",
+      "lengthM": 1900,
+      "verticalM": 420,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "De Duitstalige SkiWelt-kaart noemt nummer 40; de Engelstalige lijst toont ook nummer 26. Ter plaatse verifiëren."
+    },
+    {
+      "number": "42",
+      "name": "8er Gondelbahn Hohe Salve",
+      "area": "soll",
+      "lengthM": 1900,
+      "verticalM": 679,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "43",
+      "name": "4er Sesselbahn Keat",
+      "area": "soll",
+      "lengthM": 1230,
+      "verticalM": 396,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "44",
+      "name": "Stöckl",
+      "area": "soll",
+      "lengthM": 525,
+      "verticalM": 129,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "45",
+      "name": "Hexen6er",
+      "area": "soll",
+      "lengthM": 1238,
+      "verticalM": 337,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "46",
+      "name": "Rinner",
+      "area": "soll",
+      "lengthM": 550,
+      "verticalM": 150,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "47",
+      "name": "Hans im Glück",
+      "area": "soll",
+      "lengthM": 402,
+      "verticalM": 105,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "51",
+      "name": "Siller-Keat",
+      "area": "soll",
+      "lengthM": 940,
+      "verticalM": 330,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "57",
+      "name": "Knolln",
+      "area": "soll",
+      "lengthM": 360,
+      "verticalM": 30,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "58",
+      "name": "Hexenteppich 1",
+      "area": "soll",
+      "lengthM": 120,
+      "verticalM": 20,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "58a",
+      "name": "Hexenteppich 2",
+      "area": "soll",
+      "lengthM": 63,
+      "verticalM": 10,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "59",
+      "name": "Mühlbichl (Übungsbereich im Dorf)",
+      "area": "soll",
+      "lengthM": 63,
+      "verticalM": 0,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "60",
+      "name": "4EUB Brandstadl",
+      "area": "scheffau",
+      "lengthM": 3256,
+      "verticalM": 963,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "61",
+      "name": "8er Gondelbahn Brandstadl I",
+      "area": "scheffau",
+      "lengthM": 2148,
+      "verticalM": 552,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "62",
+      "name": "8er Gondelbahn Brandstadl II",
+      "area": "scheffau",
+      "lengthM": 986,
+      "verticalM": 409,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "64",
+      "name": "Osthang",
+      "area": "scheffau",
+      "lengthM": 520,
+      "verticalM": 125,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "65",
+      "name": "Ostlift",
+      "area": "scheffau",
+      "lengthM": 300,
+      "verticalM": 35,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "66",
+      "name": "Südhang",
+      "area": "scheffau",
+      "lengthM": 818,
+      "verticalM": 253,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "67",
+      "name": "Eiberg",
+      "area": "scheffau",
+      "lengthM": 476,
+      "verticalM": 149,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Actuele Eibergbahn: nieuwe achtpersoons stoeltjeslift sinds winter 2024/25."
+    },
+    {
+      "number": "69",
+      "name": "Kummereralm-Lift",
+      "area": "scheffau",
+      "lengthM": 873,
+      "verticalM": 292,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "70",
+      "name": "Muldenbahn",
+      "area": "scheffau",
+      "lengthM": 439,
+      "verticalM": 132,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "71",
+      "name": "Aualm",
+      "area": "scheffau",
+      "lengthM": 1047,
+      "verticalM": 281,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "73",
+      "name": "Hochfeldlift-Schwoich",
+      "area": "scheffau",
+      "lengthM": 556,
+      "verticalM": 96,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "74",
+      "name": "Babylift Schwoich",
+      "area": "scheffau",
+      "lengthM": 125,
+      "verticalM": 12,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "77",
+      "name": "Babylift",
+      "area": "scheffau",
+      "lengthM": 120,
+      "verticalM": 10,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "78",
+      "name": "Übungslift - Berg",
+      "area": "scheffau",
+      "lengthM": 201,
+      "verticalM": 21,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "79",
+      "name": "Übungslift - Dorf",
+      "area": "scheffau",
+      "lengthM": 210,
+      "verticalM": 24,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "80",
+      "name": "10er Gondelbahn Hartkaiserbahn",
+      "area": "ellmau",
+      "lengthM": 2300,
+      "verticalM": 700,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "81",
+      "name": "Marcher",
+      "area": "ellmau",
+      "lengthM": 800,
+      "verticalM": 110,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "82",
+      "name": "Vetterstätt Zauberteppich",
+      "area": "ellmau",
+      "lengthM": 120,
+      "verticalM": 30,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "84",
+      "name": "Vetterstätt",
+      "area": "ellmau",
+      "lengthM": 700,
+      "verticalM": 140,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "86",
+      "name": "Kirchbichl",
+      "area": "ellmau",
+      "lengthM": 430,
+      "verticalM": 70,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "88",
+      "name": "Schmiedalm",
+      "area": "ellmau",
+      "lengthM": 1380,
+      "verticalM": 420,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "89a",
+      "name": "Ellmi's Zauberteppich I",
+      "area": "ellmau",
+      "lengthM": 100,
+      "verticalM": 15,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "89b",
+      "name": "Ellmi's Zauberteppich II",
+      "area": "ellmau",
+      "lengthM": 54,
+      "verticalM": 10,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "89c",
+      "name": "Ellmi´s Zauberteppich III",
+      "area": "ellmau",
+      "lengthM": 18,
+      "verticalM": 0,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "90",
+      "name": "Hausberg",
+      "area": "ellmau",
+      "lengthM": 1100,
+      "verticalM": 300,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "91",
+      "name": "Ellmi's 6er",
+      "area": "ellmau",
+      "lengthM": 1202,
+      "verticalM": 300,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "96",
+      "name": "Kaiserexpress",
+      "area": "ellmau",
+      "lengthM": 600,
+      "verticalM": 160,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "97",
+      "name": "Köglbahn",
+      "area": "ellmau",
+      "lengthM": 1000,
+      "verticalM": 310,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "98",
+      "name": "Almbahn",
+      "area": "ellmau",
+      "lengthM": 1100,
+      "verticalM": 300,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "99",
+      "name": "Tanzbodenbahn",
+      "area": "ellmau",
+      "lengthM": 710,
+      "verticalM": 160,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "100",
+      "name": "Astbergbahn",
+      "area": "ellmau",
+      "lengthM": 1500,
+      "verticalM": 470,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "102",
+      "name": "Sonnenlift",
+      "area": "ellmau",
+      "lengthM": 860,
+      "verticalM": 250,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "107",
+      "name": "Maxilift",
+      "area": "ellmau",
+      "lengthM": 360,
+      "verticalM": 70,
+      "type": "sleeplift",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "108",
+      "name": "Zauberteppich Astberg",
+      "area": "ellmau",
+      "lengthM": 220,
+      "verticalM": 40,
+      "type": "transportband",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "110",
+      "name": "6er Gondelbahn Alpenrosenbahn I",
+      "area": "westendorf",
+      "lengthM": 1485,
+      "verticalM": 522,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "111",
+      "name": "6er Gondelbahn Alpenrosenbahn II",
+      "area": "westendorf",
+      "lengthM": 1618,
+      "verticalM": 452,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "112",
+      "name": "8er Gondelbahn Choralmbahn",
+      "area": "westendorf",
+      "lengthM": 2200,
+      "verticalM": 895,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "114",
+      "name": "Talkaser",
+      "area": "westendorf",
+      "lengthM": 503,
+      "verticalM": 161,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "115",
+      "name": "Laubkogel",
+      "area": "westendorf",
+      "lengthM": 178,
+      "verticalM": 40,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "117",
+      "name": "Fleiding",
+      "area": "westendorf",
+      "lengthM": 1540,
+      "verticalM": 597,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "118",
+      "name": "Windauberg",
+      "area": "westendorf",
+      "lengthM": 850,
+      "verticalM": 224,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "119",
+      "name": "Gampenkogel",
+      "area": "westendorf",
+      "lengthM": 767,
+      "verticalM": 235,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "120",
+      "name": "8er Gondelbahn KiWest",
+      "area": "westendorf",
+      "lengthM": 3006,
+      "verticalM": 799,
+      "type": "gondel",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "125",
+      "name": "Sammer",
+      "area": "westendorf",
+      "lengthM": 286,
+      "verticalM": 35,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    },
+    {
+      "number": "126",
+      "name": "Schneeberg",
+      "area": "westendorf",
+      "lengthM": 524,
+      "verticalM": 85,
+      "type": "stoel-of-ander",
+      "official": "https://skimap.skiwelt.at/en/",
+      "note": "Indicatieve gebiedspositie; individuele liftlocatie nog niet met GPS gecontroleerd."
+    }
+  ]
+}

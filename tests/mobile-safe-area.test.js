@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+test('safe-area layout is model-independent and preserves system navigation clearance',()=>{
+ const css=read('public/mobile-safe-area.css');
+ const js=read('public/mobile-safe-area.js');
+ const html=read('public/index.html');
+ assert.match(css,/env\(safe-area-inset-bottom/);
+ assert.match(css,/env\(safe-area-inset-top/);
+ assert.match(css,/env\(safe-area-inset-left/);
+ assert.match(css,/env\(safe-area-inset-right/);
+ assert.match(css,/100dvh/);
+ assert.match(css,/--skije-nav-measured-height/);
+ assert.match(css,/--skije-user-bottom-extra/);
+ assert.match(js,/ResizeObserver/);
+ assert.match(js,/visualViewport/);
+ assert.match(js,/--skije-nav-measured-height/);
+ assert.match(html,/viewport-fit=cover/);
+ assert.match(html,/id="screen-bottom-clearance"/);
+ assert.match(html,/mobile-safe-area\.css/);
+ assert.match(html,/mobile-safe-area\.js/);
+ assert.doesNotMatch(js,/userAgent|Galaxy|iPhone/);
+});
+test('fallback is stored only locally and does not clear existing tracking or groups',()=>{
+ const js=read('public/mobile-safe-area.js'),sw=read('public/sw.js'),install=read('public/install.html');
+ assert.match(js,/localStorage\.setItem\(KEY/);
+ assert.doesNotMatch(js,/localStorage\.clear\(/);
+ assert.doesNotMatch(js,/fetch\(|geolocation|watchPosition/);
+ assert.match(sw,/mobile-safe-area\.css/);
+ assert.match(sw,/mobile-safe-area\.js/);
+ assert.match(install,/safe-area-inset-bottom/);
+});

@@ -12,7 +12,7 @@ test('SkiWelt has real directional geometry not synthetic area corridors',()=>{
  assert.ok(Object.keys(graph.stations).length>=12);
  for(const edge of graph.edges)assert.ok(edge[0]!==edge[1]);
  const lifts=graph.features.filter(f=>f.kind==='lift');
- assert.ok(lifts.some(f=>f.ref==='8'&&/Würstlexpress/i.test(f.name)));
+ assert.ok(lifts.some(f=>f.ref==='8'&&/Würste?lexpress/i.test(f.name)));
  assert.ok(lifts.some(f=>f.ref==='9'&&/Hochbrixen/i.test(f.name)));
  assert.ok(lifts.some(f=>f.ref==='10'&&/Skischullift/i.test(f.name)));
  assert.ok(graph.features.some(f=>f.kind==='piste'&&f.ref==='7'));

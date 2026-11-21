@@ -332,3 +332,13 @@ body.utility-open{overflow:hidden}
 /* Put both cluster types on separate lanes in overview so either is clickable. */
 .pano-hut-layer{z-index:3}
 .pano-lift-layer{z-index:4}
+
+/* The 8 individually verified green hut markers are extracted from the PDF.
+   Number hotspots appear at zoom; remain separate from piste/lift numbers. */
+.pano-numbered-hut{position:absolute;transform:translate(-50%,-50%);
+ pointer-events:auto;z-index:5;min-width:36px;min-height:36px;
+ border-radius:11px;padding:3px 5px;border:2px solid #fff;
+ background:#82bb41;color:#123e16;font-size:12px;font-weight:900;
+ box-shadow:0 2px 8px #00331b99;touch-action:manipulation}
+.pano-numbered-hut[hidden]{display:none!important}
+.pano-numbered-hut:focus-visible{outline:3px solid #ff9a21;outline-offset:2px}

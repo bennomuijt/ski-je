@@ -37,7 +37,7 @@ function socket(env,room,memberId,token){const url=`https://ski-je.example/api/g
 test('first-party app and public health endpoint work; no explicit CORS',async()=>{
  const {env}=setup();const p=await worker.fetch(new Request('https://ski-je.example/'),env);
  assert.equal(p.status,200);assert.match(await p.text(),/SKI-je/);
- const h=await worker.fetch(new Request('https://ski-je.example/api/health'),env);const json=await h.json();assert.equal(json.ok,true);assert.equal(json.version,'4.5.11-cf');assert.equal(json.maxMembersPerGroup,50);assert.equal(h.headers.get('access-control-allow-origin'),null);
+ const h=await worker.fetch(new Request('https://ski-je.example/api/health'),env);const json=await h.json();assert.equal(json.ok,true);assert.equal(json.version,'4.5.12-cf');assert.equal(json.maxMembersPerGroup,50);assert.equal(h.headers.get('access-control-allow-origin'),null);
 });
 test('create requires configured admin code and same-origin; invite codes are unguessable',async()=>{
  const {env}=setup();let r=await post(env,'create',{memberName:'X',adminCode:'wrong'});assert.equal(r.status,403);

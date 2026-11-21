@@ -139,8 +139,8 @@ await add('full SkiWelt 2026-27 panorama is an image and village zoom works',asy
  if(await page.locator('#pano-huts').count()){
    assert.ok(await page.locator('.pano-hut').count()>=4,'restaurant area pins must exist');
    if(await page.locator('#pano-restaurants-visible').count()){
-     assert.equal(await page.locator('#pano-restaurants-visible').isChecked(),false,'restaurant markers default off');
-     await page.locator('#pano-restaurants-visible').check();
+     // SKI-je 4.5.9 shows restaurant area markers by default; older releases did not.
+     if(!(await page.locator('#pano-restaurants-visible').isChecked()))await page.locator('#pano-restaurants-visible').check();
    }
    await page.locator('.pano-hut:visible').first().click();
    assert.ok(await page.locator('#pano-hut-info').isVisible(),'restaurant detail must open in the app');

@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/build-skiwelt-geometry.mjs'
       - 'scripts/enrich-skiwelt-elevation.mjs'
+      - 'scripts/build-skiwelt-network.mjs'
       - '.github/workflows/skiwelt-geometry-import.yml'
   workflow_dispatch:
 permissions:
@@ -23,11 +24,13 @@ jobs:
         run: node scripts/build-skiwelt-geometry.mjs
       - name: Derive downhill direction using Copernicus terrain DEM
         run: node scripts/enrich-skiwelt-elevation.mjs
+      - name: Construct slope and lift junction graph with directed edges
+        run: node scripts/build-skiwelt-network.mjs
       - name: Save reproducible offline map data on this branch
         run: |
           git config user.name "skije-map-builder"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/skiwelt-geometry.json public/skiwelt-source-summary.json
+          git add public/skiwelt-geometry.json public/skiwelt-source-summary.json public/skiwelt-network-graph.json public/skiwelt-graph-summary.json
           if git diff --cached --quiet; then
             echo "No map geometry changes."
           else

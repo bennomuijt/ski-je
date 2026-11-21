@@ -51,5 +51,20 @@ def main():
   matches=[s for s in nums if s["text"]==n]
   print("NUMBER",n,json.dumps(matches[:20],ensure_ascii=False))
  print("SAMPLE_AREA_WORDS",json.dumps([s for s in spans if any(v in s["text"].lower() for v in ["ellmau","scheffau","hopfgarten","westendorf","brixen","going","söll","itter"])][:35],ensure_ascii=False))
+ # Hut icons may be filled colored geometric labels, not ordinary text.
+ try:
+  small=[]
+  for d in page.get_drawings():
+   rect=d.get("rect")
+   fill=d.get("fill")
+   if not rect or fill is None:continue
+   if not (3<=rect.width<=35 and 3<=rect.height<=35):continue
+   color=tuple(round(ch*255) for ch in fill[:3])
+   small.append({"fill":color,"x":round(rect.x0,1),"y":round(rect.y0,1),"w":round(rect.width,1),"h":round(rect.height,1)})
+  groups=collections.Counter(str(d["fill"]) for d in small)
+  print("SMALL_FILLS",json.dumps([{"fill":k,"count":v,"samples":[d for d in small if str(d["fill"])==k][:8]} for k,v in groups.most_common(16)],ensure_ascii=False))
+ except Exception as exc:
+  print("DRAWING_INSPECT_FAILED",repr(exc))
+
  print("NOTE: these are raw PDF text placements, not verified lift/restaurant markers; pistes share numbers.")
 if __name__=="__main__":main()

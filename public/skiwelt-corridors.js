@@ -171,7 +171,7 @@
   }
   const explicit=wishes.find(area=>area!==start&&area!==finish)||null;
   const lunchAreas=withLunch?(assignedLunch?[assignedLunch]:areas):[start];
-  const targets=explicit?[explicit]:areas;
+  const targets=explicit?[explicit]:(start===finish?areas:[finish]);
   const options=[];
   for(const lunchArea of lunchAreas){
    for(const target of targets){

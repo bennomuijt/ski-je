@@ -35,6 +35,8 @@ jobs:
         run: |
           command -v google-chrome
           npm install --no-save --no-package-lock playwright-core
+      - name: Test proposed clickable lift and restaurant panels in mobile browser
+        run: node tests/panorama-layers-browser.mjs
       - name: Test actual SKI-je UI, PDF, map and webcam on mobile viewport
         run: node tests/browser-smoke.mjs
       - name: Save browser screenshots and PDF for QA

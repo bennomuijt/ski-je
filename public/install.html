@@ -14,7 +14,7 @@
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#10344e;color-scheme:light}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(155deg,#d6efff 0%,#f5fbff 55%,#e6f3fb 100%)}
-main{max-width:700px;margin:0 auto;padding:20px 17px 40px}
+main{max-width:700px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top,0px)) calc(17px + env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) calc(17px + env(safe-area-inset-left,0px))}
 .hero{padding:24px 20px 25px;border-radius:25px;background:radial-gradient(circle at 85% 13%,#eaf9ff4d 0 32px,transparent 33px),linear-gradient(120deg,#06416e,#047db6);color:white;box-shadow:0 12px 30px #0a4b7428}
 .logo{width:min(260px,78%);aspect-ratio:320/213;object-fit:contain;display:block;margin:0 auto 4px;filter:drop-shadow(0 7px 8px #04345355)}
 h1{margin:4px 0 8px;font-size:clamp(26px,6vw,34px);text-align:center;line-height:1.12}
@@ -34,7 +34,7 @@ li{margin:7px 0}.muted{font-size:13px;line-height:1.5;color:#5a7180}
 .notice{margin-top:16px;font-size:12px;line-height:1.6;color:#526779}
 #status{min-height:20px;font-size:13px;color:#115c3d;font-weight:700}
 footer{text-align:center;font-size:12px;color:#527186;margin:20px auto}
-@media(max-width:400px){main{padding-inline:10px}.card{padding:15px}.share{grid-template-columns:1fr}.btn{font-size:15px}}
+@media(max-width:400px){main{padding-inline:calc(10px + env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-right,0px))}.card{padding:15px}.share{grid-template-columns:1fr}.btn{font-size:15px}}
 </style>
 </head>
 <body>

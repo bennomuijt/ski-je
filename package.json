@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "npm run build:icons && wrangler deploy",
-    "check": "npm run build:icons && node --check public/i18n-data.js && node --check public/i18n.js && node --check public/share-location.js && node --check public/day-planner.js && node --check public/skiwelt-corridors.js && node --check public/day-ui.js && node --check public/day-pdf.js && node --check src/index.js && node --check src/photos.js && node --check public/photo-community.js && node --check public/ski-photo-sources.js && node --check public/group-cloudflare.js && node --check public/route-engine.js && node --check public/highlights-core.js && node --check public/ski-highlights.js && node --check public/extra.js && node --check public/panorama-tools.js && node --check public/pano-restaurants.js && node --test tests/*.test.js",
+    "check": "npm run build:icons && node --check public/i18n-data.js && node --check public/i18n.js && node --check public/share-location.js && node --check public/day-planner.js && node --check public/skiwelt-corridors.js && node --check public/day-ui.js && node --check public/day-pdf.js && node --check src/index.js && node --check src/photos.js && node --check public/photo-community.js && node --check public/ski-photo-sources.js && node --check public/group-cloudflare.js && node --check public/route-engine.js && node --check public/highlights-core.js && node --check public/ski-highlights.js && node --check public/mobile-safe-area.js && node --check public/extra.js && node --check public/panorama-tools.js && node --check public/pano-restaurants.js && node --test tests/*.test.js",
     "build:icons": "node scripts/build-icons.mjs"
   },
   "devDependencies": {

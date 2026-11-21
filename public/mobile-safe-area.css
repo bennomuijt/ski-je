@@ -1,0 +1,92 @@
+/* SKI-je: safe-area first mobile layout.
+ * Device independent: do NOT use hardware pixel resolutions as CSS viewport sizes.
+ * CSS env() handles iOS Home indicator, Android system bars (if exposed),
+ * cutouts and foldables; explicit local fallback is for browsers that omit insets.
+ */
+:root{
+  --skije-viewport-height:100vh;
+  --skije-nav-measured-height:100px;
+  --skije-user-bottom-extra:0px;
+}
+@supports(height:100dvh){:root{--skije-viewport-height:100dvh}}
+/* Fixed navigation stays physically above touch-unsafe system UI. */
+.bottom{
+  bottom:0;
+  padding-bottom:calc(10px + max(12px, env(safe-area-inset-bottom, 0px), var(--skije-user-bottom-extra)));
+  padding-left:calc(5px + env(safe-area-inset-left, 0px));
+  padding-right:calc(5px + env(safe-area-inset-right, 0px));
+  box-sizing:border-box;
+}
+.bottom button{min-width:0;touch-action:manipulation}
+/* The real rendered footer height (including device insets) is observed in JS.
+ * This keeps the last page button/form well above the fixed footer. */
+.wrap{
+  padding-bottom:calc(var(--skije-nav-measured-height) + 20px);
+  padding-left:env(safe-area-inset-left, 0px);
+  padding-right:env(safe-area-inset-right, 0px);
+}
+.ski-hero{padding-top:calc(20px + env(safe-area-inset-top, 0px))}
+/* Dialogs are within the safe window even in PWA standalone, landscape,
+ * full-screen gestures and devices with rounded edges. */
+.utility-modal,.webcam-modal,.legal-gate{
+  box-sizing:border-box;
+  max-height:var(--skije-viewport-height);
+  padding-top:max(10px, env(safe-area-inset-top, 0px));
+  padding-right:max(8px, env(safe-area-inset-right, 0px));
+  padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));
+  padding-left:max(8px, env(safe-area-inset-left, 0px));
+}
+.utility-panel,.webcam-panel,.legal-gate-panel{
+  min-height:0;
+  max-height:100%;
+}
+.utility-content{min-height:0;overflow-y:auto}
+#return-home-modal .utility-content{max-height:none;min-height:0}
+.legal-gate-panel{overflow-y:auto;overscroll-behavior:contain}
+.cam-footer{
+  flex-wrap:wrap;
+  padding-bottom:calc(10px + max(0px, env(safe-area-inset-bottom, 0px)));
+}
+.pano-panel{max-height:100%}
+.pano-tools{flex-wrap:wrap}
+.pano-route-box{min-width:0;max-height:min(21vh,120px);overflow-y:auto}
+.pano-hut-info{max-height:min(34vh,240px);overflow-y:auto;min-height:0}
+.pano-filter{flex-wrap:wrap}
+/* While entering text, reclaim the space under the software keyboard. */
+@media (pointer:coarse) and (max-width:900px){
+  body.skije-typing .bottom{display:none!important}
+  body.skije-typing .wrap{padding-bottom:24px}
+}
+@media(max-width:760px){
+  #pano-modal,.webcam-modal{
+    width:100%;
+    height:var(--skije-viewport-height);
+    inset:0 auto auto 0;
+  }
+  #pano-modal .pano-panel,.webcam-panel{
+    width:100%;
+    height:100%;
+    max-height:100%;
+    border-radius:0;
+  }
+  #pano-modal .pano-viewport{
+    flex:1 1 auto;
+    min-height:108px;
+  }
+  #pano-modal .pano-tools{row-gap:5px}
+  #pano-modal .pano-hint{margin-block:4px}
+}
+@media(max-height:560px) and (orientation:landscape){
+  .bottom button{min-height:44px;padding-block:2px;font-size:9px}
+  .bottom button span{font-size:17px;margin-bottom:0}
+  #pano-modal .pano-hint{display:none}
+  #pano-modal .pano-viewport{min-height:84px}
+  .utility-panel,.legal-gate-panel{max-height:100%}
+}
+@media print{
+  .wrap{padding:0}
+  .bottom{display:none!important}
+  .ski-hero{padding-top:0}
+}
+/* User fallback never alters system preferences and is local to SKI-je. */
+#screen-bottom-clearance{max-width:100%}

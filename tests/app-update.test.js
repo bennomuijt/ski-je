@@ -21,7 +21,7 @@ test('4.5.8 PWA update and PDF watermark are in sync',()=>{
  const pdf=read('public/day-pdf.js'),api=read('src/index.js'),pkg=JSON.parse(read('package.json'));
  assert.equal(pkg.version,'4.5.8');
  assert.match(html,/v4\.5\.8/);assert.match(js,/4\.5\.8-cf/);assert.match(api,/4\.5\.8-cf/);
- assert.match(sw,/v4-5-8-photo-sources/);
+ assert.match(sw,/v4-5-8-mobile-safearea-r1/);
  assert.match(html,/app-update\.js\?v=458/);assert.match(html,/day-pdf\.js\?v=458/);
  assert.match(pdf,/globalAlpha=0\.12/);
 });

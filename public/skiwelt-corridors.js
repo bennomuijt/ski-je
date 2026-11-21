@@ -199,7 +199,7 @@
     const depth=Math.max(...nodes.map(area=>(shortest(start,area,blocked)||[]).length));
     // Reward different areas, never reward repeated backtracking around the base.
     let score=settings?.style==='fast'?-total-repeated*40:
-      distinct*60+depth*(start===finish?40:12)-repeated*95-Math.max(0,total-baseline)*(start===finish?.2:.75);
+      distinct*60+depth*(start===finish?40:12)-repeated*(start===finish?15:95)-Math.max(0,total-baseline)*(start===finish?.2:.75);
     if(start!==finish&&target===finish)score+=12;
     if(start===finish&&target===start)score-=70;
     if(withLunch&&lunchArea===start&&start!==finish)score-=15;

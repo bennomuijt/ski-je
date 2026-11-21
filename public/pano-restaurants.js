@@ -76,7 +76,6 @@
   link.href=pages[hut.name]||picture?.page||data.source;
   link.textContent=pages[hut.name]||picture?.page?'Restaurantinformatie bij bron':'Bekijk hut op officiële SkiWelt-kaart';
   info.hidden=false;
-  document.dispatchEvent(new CustomEvent('skije-panorama-selection',{detail:{kind:'restaurant',id:hut.id,name:hut.name,label:hut.name,areaKey:hut.areaKey}}));
   for(const b of buttons.querySelectorAll('button[data-hut-id]'))b.setAttribute('aria-pressed',String(b.dataset.hutId===hut.id));
  }
  function fillOptions(list){
@@ -156,5 +155,5 @@
  document.addEventListener('skije-photo-list-updated',()=>{if(!info.hidden&&select.value)showRestaurant(huts.find(h=>h.id===select.value));});
  fillOptions(huts);update();
  window.SKIRestaurantMap={getAnchors:()=>anchors.map(a=>({area:a.area,restaurants:huts.filter(h=>h.areaKey===a.area).map(h=>h.name),precision:'area-only'})),
-  getHuts:()=>huts.map(x=>({...x})),openHut:id=>{const hut=huts.find(h=>h.id===String(id));if(!hut)return false;search.value='';fillOptions(huts.filter(h=>h.areaKey===hut.areaKey));showRestaurant(hut);$('pano-lift-info').hidden=true;return true;},precision:'area-only'};
+  getHuts:()=>huts.map(x=>({...x})),precision:'area-only'};
 })();

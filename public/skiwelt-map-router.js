@@ -84,7 +84,7 @@
     let distance=metresToMin(row[3],kind,opts.speed);
     // Boarding overhead is included in the first lift segment, not every vertex.
     if(kind==='lift')distance+=0.15;
-    if(kind==='transfer')distance+=row[4]==='station-walk'?1.7:0.35;
+    if(kind==='transfer')distance+=row[3]<=3?0.015:row[4]==='station-walk'||row[4]==='village-walk'?1.7:0.35;
     if(row[4]==='flat-possible')distance+=0.5;
     if(opts.avoid?.has(row[2]))distance+=1.4;
     const next=cost+distance;
@@ -128,6 +128,14 @@
   const result=[];let previous=null;
   for(const edgeId of path.edgeIds){
    const e=graph.edges[edgeId],info=labelFeature(e);
+   // A mapped vertex-to-vertex junction of 1-3m is not a separate
+   // walking leg. Preserve its geometry and continuous graph nodes,
+   // but don't invent one minute of skiing/walking per intersection.
+   if(info.type==='transfer'&&e[3]<=3&&
+      ['map-junction','map-crossing','station-access'].includes(info.confidence)){
+    if(previous)previous.points.push(graph.nodes[e[1]].slice(0,2));
+    continue;
+   }
    const same=previous&&previous.type===info.type&&previous.feature===info.feature&&previous.confidence===info.confidence;
    if(same){previous.metres+=e[3];previous.to=e[1];previous.points.push(graph.nodes[e[1]].slice(0,2));}
    else{

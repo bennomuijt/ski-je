@@ -25,7 +25,7 @@
    ba:[item('lift','6','Jochbahn'),item('piste','65a','Verbinding Aualm–Osthang (of 72/70)'),item('transfer','','Vervolg richting Scheffau controleren')]
   },
   'brixen-westendorf':{
-   ab:[item('lift','1','Gondellift Hochbrixen'),item('lift','11','SkiWeltbahn richting Westendorf')],
+   ab:[item('lift','1','Gondellift Hochbrixen'),item('lift','11','SkiWeltbahn richting Westendorf'),item('piste','110','SkiWelt Tour: piste 110'),item('piste','111','SkiWelt Tour: piste 111'),item('piste','117','SkiWelt Tour: piste 117'),item('lift','117','Fleiding (volgende etappe volgens officiële SkiWelt Tour)')],
    ba:[item('piste','111','Windau-afdaling'),item('lift','112','Choralmbahn'),item('piste','11','Kandleralm-afdaling'),item('lift','18','Sonnenband'),item('lift','12','Sonnenlift'),item('lift','1','Hochbrixen gondellift')]
   },
   'brixen-hopfgarten':{

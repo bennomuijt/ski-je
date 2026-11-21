@@ -64,7 +64,7 @@ test('terrain and piste colour prevent reversed black/freeride by default',()=>{
 test('every named lift has bottom and top stations mapped to its own ascent geometry',()=>{
  const named=graph.features.filter(x=>x.kind==='lift'&&x.ref);
  for(const lift of named){
-  const bottom=graph.stations['lift:'+lift.ref.toLowerCase()+':bottom],top=graph.stations['lift:'+lift.ref.toLowerCase()+':top];
+  const bottom=graph.stations['lift:'+lift.ref.toLowerCase()+':bottom'],top=graph.stations['lift:'+lift.ref.toLowerCase()+':top'];
   assert.ok(bottom&&top,'no complete stations for lift '+lift.ref);
   assert.notEqual(bottom.node,top.node,'invalid lift '+lift.ref);
  }

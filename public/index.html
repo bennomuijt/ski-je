@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07538c">
-<link rel="manifest" href="manifest.webmanifest?v=456">
+<link rel="manifest" href="manifest.webmanifest?v=457">
 <link rel="icon" type="image/svg+xml" href="icons/skije-logo-v455.svg">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192-v455.png">
 <link rel="apple-touch-icon" href="icons/icon-192-v455.png">
@@ -176,12 +176,12 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.6</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.7</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
   <button class="hero-mini" type="button" id="share-location-hero">📤 Deel mijn locatie</button>
-  <button class="hero-mini" type="button" id="group-quick">👥 Groep</button>
+  <button class="hero-mini" type="button" id="group-quick">👥 Groep</button><button class="hero-mini" type="button" id="my-highlights-quick">🏆 Mijn highlights</button>
   <button class="hero-mini" type="button" id="power-quick" aria-label="Open energie-instellingen">&#9889; Zuinig</button>
   <span class="hero-connection" id="online-label" role="status">Verbinding controleren</span>
 </div>
@@ -341,6 +341,28 @@ body.legal-open{overflow:hidden}
       <p class="hint">Meet alleen tussen 08:00 en 17:00. Tracking werkt <b>alleen terwijl de webapp op de voorgrond actief is</b>; bij verbergen pauzeert de registratie automatisch. Liften tellen mogelijk mee.</p>
       <div class="switchrow"><label for="track-gpx">Mijn volledige spoor tijdelijk bewaren (GPX-export)</label><input type="checkbox" id="track-gpx"></div>
       <div class="notice" id="lunch-detect" hidden>Mogelijke lunchstop herkend; bevestig zelf waar je hebt gegeten.</div>
+    </div>
+    <div class="card ski-highlights-card" id="ski-highlights">
+      <div class="row"><h2>🏔️ Mijn ski-highlights</h2><span class="pill">Op dit toestel</span></div>
+      <p class="hint">Jouw persoonlijke skiherinneringen, automatisch berekend uit opgeslagen skidagen. Geen extra GPS of internet nodig.</p>
+      <div class="ski-highlights-grid" aria-live="polite">
+        <div class="ski-highlight"><small>⛷️ Skidagen</small><strong id="highlight-days">0</strong></div>
+        <div class="ski-highlight"><small>🗺️ GPS-kilometers totaal</small><strong id="highlight-total-km">0,0</strong></div>
+        <div class="ski-highlight"><small>🏔️ Mooiste afstandsdag</small><strong id="highlight-best-day">—</strong></div>
+        <div class="ski-highlight"><small>⏱️ Tijd geregistreerd</small><strong id="highlight-hours">0,0</strong></div>
+        <div class="ski-highlight"><small>📍 Hoogste GPS-meting</small><strong id="highlight-speed">—</strong></div>
+      </div>
+      <div id="highlight-empty" class="hint">Nog geen opgeslagen skidag. Start je eerste GPS-registratie en bewaar de dag om highlights te zien.</div>
+      <details class="feature-fold" id="highlight-share-options"><summary>📸 Maak een skiherinnering met foto</summary>
+        <p class="hint">Kies optioneel een eigen foto van je telefoon. Die wordt alleen voor jouw deelkaart gebruikt en niet geüpload of opgeslagen.</p>
+        <input id="highlight-photo" type="file" accept="image/jpeg,image/png,image/webp">
+        <p id="highlight-photo-status" class="hint" role="status">Nog geen foto gekozen.</p>
+      </details>
+      <div class="toolbar">
+        <button class="btn" type="button" id="highlight-share-image">📸 Maak deelbare ski-kaart</button>
+        <button class="btn secondary" type="button" id="highlight-copy">📋 Kopieer mijn highlights</button>
+      </div>
+      <p id="highlight-status" class="hint" role="status">GPS-afstand kan liften omvatten; snelheid is een GPS-schatting, geen aanmoediging om harder te skiën.</p>
     </div>
     <div class="card"><div class="row"><h2>&#128466; Opgeslagen skidagen</h2><span class="pill" id="day-count">0</span></div>
       <div id="saved-days"><p class="hint">Nog geen skidagen vastgelegd.</p></div>
@@ -511,7 +533,7 @@ body.legal-open{overflow:hidden}
       <label class="verify"><input id="hint-checkpoints" type="checkbox"> Optionele ijkpunt-suggesties wanneer ik stilsta (alleen in app)</label>
       <label class="verify"><input id="motion-setting" type="checkbox" checked> Logoanimatie bij iedere nieuwe start tonen (niet bij verminderde beweging)</label>
       <div class="toolbar"><a class="btn secondary small-btn" href="install.html">📲 Installeren / deel installatielink</a><button class="btn secondary small-btn" id="install-app" type="button" hidden>Installeer SKI-je op mijn telefoon</button><button class="btn secondary small-btn" type="button" id="intro-replay">&#9654; Bekijk logoanimatie</button><button class="btn secondary small-btn" type="button" id="check-update">&#8635; Update app naar nieuwste versie</button></div>
-      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.6 · Controleer online op nieuwe updates.</p>
+      <p class="hint" id="app-update-status" role="status" aria-live="polite">Versie 4.5.7 · Controleer online op nieuwe updates.</p>
       <p class="hint" id="install-help">Android: Chrome-menu &rarr; App installeren of Toevoegen aan startscherm. iPhone: Safari &rarr; Deel &rarr; Zet op beginscherm.</p>
       <div class="toolbar"><button class="btn secondary small-btn" id="export-all" type="button">&#128190; Mijn data exporteren</button><button class="btn clear small-btn" id="clear-private" type="button">Lokale data wissen</button></div>
       <details><summary>🔄 Mijn SKI-je-back-up terugzetten</summary>
@@ -521,7 +543,7 @@ body.legal-open{overflow:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.5.6-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
+      <p class="tiny">SKI-je v4.5.7-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
@@ -1021,7 +1043,7 @@ window.addEventListener('beforeunload',()=>{stopGps();stopRadar();closeCamera();
     showByPreference=saved?.preferences?.motion!==false;
   } catch {}
   let timer=null,cleanupTimer=null,travel=null;
-  let remaining=3250,startedAt=0,finished=true,visible=false;
+  let remaining=2050,startedAt=0,finished=true,visible=false;
   const animated=[...intro.querySelectorAll('.ski-intro-photo,.ski-intro-kicker,.ski-original-logo,.ski-intro-line,.ski-intro-sub')];
   const clearTimers=()=>{clearTimeout(timer);clearTimeout(cleanupTimer);timer=cleanupTimer=null;};
   function hide(){
@@ -1041,9 +1063,9 @@ window.addEventListener('beforeunload',()=>{stopGps();stopRadar();closeCamera();
       travel=sign.animate([
         {transform:'translate3d(0,0,0) scale(1)'},
         {transform:`translate3d(${tx}px,${ty}px,0) scale(${ratio})`}
-      ],{duration:660,easing:'cubic-bezier(.22,.8,.25,1)',fill:'forwards'});
+      ],{duration:400,easing:'cubic-bezier(.22,.8,.25,1)',fill:'forwards'});
     }
-    cleanupTimer=window.setTimeout(hide,690);
+    cleanupTimer=window.setTimeout(hide,420);
   }
   function beginCountdown(){
     if(finished||document.hidden)return;
@@ -1052,7 +1074,7 @@ window.addEventListener('beforeunload',()=>{stopGps();stopRadar();closeCamera();
   function play(force=false){
     if(!force&&(!showByPreference||reduced))return;
     hide();
-    finished=false;visible=true;remaining=reduced?1800:3250;
+    finished=false;visible=true;remaining=reduced?0:2050;
     intro.hidden=false;intro.classList.remove('leaving');intro.removeAttribute('aria-hidden');
     document.body.classList.add('brand-arriving');
     // Replays reset letter pop, underline, and photo keyframes without extra downloads.
@@ -1113,16 +1135,18 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 
 <script src="i18n-data.js" defer></script>
 <script src="i18n.js" defer></script>
-<script src="app-update.js?v=456" defer></script>
+<script src="app-update.js?v=457" defer></script>
 <script src="route-engine.js" defer></script>
 <script src="day-planner.js" defer></script>
 <script src="skiwelt-corridors.js" defer></script>
 <script src="route-detail.js" defer></script>
-<script src="day-pdf.js?v=456" defer></script>
+<script src="day-pdf.js?v=457" defer></script>
+<script src="highlights-core.js?v=457" defer></script>
+<script src="ski-highlights.js?v=457" defer></script>
 <script src="extra.js" defer></script>
 <script src="panorama-tools.js" defer></script>
-<script src="pano-restaurants.js?v=456" defer></script>
-<script src="photo-community.js?v=456" defer></script>
+<script src="pano-restaurants.js?v=457" defer></script>
+<script src="photo-community.js?v=457" defer></script>
 <script src="day-ui.js" defer></script>
 <script src="return-home-ui.js" defer></script>
 <script src="lunch-minute.js" defer></script>

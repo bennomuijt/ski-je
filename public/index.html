@@ -514,6 +514,32 @@ body.legal-open{overflow:hidden}
         <div class="cf-actions"><button class="btn secondary" type="button" id="cf-group-invite">🔗 Deel uitnodiging</button><button class="btn clear" type="button" id="cf-group-copy">📋 Kopieer link</button></div>
         <label class="cf-label" for="cf-share-position">📍 Mijn GPS-locatie delen met groepsleden <input id="cf-share-position" type="checkbox"></label>
         <p id="cf-share-info" class="cf-small" role="status">Uit. Je positie wordt niet gedeeld.</p>
+        <section class="cf-social" aria-label="Groepsafspraken en groepschat">
+          <h3>📅 Onze groepsafspraak</h3>
+          <div id="cf-meeting-view" class="cf-meeting-view" aria-live="polite">Er is nog geen groepsafspraak.</div>
+          <details class="cf-meeting-edit" id="cf-meeting-editor">
+            <summary>➕ Afspraak maken of wijzigen</summary>
+            <div class="field"><label for="cf-meeting-place">Ontmoetingsplek</label><input id="cf-meeting-place" maxlength="90" placeholder="Bijvoorbeeld: restaurant Hohe Salve" autocomplete="off"></div>
+            <div class="field"><label for="cf-meeting-when">Datum en tijd (lokale tijd)</label><input id="cf-meeting-when" type="datetime-local"></div>
+            <div class="field"><label for="cf-meeting-note">Opmerking (optioneel)</label><input id="cf-meeting-note" maxlength="180" placeholder="Bijvoorbeeld: Samen lunchen om 12:30"></div>
+            <div class="cf-actions">
+              <button type="button" class="btn" id="cf-meeting-save">✓ Afspraak opslaan</button>
+              <button type="button" class="btn clear" id="cf-meeting-clear" hidden>Afspraak verwijderen</button>
+            </div>
+          </details>
+          <p class="cf-small" id="cf-meeting-status" role="status"></p>
+          <h3>💬 Groepsgesprek</h3>
+          <p class="cf-small">Alleen je groepsleden kunnen hier berichten lezen en schrijven. De laatste 100 berichten worden maximaal 30 dagen bewaard. Voor het ophalen en verzenden is internet nodig.</p>
+          <div id="cf-chat-list" class="cf-chat-list" role="log" aria-label="Groepsberichten" aria-live="polite"><p class="cf-small">Nog geen berichten.</p></div>
+          <form id="cf-chat-form" class="cf-chat-form">
+            <label for="cf-chat-text" class="cf-small">Bericht aan de groep</label>
+            <div class="cf-chat-compose">
+              <input id="cf-chat-text" type="text" maxlength="500" autocomplete="off" placeholder="Typ een bericht..." required>
+              <button class="btn" type="submit" id="cf-chat-send">Verstuur</button>
+            </div>
+          </form>
+          <p class="cf-small" id="cf-chat-status" role="status"></p>
+        </section>
         <h3>Groepsleden</h3><div class="cf-members" id="cf-members" aria-live="polite"></div>
         <p class="cf-small">Geen continue achtergrondtracking: bij vergrendelen of verlaten van de app stopt de GPS-deling. Oude GPS-punten verdwijnen na 2 minuten van de kaart. Deel de uitnodigingslink alleen met vertrouwde mensen.</p>
         <div class="cf-actions"><button class="btn clear cf-danger" type="button" id="cf-group-leave">Groep verlaten</button><button class="btn clear cf-danger" type="button" id="cf-close" hidden>Hele groep sluiten</button></div>

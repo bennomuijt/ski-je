@@ -88,7 +88,7 @@
    syncMembers(data.members||data.peers);setPeers(data.peers);window.dispatchEvent(new CustomEvent('skije:group-social',{detail:{type:'welcome',meeting:data.meeting||null,messages:data.messages||[]}}));status('Verbonden. Groepslocaties alleen zichtbaar als iemand delen aanzet.');
    if(sharing)scheduleFix(0);
   }
-  else if(data.type==='chat-message'||data.type==='meeting-updated'){window.dispatchEvent(new CustomEvent('skije:group-social',{detail:data}));}
+  else if(data.type==='chat-message'||data.type==='meeting-updated'||data.type==='group-photo-updated'){window.dispatchEvent(new CustomEvent('skije:group-social',{detail:data}));}
   else if(data.type==='member-added'&&data.id!==group?.memberId){members.set(data.id,{id:data.id,name:cleanName(data.name),online:false});render();}
   else if(data.type==='member-removed'){members.delete(data.id);peers.delete(data.id);render();}
   else if(data.type==='group-closed'){stopSharing();endSocket();group=null;saveGroup();render();status('Deze groep is gesloten door de beheerder.');}

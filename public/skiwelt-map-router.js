@@ -101,11 +101,33 @@
   }
   return{edges,accepted,rejected};
  }
+ // Specific OSM ways matched to the official Skimap by name/number and
+ // location. The Skimap element IDs are kept here for rechecking the matches:
+ // https://sgm.skiwelt.at/SkigebieteManager/Micado.SkigebieteManager.Plugin.Map/GetElements.api?Map=skiwelt-winter-neu&lang=de
+ const PISTE_REFS_BY_WAY=Object.freeze({
+  'way/263215024':'24a', // Schernthann: 1835, same endpoint as the numbered way
+  'way/263312372':'22', // Hohe Salve – Rigi: 2006
+  'way/30680870':'66a', // Verbindung Osthang–Südhang: 1998
+  'way/330194414':'43a', // Skiweg Keat Siller – Hochsöll: 1849, continuation of way/50592419
+  'way/404300394':'46', // Rinnerabfahrt: 2275, continuation of way/47679139
+  'way/1246397178':'87', // Ranhart: 1904
+  'way/1246397183':'80a', // Number stored as name; joins way/1246397180 at Hartkaiser: 2426
+  'way/1390220271':'87', // Ranhart: 1904
+  'way/1390220272':'87a', // Umfahrung Seppenbauer: 2253
+  'way/1390220273':'87a', // Umfahrung Seppenbauer: 2253
+  'way/1390224978':'100b', // Astbergbahn Talabfahrt: 1887
+  'way/1468560720':'2a', // Number stored as name, Hochbrixen: 1809
+  'way/1576929400':'118' // Number stored as name, Windau Abfahrt II: 1956
+ });
  function initialize(data){
   if(!data||data.version!==1||!Array.isArray(data.nodes)||!Array.isArray(data.edges)||
      data.nodes.length<1000||!data.stations)throw Error('SkiWelt-kaartnetwerk ontbreekt of is onjuist.');
   const audit=auditedWalkEdges(data),tourAudit=auditedOfficialPisteEdges(data);
-  graph={...data,edges:[...data.edges,...audit.out.flatMap(pair=>pair.edges),...tourAudit.edges],
+  const features=data.features.map(feature=>{
+   const ref=feature.kind==='piste'&&!feature.ref&&PISTE_REFS_BY_WAY[feature.osm];
+   return ref?{...feature,ref}:feature;
+  });
+  graph={...data,features,edges:[...data.edges,...audit.out.flatMap(pair=>pair.edges),...tourAudit.edges],
    localTransferAudit:{accepted:audit.out.map(({entry,metres,gain})=>({
     from:entry.a,to:entry.b,metres,heightDelta:gain,source:entry.source,status:entry.status
    })),rejected:audit.rejected},
@@ -242,34 +264,8 @@
    level:'unknown',confidence:row[4]};
   const difficulty=f.kind==='piste'&&f.ref==='20a'?'intermediate':f.difficulty;
   const level={novice:'blue',easy:'blue',intermediate:'red',advanced:'black',expert:'black'}[difficulty]||'unknown';
-  return{type:f.kind,code:f.ref,name:f.name||(f.ref?'Piste '+f.ref:'nummer niet vastgelegd in kaartbron'),
+  return{type:f.kind,code:f.ref,name:f.name||'',
    level,confidence:row[4],feature:row[2]};
- }
- function labelUnverifiedMapFragments(segments){
-  for(let i=0;i<segments.length;i++){
-   const step=segments[i];if(step.type!=='piste'||step.code)continue;
-   const neighboring=direction=>{
-    for(let j=i+direction;j>=0&&j<segments.length;j+=direction){
-     const p=segments[j];
-     if(p.type==='lift'||p.type==='transfer'&&p.metres>3)return null;
-     if(p.type==='piste'&&p.code)return p;
-    }
-    return null;
-   };
-   const prev=neighboring(-1),next=neighboring(1);
-   if(prev&&next&&prev.code===next.code&&step.metres<=180){
-    step.displayCode=prev.code;
-    step.numberStatus='inferred-neighbors';
-    step.label='⛷️ Aansluitend deel piste '+prev.code+' (nummer controleren)';
-    step.detail+=' Nummer gebaseerd op gelijk genummerde aangrenzende kaartdelen, nog niet onafhankelijk bevestigd.';
-   }else{
-    step.numberStatus='unverified';
-    const neighbor=prev?.code||next?.code;
-    step.label='⇄ Pisteverbinding'+(neighbor?' bij '+neighbor:'')+' (nummer te controleren)';
-    step.detail+=' De afzonderlijke kaartlijn heeft geen eigen pistennummer; deze is niet verzonnen.';
-   }
-  }
-  return segments;
  }
  function group(path,opts){
   const result=[];let previous=null;
@@ -301,8 +297,11 @@
    // SkiWelt's official piste listing gives 20a as 3,293m. The OSM
    // way is shorter; do not underestimate a final red valley descent.
    if(s.type==='piste'&&s.code==='20a'&&s.metres>1500)s.minutes=Math.max(20,s.minutes);
-   s.label=(s.type==='lift'?'🚡 Lift ':s.type==='piste'?'⛷️ Piste ':s.confidence==='walk-pole'?'🚶 Loop/prik ':'⇄ Overstap ')+
-     (s.code?s.code+' · ':'')+s.name;
+   const prefix=s.type==='lift'?'🚡 Lift ':s.type==='piste'?'⛷️ Piste ':s.confidence==='walk-pole'?'🚶 Loop/prik ':'⇄ Overstap ';
+   const name=s.type==='piste'&&!s.code?s.name.replace(/^\d+[a-z]?(?:\s+|$)/i,''):s.name;
+   s.label=s.type==='piste'&&!s.code
+    ?'⛷️ Skitraject'+(name?' · '+name:'')
+    :prefix+(s.code?s.code+(name&&name!==s.code?' · '+name:''):name);
    s.detail=s.confidence==='official-tour-provisional'?
     'De SkiWelt Tour 2026/27 bevestigt piste 111 naar 117 als routevolgorde. In OSM ligt 22 m tussen de gekozen kaartlijnen; het grove hoogtemodel geeft een tegenstrijdig hoogteverschil. Dit is geen GPS-gecontroleerde fysieke oversteek of nieuw officieel pistedeel. Controleer ter plaatse de borden.':
     s.confidence==='walk-pole'?
@@ -312,7 +311,7 @@
      'Kaartlijn '+s.metres+' m · '+(s.level!=='unknown'?s.level:'kleur niet bevestigd')+
      ' · Bron: OpenSkiData/OSM; geen live lift-/pistestatus';
   }
-  return labelUnverifiedMapFragments(result);
+  return result;
  }
  function routeSummary(groups){
   return groups.map(s=>({from:s.from,to:s.to,code:s.code,type:s.type,minutes:s.minutes,label:s.label,
@@ -333,7 +332,7 @@
   }
   const addRoute=(path,phase)=>{
    for(const step of group(path,options)){insert(step.type,step.label,step.minutes,step.detail,
-    {phase,code:step.code,displayCode:step.displayCode||step.code,numberStatus:step.numberStatus||'source',level:step.level,heightDelta:step.heightDelta,from:step.from,to:step.to,feature:step.feature,
+    {phase,code:step.code,level:step.level,heightDelta:step.heightDelta,from:step.from,to:step.to,feature:step.feature,
      lengthKm:step.lengthKm,coordinates:step.points,confidence:step.confidence});}
   };
   const lunchAt=clock(options.lunchTime||'12:30');
@@ -571,11 +570,9 @@
   if(steps.some(s=>s.confidence==='walk-pole'))notes.push('Loop-/prikoverstappen zijn beperkt tot afzonderlijk gecontroleerde liftstationparen; ze volgen kaartgegevens, maar de exacte toegestane doorgang is niet voor elk paar officieel bevestigd.');
   if(steps.some(s=>s.confidence==='village-walk'))notes.push('⚠️ Going–Ellmau: circa 80 meter aparte loopoverstap. SkiWelt bevestigt de gebiedsroute, niet deze exacte looproute; oversteek ter plaatse controleren.');
   if(steps.some(s=>s.level==='unknown'&&s.type==='piste'))notes.push('⚠️ Een of meer pistekleuren zijn niet bevestigd. Controleer of het niveau geschikt is.');
-  const unnamedPistes=steps.filter(s=>s.type==='piste'&&!s.code);
   const flatPistes=steps.filter(s=>s.type==='piste'&&s.confidence==='flat-possible');
   const uncertainTransfers=steps.map((step,index)=>({step,index})).filter(({step})=>
    step.type==='transfer'&&(step.metres>18||step.confidence==='village-walk'||step.confidence==='official-tour-provisional'));
-  if(unnamedPistes.length)notes.push('⚠️ '+unnamedPistes.length+' pisteonderdelen zonder bevestigd nummer in de kaartbron. Deze stukken volgen de lijngeometrie, maar zijn geen officieel gecontroleerde piste-identificatie.');
   if(flatPistes.length)notes.push('⚠️ '+flatPistes.length+' korte vlakke/hoogte-onzekere lijnstukken. Richting en kruisingen zijn hier niet onafhankelijk bevestigd.');
   if(uncertainTransfers.length)notes.push('⚠️ '+uncertainTransfers.length+' kaartoverstappen vragen extra controle op de officiële pistekaart.');
   if(endMode==='valley')notes.push('Piste 20a is volgens SkiWelt een rode dalafdaling van 3.293 meter. De kaartgeometrie beschrijft slechts een deel van de lijn: tijd en afstand blijven indicatief.');

@@ -81,7 +81,10 @@
   current={plan,route,options,itinerary,graphBased:true,path:routeResult.path,
    optionalDescent:routeResult.optionalDescent,endMode:routeResult.endMode,routePreset:routeResult.routePreset};
 
-  output.append(el('strong','plan-heading',itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length||itinerary.steps.some(s=>s.unplanned)?'⚠️ Voorlopige skidag — niet alle pistes en liften gecontroleerd':t('Jouw volledige skidag')));
+  const incomplete=itinerary.missingSteps?.length||itinerary.steps.some(step=>step.unplanned);
+  const heading=incomplete?'⚠️ Voorlopige skidag':
+   itinerary.unverifiedTransitions?.length?'Jouw skidag · aandachtspunten bij overstappen':t('Jouw volledige skidag');
+  output.append(el('strong','plan-heading',heading));
   const intro=el('div','day-intro');
   intro.append(el('span','day-pill',plan.departure+' – '+plan.returnTime));
   intro.append(el('span','day-pill',t('Streefaankomst')+' '+plan.safeArrival+' · marge '+plan.margin+' min'));
@@ -162,14 +165,15 @@
   routeWrap.append(detailed);
   if(itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length){
    const gaps=el('details','route-gap-audit');
-   gaps.append(el('summary','', '⚠️ Nog ontbrekende of niet-gecontroleerde routeonderdelen ('+
-    ((itinerary.missingSteps?.length||0)+(itinerary.unverifiedTransitions?.length||0))+')'));
-   gaps.append(el('p','hint','Geen ongenoemde piste wordt automatisch overgeslagen of verzonnen. De hieronder genoemde gaten moeten worden opgelost voordat dit een bruikbare, complete route is.'));
+   const count=(itinerary.missingSteps?.length||0)+(itinerary.unverifiedTransitions?.length||0);
+   const title=itinerary.missingSteps?.length?'Ontbrekende routeonderdelen en overstappen':'Aandachtspunten bij overstappen';
+   gaps.append(el('summary','','⚠️ '+title+' ('+count+')'));
+   gaps.append(el('p','hint','Controleer de aangeduide overstappen op de pistekaart en volg de borden ter plaatse.'));
    for(const part of itinerary.missingSteps||[]){
     gaps.append(el('p','route-gap-line','⏳ '+part.phase+': '+(part.code?part.code+' · ':'')+part.name+' — '+part.reason));
    }
    for(const gap of itinerary.unverifiedTransitions||[]){
-    gaps.append(el('p','route-gap-line','⇄ '+gap.corridor+': lift '+gap.from+' → lift '+gap.to+' — '+gap.reason));
+    gaps.append(el('p','route-gap-line','⇄ '+gap.corridor+': '+gap.from+' → '+gap.to+' — '+gap.reason));
    }
    routeWrap.append(gaps);
   }

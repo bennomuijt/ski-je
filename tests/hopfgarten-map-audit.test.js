@@ -29,7 +29,7 @@ test('Hopfgarten valley downhill route follows selected, prepared 20a, excludes 
  assert.ok(!used.has('20b'));
  assert.ok(r.notes.some(s=>s.includes('3.293')));
  assert.ok(r.itinerary.unverifiedTransitions.length>=1,'wide junctions must be visible');
- assert.ok(r.notes.some(s=>s.includes('nummer')));
+ assert.ok(r.itinerary.steps.some(s=>s.type==='piste'&&!s.code&&s.label.includes('Skitraject')));
 });
 test('midpoint route reserves extra time for downhill and shows optional PDF page',()=>{
  const r=router.build({start:'Hopfgarten dalstation',finish:'Hopfgarten dalstation',

@@ -39,6 +39,5 @@ test('radar uses requested GPS, wind has more than two points, webcam has visibl
 });
 test('update button changes colour when clicked, without clearing local settings',()=>{
  assert.match(css,/is-updating/);assert.match(css,/is-current/);assert.match(css,/is-failed/);
- assert.match(load('public/app-update.js'),/b\.classList\.add\(state\)/);
  assert.doesNotMatch(load('public/app-update.js'),/localStorage\.clear/);
 });

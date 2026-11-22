@@ -34,7 +34,7 @@ test('startup photo gallery is 60% adult women and 40% adult men over 10 starts'
  assert.equal(new Set(names).size,10,'do not duplicate a photo inside a cycle');
  for(const name of names){
   assert.ok(existsSync(new URL('../public/'+name,import.meta.url)),name+' must ship with the app');
-  assert.ok(sw.includes("'./"+name+"'"),name+' must be cached for offline use');
+  assert.ok(sw.includes(JSON.stringify("./"+name)+":"),name+' must be cached for offline use');
  }
  assert.match(html,/skije-intro-photo-last/);
  assert.match(html,/\(previous\+1\)%introPhotos.length/);

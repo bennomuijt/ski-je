@@ -4,3 +4,15 @@
   X-Frame-Options: DENY
   X-Robots-Tag: noindex, nofollow
   Permissions-Policy: geolocation=(self), camera=(self), microphone=(self)
+
+/
+  Cache-Control: no-cache
+
+/index.html
+  Cache-Control: no-cache
+
+/sw.js
+  Cache-Control: no-cache
+
+/app-update.js
+  Cache-Control: no-cache

@@ -49,5 +49,5 @@ test('interactieve kaart toont afzonderlijke items per gebied met een eigen popu
 test('offline shell bevat alle nieuwe gegevensbestanden',()=>{
  const sw=read('public/sw.js');
  for(const file of ['hut-catalogue.js','lift-catalogue.js','skiwelt-lift-connections.js',
-   'pano-lifts.js','pano-restaurants.js'])assert.ok(sw.includes("'./"+file+"'"),file);
+   'pano-lifts.js','pano-restaurants.js'])assert.ok(sw.includes(JSON.stringify("./"+file)+":"),file);
 });

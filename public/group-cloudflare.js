@@ -56,7 +56,7 @@
   const active=!!group;
   $('cf-group-active').hidden=!active;
   $('cf-group-before').hidden=active;
-  if(!active){$('group-quick').textContent='👥 Groep';removePins();return;}
+  if(!active){$('group-quick').textContent='👥 Groep';removePins();window.dispatchEvent(new CustomEvent('skije:group-social',{detail:{type:'inactive'}}));return;}
   $('cf-active-title').textContent=group.groupName||'SKI-je groep';
   $('cf-active-name').textContent='Je bent: '+group.memberName+(group.owner?' · beheerder':'');
   $('cf-close').hidden=!group.owner;
@@ -85,9 +85,10 @@
   if(!data||typeof data!=='object')return;
   if(data.type==='welcome'){
    reconnectCount=0;if(group){group.groupName=data.groupName||group.groupName;group.owner=!!data.owner;saveGroup();}
-   syncMembers(data.members||data.peers);setPeers(data.peers);status('Verbonden. Groepslocaties alleen zichtbaar als iemand delen aanzet.');
+   syncMembers(data.members||data.peers);setPeers(data.peers);window.dispatchEvent(new CustomEvent('skije:group-social',{detail:{type:'welcome',meeting:data.meeting||null,messages:data.messages||[]}}));status('Verbonden. Groepslocaties alleen zichtbaar als iemand delen aanzet.');
    if(sharing)scheduleFix(0);
   }
+  else if(data.type==='chat-message'||data.type==='meeting-updated'){window.dispatchEvent(new CustomEvent('skije:group-social',{detail:data}));}
   else if(data.type==='member-added'&&data.id!==group?.memberId){members.set(data.id,{id:data.id,name:cleanName(data.name),online:false});render();}
   else if(data.type==='member-removed'){members.delete(data.id);peers.delete(data.id);render();}
   else if(data.type==='group-closed'){stopSharing();endSocket();group=null;saveGroup();render();status('Deze groep is gesloten door de beheerder.');}
@@ -165,7 +166,7 @@
   let json;try{json=await response.json();}catch{throw Error('Geen geldig JSON-antwoord van de Worker (HTTP '+response.status+'). Controleer de Cloudflare-logs en Durable Objects.');}
   if(!response.ok||!json?.ok)throw Error(json?.error||'Cloudflare antwoordt niet.');return json;
  }
- function startSession(data,room,memberName){peers.clear();members.clear();removePins();group={room,memberId:data.memberId,token:data.token,memberName,groupName:data.groupName,owner:!!data.owner};saveGroup();render();connect();}
+ function startSession(data,room,memberName){peers.clear();members.clear();removePins();window.dispatchEvent(new CustomEvent('skije:group-social',{detail:{type:'reset'}}));group={room,memberId:data.memberId,token:data.token,memberName,groupName:data.groupName,owner:!!data.owner};saveGroup();render();connect();}
  function openGroup(){window.SKIApi?.goPage('more');$('group-section').open=true;requestAnimationFrame(()=>$('group-section').scrollIntoView({behavior:'smooth',block:'start'}));if(group&&!ws&&online())connect();}
  $('group-quick').addEventListener('click',openGroup);
  $('cf-group-map').addEventListener('click',openGroup);

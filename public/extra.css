@@ -347,3 +347,21 @@ body.utility-open{overflow:hidden}
 }
 .pano-printed-lift:focus-visible{outline:4px solid #ff9e00;outline-offset:3px}
 .pano-printed-lift[hidden]{display:none!important}
+
+/* Reviewed 2026/27 GREEN roof labels. The outline is only a visual aid:
+   the map pointer handler selects the nearest icon (also with layer off),
+   avoiding overlapping touch boxes for clustered huts 88/59/61 and 6/7. */
+.pano-printed-hut{
+  position:absolute;z-index:6;pointer-events:none;
+  transform:translate(-50%,-50%);padding:0;
+  border:3px solid #4b9a1c;border-radius:9px;
+  background:rgba(249,255,236,.045);box-shadow:0 0 0 2px rgba(255,255,255,.85);
+  min-width:20px;min-height:20px;touch-action:manipulation;
+}
+.pano-printed-hut::after{
+  content:"i";display:grid;place-items:center;position:absolute;right:-9px;top:-12px;
+  border:1.5px solid #fff;border-radius:50%;background:#3c8124;color:#fff;
+  font:800 11px/1 system-ui,sans-serif;width:18px;height:18px;
+}
+.pano-printed-hut:focus-visible{outline:4px solid #ffab00;outline-offset:3px}
+.pano-printed-hut[hidden]{display:none!important}

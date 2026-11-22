@@ -130,6 +130,47 @@ try{
   await page.mouse.click(printed89.x,printed89.y);
   assert.match(await page.locator('#pano-lift-name').innerText(),/Kaartnummer 89/);
   await page.locator('#pano-lifts-visible').check();
+  // Green roof symbols have their own reviewed positions, separate from lifts.
+  assert.equal(await page.locator('.pano-printed-hut').count(),69);
+  // Recenter on Ellmau green 61 so its button is inside the viewport.
+  await page.evaluate(()=>{
+   const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
+   const w=Math.min(rect.width,rect.height*img.naturalWidth/img.naturalHeight);
+   const h=Math.min(rect.height,rect.width*img.naturalHeight/img.naturalWidth);
+   const zoom=8,x=.34338,y=.42669;
+   img.style.transform='translate3d('+(.5-x)*w*zoom+'px,'+(.5-y)*h*zoom+'px,0) scale('+zoom+')';
+  });
+  await page.waitForFunction(()=>!document.querySelector('.pano-printed-hut[data-hut-number="61"]')?.hidden,{timeout:15000});
+  await page.locator('.pano-printed-hut[data-hut-number="23"]').evaluate(el=>el.click());
+  assert.match(await page.locator('#pano-hut-name').innerText(),/Hut 23 · KRAFTalm/);
+  assert.match(await page.locator('#pano-hut-location').innerText(),/Groen hutnummer 23/);
+  for(const [n,label] of [['37',/Berggasthof Bavaria/],['54',/Treichlhof/],['18',/Das Brixx/]]){
+   await page.locator('.pano-printed-hut[data-hut-number="'+n+'"]').evaluate(el=>el.click());
+   assert.match(await page.locator('#pano-hut-name').innerText(),label);
+  }
+  // Two restaurants use printed number 56: require user choice.
+  await page.locator('.pano-printed-hut[data-hut-number="56"]').evaluate(el=>el.click());
+  assert.match(await page.locator('#pano-hut-name').innerText(),/hutnummer 56/i);
+  assert.equal(await page.locator('#pano-hut-select option').count(),3);
+  await page.locator('#pano-hut-select').selectOption('h-15');
+  assert.match(await page.locator('#pano-hut-name').innerText(),/Bergkaiser/);
+  // Actual screen tap on GREEN 61 while decorative markers are disabled.
+  await page.locator('#pano-restaurants-visible').uncheck();
+  assert.ok(await page.locator('#pano-huts').isHidden());
+  const green61=await page.evaluate(()=>{
+   const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
+   const w=Math.min(rect.width,rect.height*img.naturalWidth/img.naturalHeight);
+   const h=Math.min(rect.height,rect.width*img.naturalHeight/img.naturalWidth);
+   const zoom=8,x=.34338,y=.42669;
+   img.style.transform='translate3d('+(.5-x)*w*zoom+'px,'+(.5-y)*h*zoom+'px,0) scale('+zoom+')';
+   return {x:rect.left+rect.width/2,y:rect.top+rect.height/2};
+  });
+  await page.mouse.click(green61.x,green61.y);
+  assert.match(await page.locator('#pano-hut-name').innerText(),/Tirol Lodge Lieblingsplatzl/);
+  assert.match(await page.locator('#pano-hut-location').innerText(),/Groen hutnummer 61/);
+  await page.locator('#pano-restaurants-visible').check();
+  console.log('PASS 69 printed GREEN hut numbers, venue choice 56 and overlay-disabled tap on 61');
+  await page.screenshot({path:'test-artifacts/printed-green-huts-mobile.png'});
   console.log('PASS 80 printed labels including 22/23, 40/59/89 choices and overlay-off selection');
   await page.screenshot({path:'test-artifacts/printed-lifts-22-23-mobile.png'});
  }

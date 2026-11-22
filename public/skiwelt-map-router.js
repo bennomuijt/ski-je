@@ -207,6 +207,26 @@
   }
   return at===finish;
  }
+ // Flag map connectors whose coarse terrain model suggests a steep rise.
+ // This does not certify (or invalidate) the exact physical junction.
+ function auditUphillJunctions(path){
+  if(!graph||!path?.edgeIds)return [];
+  const anomalies=[],seen=new Set();
+  for(const edgeId of path.edgeIds){
+   if(seen.has(edgeId))continue;seen.add(edgeId);
+   const edge=graph.edges[edgeId];
+   if(!edge||edge[2]!==-1)continue;
+   const from=graph.nodes[edge[0]],to=graph.nodes[edge[1]];
+   if(!from||!to)continue;
+   const rise=Math.round(to[2]-from[2]);
+   if(rise<=12)continue;
+   anomalies.push({edgeId,from:edge[0],to:edge[1],metres:edge[3],
+    demRise:rise,kind:edge[4],reason:'Geschat hoogteverschil +'+rise+' m over '+
+     Math.round(edge[3])+' m kaartafstand ('+edge[4]+
+     '). Mogelijk DEM-fout of niet-ski-bare stijging; controleer het kruispunt ter plaatse.'});
+  }
+  return anomalies;
+ }
  function combine(a,b){
   if(!a||!b)return null;
   const edgeIds=[...a.edgeIds,...b.edgeIds];
@@ -537,6 +557,7 @@
   // Consumers must validate against these edges, not raw JSON indexes.
   path.edgeSegments=path.edgeIds.map(id=>graph.edges[id].slice());
   const steps=chosen.grouped;
+  const uphillAnomalies=auditUphillJunctions(path);
   const notes=[
    ...(isHopfgarten?['Hopfgarten: de volledige terugweg eindigt '+(endMode==='valley'?'na piste 20a in het dal.':'bij het middenstation van Salvenbahn I.'),
     'Piste 20a kan zonder lift worden geskied, mits de piste daadwerkelijk open is.']:[]),
@@ -544,6 +565,7 @@
    '⚠️ Lift- en pistestatus en sluitingstijden zijn nog niet live gecontroleerd. Volg altijd de officiële pisteborden.',
    '⚠️ Terreinhoogtes zijn afgeleid uit een 90 m hoogtemodel; voor kleine paden en kruisingen kan de richting afwijken.'
   ];
+  if(uphillAnomalies.length)notes.push('⚠️ '+uphillAnomalies.length+' kaartkruisingen tonen een geschatte stijging van meer dan 12 m. Dat is niet als skibare verbinding bevestigd; zie onzekere overstappen.');
   if(steps.some(s=>s.type==='transfer'))notes.push('⚠️ '+steps.filter(s=>s.type==='transfer').length+' kaartovergangen zijn slechts op afstand gekoppeld. Controleer deze overstappen ter plaatse.');
   if(steps.some(s=>s.confidence==='official-tour-provisional'))notes.push('⚠️ SkiWelt Tour bevestigt 111 → 117 als route, maar het exacte OSM-overstappunt heeft een tegenstrijdige DEM-hoogte. Volg de pisteborden; deze verbinding is voorlopig.');
   if(steps.some(s=>s.confidence==='walk-pole'))notes.push('Loop-/prikoverstappen zijn beperkt tot afzonderlijk gecontroleerde liftstationparen; ze volgen kaartgegevens, maar de exacte toegestane doorgang is niet voor elk paar officieel bevestigd.');
@@ -555,7 +577,7 @@
    step.type==='transfer'&&(step.metres>18||step.confidence==='village-walk'||step.confidence==='official-tour-provisional'));
   if(unnamedPistes.length)notes.push('⚠️ '+unnamedPistes.length+' pisteonderdelen zonder bevestigd nummer in de kaartbron. Deze stukken volgen de lijngeometrie, maar zijn geen officieel gecontroleerde piste-identificatie.');
   if(flatPistes.length)notes.push('⚠️ '+flatPistes.length+' korte vlakke/hoogte-onzekere lijnstukken. Richting en kruisingen zijn hier niet onafhankelijk bevestigd.');
-  if(uncertainTransfers.length)notes.push('⚠️ '+uncertainTransfers.length+' overstappen langer dan 18 meter vragen extra controle op de officiële pistekaart.');
+  if(uncertainTransfers.length)notes.push('⚠️ '+uncertainTransfers.length+' kaartoverstappen vragen extra controle op de officiële pistekaart.');
   if(endMode==='valley')notes.push('Piste 20a is volgens SkiWelt een rode dalafdaling van 3.293 meter. De kaartgeometrie beschrijft slechts een deel van de lijn: tijd en afstand blijven indicatief.');
 
   const allItinerary=made.itinerary;
@@ -563,12 +585,18 @@
   const pisteKm=total.filter(x=>x.type==='piste').reduce((n,s)=>n+Number(s.lengthKm||0),0);
   const liftKm=total.filter(x=>x.type==='lift').reduce((n,s)=>n+Number(s.lengthKm||0),0);
   const itinerary={steps:allItinerary,pois:[],warnings:notes,missingSteps:[],
-   unverifiedTransitions:uncertainTransfers.map(({step,index})=>({
-    corridor:'Kaartovergang '+(index+1),
-    from:steps[index-1]?.code||steps[index-1]?.name||'onbekend',
-    to:steps[index+1]?.code||steps[index+1]?.name||'onbekend',
-    reason:'De kaartlijnen liggen '+step.metres+' m uit elkaar (type '+step.confidence+'). Of deze doorgang geopend en ski-bereikbaar is, is niet officieel bevestigd.'
-   })),
+   unverifiedTransitions:[
+    ...uncertainTransfers.map(({step,index})=>({
+     corridor:'Kaartovergang '+(index+1),
+     from:steps[index-1]?.code||steps[index-1]?.name||'onbekend',
+     to:steps[index+1]?.code||steps[index+1]?.name||'onbekend',
+     reason:'De kaartlijnen liggen '+step.metres+' m uit elkaar (type '+step.confidence+'). Of deze doorgang geopend en ski-bereikbaar is, is niet officieel bevestigd.'
+    })),
+    ...uphillAnomalies.map((issue,index)=>({
+     corridor:'Hoogtecontrole '+(index+1),
+     from:'Knooppunt '+issue.from,to:'Knooppunt '+issue.to,reason:issue.reason
+    }))
+   ],
    routeMinutes:total.reduce((n,s)=>n+s.minutes,0),
    liftMinutes:total.filter(s=>s.type==='lift').reduce((n,s)=>n+s.minutes,0),
    pisteMinutes:total.filter(s=>s.type==='piste').reduce((n,s)=>n+s.minutes,0),
@@ -587,5 +615,5 @@
    graphBased:true,notes,options,endMode,routePreset:preset?.label||null,
    optionalDescent:isHopfgarten?optionalDescent:null};
  }
- return{initialize,load,build,shortest,validateRoute,group,clock,hhmm,closureSet,hopfgartenPresets,getEdge:id=>graph?.edges[id]?.slice()||null};
+ return{initialize,load,build,shortest,validateRoute,group,auditUphillJunctions,clock,hhmm,closureSet,hopfgartenPresets,getEdge:id=>graph?.edges[id]?.slice()||null};
 });

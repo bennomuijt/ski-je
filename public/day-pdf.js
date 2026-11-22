@@ -236,11 +236,31 @@
    'Liftwachttijden, actuele afsluitingen, weer en pistecondities kunnen afwijken.',
    'Terugweg eerst op tijd starten. GPS is op de panoramakaart niet exact.',
    'Kleurcode: liften paars; pistes blauw (tenzij moeilijkheid bekend is).',
-   'Ski-je berekent voorlopig gebiedsverbindingen, geen gegarandeerde GPS-afslagroute.',
+   data.optionalDescent?(data.endMode==='middle'?
+    'Hopfgarten: middenstation als eindpunt; piste 20a is een optionele, niet ingeplande afdaling.':
+    'Hopfgarten: route eindigt na piste 20a bij het dalstation; de piste moet officieel open zijn.'):
+    'Ski-je volgt kaartlijnen, maar alle kruisingen en pistes moeten officieel gecontroleerd blijven.',
     'Afstanden zijn indicaties van beschreven deeltrajecten, niet GPS-gemeten.',
    '© SkiWelt voor officiële verbindingsinformatie; gebruik op eigen risico.'
   ];
   for(const item of tips){lines(ctx,'• '+item,66,y,1080,18,2,COL.ink);y+=70;}
+ }
+ function optionalDescentPage(ctx,desc,plan){
+  label(ctx,'OPTIONELE DALAFDALING HOPFGARTEN',62,290,31,COL.navy,true);
+  label(ctx,'Salvenbahn I middenstation → Hopfgarten dalstation',62,337,24,COL.blue,true);
+  box(ctx,58,370,1120,132,'#fff0db');
+  lines(ctx,'Deze afdaling staat NIET in de geplande skitijd. Alleen gebruiken als piste 20a officieel open is en de condities het toelaten.',78,413,1070,21,3,'#805223');
+  label(ctx,'Geschatte afdaling: '+desc.minutes+' minuten, exclusief onverwachte vertraging.',76,544,21,COL.navy,true);
+  label(ctx,'Ingeplande aankomst middenstation: '+plan.safeArrival,76,582,21,COL.blue,true);
+  let y=638;
+  for(const [i,step] of (desc.steps||[]).entries()){
+   box(ctx,61,y,1115,113,i%2?'#f1f8fc':'#e7f3fa');
+   label(ctx,(i+1)+'. '+step.label,85,y+39,22,COL.navy,true);
+   lines(ctx,step.metres+' meter · circa '+step.minutes+' minuten · '+(step.level||'kleur onbekend'),85,y+75,1030,18,2,COL.gray);
+   y+=122;
+  }
+  if(!desc.available)lines(ctx,'Geen veilige liftvrije verbinding aangetoond. Reken niet automatisch op de gondel, zeker niet na sluitingstijd.',77,y+44,1040,21,3,COL.red);
+  lines(ctx,'Bron: OpenSkiData/OSM + officiële SkiWelt-kaart. Controleer piste-openstelling en borden.',68,H-154,1100,17,2,COL.gray);
  }
  function reportPages(data){
   const events=data.itinerary?.steps||[],wc=data.itinerary?.pois||[];
@@ -252,6 +272,7 @@
    const regions=layoutPages(data.route?.steps||[],[...(data.route?.notes||[]),...(data.plan?.notes||[]),...(data.itinerary?.warnings||[]),...missing,...gaps]);
   pages.push(...regions.slice(1));
   for(let i=0;i<wc.length;i+=5)pages.push({kind:'wc',rows:wc.slice(i,i+5)});
+  if(data.endMode==='middle'&&data.optionalDescent)pages.push({kind:'descent',desc:data.optionalDescent});
   pages.push({kind:'summary'});
   return pages;
  }
@@ -274,6 +295,7 @@
    else if(section.kind==='notes')regionPage(ctx,[],section.notes,true);
    else if(section.kind==='wc')wcPage(ctx,section.rows,route,data);
    else if(section.kind==='summary')summaryPage(ctx,data);
+   else if(section.kind==='descent')optionalDescentPage(ctx,section.desc,plan);
    jpegs.push(jpegBytes(canvas.toDataURL('image/jpeg',0.88)));
    canvas.width=1;canvas.height=1;
   }

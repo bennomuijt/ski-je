@@ -1,6 +1,6 @@
 /* SKI-je Cloudflare pilot, 2026-11-20.
  * One Cloudflare Worker: first-party static assets + authenticated group WebSockets.
- * Group GPS is never written to storage; the short-lived fix is attached to active sockets only.
+ * Membership is persisted; GPS fixes only exist on active WebSockets.
  * No third-party database, no paid plan required within Cloudflare Free quotas.
  */
 import { release } from './release.js';
@@ -151,7 +151,7 @@ export class SkiGroup {
    const pair=new WebSocketPair();const [client,server]=Object.values(pair);
    const attachment={id:member.id,name:member.name,last:null,at:0};
    this.ctx.acceptWebSocket(server);server.serializeAttachment(attachment);
-   this.safeSend(server,{type:'welcome',groupName:meta.name,you:member.id,owner:!!member.owner,maxMembers:GROUP_LIMIT,peers:this.peers(server)});
+   this.safeSend(server,{type:'welcome',groupName:meta.name,you:member.id,owner:!!member.owner,maxMembers:GROUP_LIMIT,members:await this.members(),peers:this.peers(server)});
    this.broadcast({type:'joined',id:member.id,name:member.name,at:Date.now()},server);
    return new Response(null,{status:101,webSocket:client});
   }
@@ -179,6 +179,7 @@ export class SkiGroup {
    });
    if(!accepted)return fail('De skigroep heeft het maximum van 50 leden bereikt.',409);
    await this.ctx.storage.setAlarm(t+GROUP_LIFETIME_MS);
+   this.broadcast({type:'member-added',id,name:memberName,at:t});
    return result({ok:true,groupName:meta.name,memberId:id,token,owner:false,maxMembers:GROUP_LIMIT});
   }
   if(op==='/leave'||op==='/close'){
@@ -186,10 +187,12 @@ export class SkiGroup {
    if(!member)return fail('Je bent niet meer aangemeld.',401);
    if(op==='/close'&&!member.owner)return fail('Alleen de groepsbeheerder mag de groep sluiten.',403);
    if(op==='/close'){
+    this.broadcast({type:'group-closed'});
     for(const ws of this.ctx.getWebSockets())try{ws.close(1000,'Groep gesloten');}catch{}
     await this.ctx.storage.deleteAll();return result({ok:true,closed:true});
    }
    await this.ctx.storage.delete('m:'+member.id);
+   this.broadcast({type:'member-removed',id:member.id,at:Date.now()});
    for(const ws of this.ctx.getWebSockets())if(ws.deserializeAttachment()?.id===member.id){try{ws.close(1000,'Groep verlaten');}catch{}}
    return result({ok:true,left:true});
   }
@@ -205,11 +208,19 @@ export class SkiGroup {
  }
  safeSend(ws,data){try{ws.send(JSON.stringify(data));}catch{}}
  peers(exclude=null){const t=Date.now();const unique=new Map();for(const s of this.ctx.getWebSockets()){
-  if(s===exclude)continue;
+  if(s===exclude||s.readyState!==WebSocket.OPEN)continue;
   const a=s.deserializeAttachment();if(!a||!a.id)continue;
   const previous=unique.get(a.id);if(previous&&previous.at>=a.at)continue;
   unique.set(a.id,{id:a.id,name:a.name,at:a.at||0,last:a.last&&t-a.last.at<GPS_TTL_MS?a.last:null});
  }return [...unique.values()].slice(0,GROUP_LIMIT);}
+ async members(){
+  const stored=await this.ctx.storage.list({prefix:'m:'});
+  const active=new Map(this.peers().map(peer=>[peer.id,peer]));
+  return [...stored.values()].map(member=>{
+   const connection=active.get(member.id);
+   return {id:member.id,name:member.name,online:!!connection,last:connection?.last||null,at:connection?.at||0};
+  }).slice(0,GROUP_LIMIT);
+ }
  broadcast(data,except=null){for(const s of this.ctx.getWebSockets()){if(s!==except)this.safeSend(s,data);}}
  async webSocketMessage(ws,message){
   if(typeof message!=='string'||message.length>1200)return;
@@ -228,9 +239,10 @@ export class SkiGroup {
   a.last=fix;a.at=t;ws.serializeAttachment(a);
   this.broadcast({type:'position',id:a.id,name:a.name,...fix},null);
  }
+ hasOtherSocket(id,exclude){return this.ctx.getWebSockets().some(s=>s!==exclude&&s.readyState===WebSocket.OPEN&&s.deserializeAttachment()?.id===id);}
  async webSocketClose(ws,code,reason){
-  const a=ws.deserializeAttachment();if(a?.id)this.broadcast({type:'left',id:a.id,at:Date.now()},ws);
+  const a=ws.deserializeAttachment();if(a?.id&&!this.hasOtherSocket(a.id,ws))this.broadcast({type:'left',id:a.id,at:Date.now()},ws);
   try{if(code>=1000&&code<5000&&![1004,1005,1006,1015].includes(code))ws.close(code,reason);else ws.close();}catch{}
  }
- async webSocketError(ws){const a=ws.deserializeAttachment();if(a?.id)this.broadcast({type:'left',id:a.id,at:Date.now()},ws);try{ws.close();}catch{}}
+ async webSocketError(ws){const a=ws.deserializeAttachment();if(a?.id&&!this.hasOtherSocket(a.id,ws))this.broadcast({type:'left',id:a.id,at:Date.now()},ws);try{ws.close();}catch{}}
 }

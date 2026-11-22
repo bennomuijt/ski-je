@@ -14,9 +14,6 @@ jobs:
           node-version: '22'
       - run: npm install --no-audit --no-fund
       - run: npm run build:release
-      - name: Verify PWA release metadata and offline cache are committed
-        run: git diff --exit-code -- public/index.html public/sw.js src/release.js
-      - run: npm run check
       - name: Save generated PWA release source for consistent GitHub and Cloudflare versions
         uses: actions/upload-artifact@v4
         with:
@@ -26,6 +23,9 @@ jobs:
             public/sw.js
             src/release.js
           retention-days: 5
+      - name: Verify PWA release metadata and offline cache are committed
+        run: git diff --exit-code -- public/index.html public/sw.js src/release.js
+      - run: npm run check
       - name: Inspect official SkiWelt 2026-27 full panorama (informational)
         shell: bash
         run: |
@@ -43,6 +43,8 @@ jobs:
           curl -L -sS --max-time 30 -o /dev/null -w 'HTTP %{http_code} %{content_type} %{size_download}\n' 'https://ski-je.bennomuijt.workers.dev/api/skimap.jpg' || true
           echo "Live installation page:"
           curl -L -sS --max-time 18 -o /dev/null -w 'HTTP %{http_code} %{content_type}\n' 'https://ski-je.bennomuijt.workers.dev/install.html' || true
+      - name: Inspect exact printed lift number locations 22 and 23 on official image
+        run: node tests/panorama-label-reference.mjs
       - name: Prepare headless Chrome regression
         run: |
           command -v google-chrome

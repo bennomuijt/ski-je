@@ -11,6 +11,15 @@ const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=u
 const server=createServer(async(req,res)=>{
  try{
   const path=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
+  if(path==='/api/skimap.jpg'){
+   const official=resolve('test-artifacts/skiwelt-official-26-27.jpg');
+   try{
+    if((await stat(official)).isFile()){
+     const raw=await readFile(official);
+     res.writeHead(200,{'content-type':'image/jpeg','cache-control':'no-store'});res.end(raw);return;
+    }
+   }catch{}
+  }
   const local=path==='/api/skimap.jpg'?'/Kaart 2026-2027.png':path==='/'?'/index.html':path;
   const file=resolve(root,'.'+local);
   if(!file.startsWith(root+sep)){res.writeHead(403);res.end();return;}
@@ -56,6 +65,40 @@ try{
  await page.locator('#pano-open').evaluate(el=>el.click());
  await page.waitForFunction(()=>document.getElementById('pano-img')?.naturalWidth>0,{timeout:20000});
  await page.locator('#pano-lifts .pano-lift-group').first().waitFor();
+ // In CI the official 3537x2445 JPG is provided by panorama-label-reference.mjs.
+ // Project exact PDF text centres onto the panorama and verify each lift panel.
+ if(await page.locator('#pano-img').evaluate(img=>img.naturalWidth===3537&&img.naturalHeight===2445)){
+  assert.equal(await page.locator('#pano-lifts .pano-printed-lift').count(),2);
+  await page.evaluate(()=>{
+   const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
+   const w=Math.min(rect.width,rect.height*img.naturalWidth/img.naturalHeight);
+   const h=Math.min(rect.height,rect.width*img.naturalHeight/img.naturalWidth);
+   const zoom=8;
+   const px=(.5-.5925)*w*zoom,py=(.5-.6129)*h*zoom;
+   img.style.transform='translate3d('+px+'px,'+py+'px,0) scale('+zoom+')';
+  });
+  await page.waitForFunction(()=>!document.querySelector('.pano-printed-lift[data-lift-number="22"]')?.hidden,{timeout:5000});
+  await page.locator('.pano-printed-lift[data-lift-number="22"]').click({force:true});
+  assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 22 · 8er Gondelbahn Salvenbahn II/);
+  assert.match(await page.locator('#pano-lift-area').innerText(),/1775 m/);
+  assert.ok(await page.locator('.pano-printed-lift[data-lift-number="23"]').count());
+  await page.locator('#pano-lifts-visible').uncheck();
+  assert.equal(await page.locator('#pano-lifts').isHidden(),true);
+  const point=await page.evaluate(()=>{
+   const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
+   const w=Math.min(rect.width,rect.height*img.naturalWidth/img.naturalHeight);
+   const h=Math.min(rect.height,rect.width*img.naturalHeight/img.naturalWidth);
+   const m=img.style.transform.match(/translate3d\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px\s*,\s*0(?:px)?\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
+   return {x:rect.left+rect.width/2+(.5806-.5)*w*Number(m[3])+Number(m[1]),
+           y:rect.top+rect.height/2+(.61025-.5)*h*Number(m[3])+Number(m[2])};
+  });
+  await page.mouse.click(point.x,point.y);
+  assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 23 · Rigibahn/);
+  assert.match(await page.locator('#pano-lift-area').innerText(),/916 m/);
+  await page.locator('#pano-lifts-visible').check();
+  console.log('PASS exact printed lift 22 and lift 23, even with overlay switched off');
+  await page.screenshot({path:'test-artifacts/printed-lifts-22-23-mobile.png'});
+ }
  assert.equal(await page.locator('#pano-lifts-visible').isChecked(),true);
  assert.equal(await page.locator('#pano-restaurants-visible').isChecked(),true);
  assert.equal(await page.locator('#pano-lifts .pano-lift-group').count(),8);

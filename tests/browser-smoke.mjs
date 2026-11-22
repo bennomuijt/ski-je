@@ -254,6 +254,50 @@ await add('update button changes color during version check and ends green',asyn
  await page.locator('#app-update-now.is-current').waitFor({timeout:12000});
  assert.ok(count>=1,'no health check requested');
 });
+await add('Hopfgarten three full-day routes and optional midstation piste 20a escape',async()=>{
+ const same=page.locator('#same-end');
+ if(!(await same.isChecked()))await same.check();
+ await page.locator('#start').selectOption('Hopfgarten dalstation');
+ await page.locator('#finish').selectOption('Hopfgarten dalstation');
+ await page.locator('#departure').fill('09:00');
+ await page.locator('#return-time').fill('16:00');
+ await page.locator('#lunch-time').fill('12:30');
+ await page.locator('#lunch-restaurant').selectOption('');
+ await page.locator('#early-break').uncheck();
+ await page.locator('#late-break').uncheck();
+ await page.waitForFunction(()=>document.querySelector('#hopfgarten-route-settings')?.hidden===false,{timeout:10000});
+ for(const preset of ['salve','foisching','itter']){
+  await page.locator('#hopfgarten-route-preset').selectOption(preset);
+  await page.locator('#hopfgarten-end-mode').selectOption('valley');
+  await page.locator('#create').click();
+  await page.waitForFunction(()=>document.querySelector('.hopfgarten-escape-panel')!==null,{timeout:15000});
+  const data=await page.evaluate(()=>window.SKIDayUI.getCurrent());
+  assert.ok(data?.graphBased);
+  assert.equal(data.endMode,'valley');
+  assert.equal(data.itinerary.steps.at(-3).code,'20a','last piste should be 20a before return/buffer');
+  assert.equal(data.plan.startPoint,'Hopfgarten dalstation');
+  assert.equal(data.plan.endPoint,'Hopfgarten dalstation');
+  assert.equal(data.plan.safeArrival,'15:30');
+  assert.ok(data.itinerary.steps.some(step=>step.type==='lunch'&&step.minutes===60));
+  const lunch=await page.locator('.day-timeline-row.lunch .day-event strong').innerText();
+  assert.match(lunch,/Lunch/i);
+  const steps=await page.locator('.ski-route-step.piste').count();
+  assert.ok(steps>=12,'route lacks complete pistes for '+preset);
+ }
+ await page.locator('#hopfgarten-end-mode').selectOption('middle');
+ await page.locator('#create').click();
+ await page.waitForFunction(()=>document.querySelector('.hopfgarten-descent-steps')!==null,{timeout:15000});
+ const mid=await page.evaluate(()=>window.SKIDayUI.getCurrent());
+ assert.equal(mid.endMode,'middle');
+ assert.equal(mid.plan.safeArrival,'15:00');
+ assert.ok(mid.optionalDescent.available);
+ assert.equal(mid.optionalDescent.steps.at(-1).code,'20a');
+ const pages=await page.evaluate(()=>window.SKIPdf.reportPages(window.SKIDayUI.getCurrent()));
+ assert.ok(pages.some(p=>p.kind==='descent'),'optional descent not shown in the PDF');
+ await page.locator('.hopfgarten-descent-steps').evaluate(el=>el.open=true);
+ assert.match(await page.locator('.hopfgarten-descent-steps').innerText(),/20a/);
+ await page.screenshot({path:screenshotDir+'/03-hopfgarten-midstation-mobile.png',fullPage:true});
+});
 await add('eight languages switch and persist',async()=>{
  const selector=page.locator('header [data-skije-language-select]');
  await selector.selectOption('pl');

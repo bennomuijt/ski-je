@@ -564,13 +564,13 @@ body.legal-open{overflow:hidden}
       <button class="btn full" id="group-share" type="button">&#128279; Deel groepsafspraak</button>
       <p class="hint" id="group-status" role="status"></p>
     </details>
-    <details class="feature-fold" id="diagnostics-section"><summary>&#128736; Praktijktest &amp; correcties</summary>
-      <p class="hint">Meld een afwijking op de piste. Bewaar gegevens offline en exporteer ze wanneer je wilt.</p>
-      <div class="field"><label for="issue-type">Soort controle</label><select id="issue-type"><option>Verkeerde pisteverbinding</option><option>Verkeerd liftnummer</option><option>GPS-afwijking</option><option>Restaurantgegevens</option><option>Routeplanner</option><option>Overig</option></select></div>
-      <div class="field"><label for="issue-text">Wat klopt niet?</label><textarea id="issue-text" rows="3" maxlength="500" placeholder="Bijv. piste 62 komt niet uit bij lift 67"></textarea></div>
+    <details class="feature-fold" id="diagnostics-section"><summary>&#128736; Groepstest: opmerkingen &amp; correcties</summary>
+      <p class="hint">Iedere tester kan hier opmerkingen bewaren, ook zonder internet. Vermeld kort wat er gebeurde, op welke telefoon en hoe we het kunnen herhalen. Aan het einde van de test exporteer je alle opmerkingen als één bestand en deel je dit met de groepsbeheerder. GPS wordt alleen toegevoegd als je het aanvinkt.</p>
+      <div class="field"><label for="issue-type">Soort controle</label><select id="issue-type"><option>Verkeerde pisteverbinding</option><option>Verkeerd liftnummer</option><option>GPS-afwijking</option><option>Restaurantgegevens</option><option>Routeplanner</option><option>PDF en delen</option><option>Groepsleden en GPS</option><option>Groepsgesprek en afspraak</option><option>Groepsfoto</option><option>Installeren en updaten</option><option>Weergave en bediening</option><option>Overig</option></select></div>
+      <div class="field"><label for="issue-text">Wat klopt niet?</label><textarea id="issue-text" rows="3" maxlength="500" placeholder="Wat ging er mis? Bij welke stap? Welk toestel? (bijv. Samsung A21)"></textarea></div>
       <label class="verify"><input type="checkbox" id="issue-gps"> Huidige GPS-co&ouml;rdinaten toevoegen</label>
-      <button class="btn full" id="issue-add" type="button">&#128190; Controle offline bewaren</button>
-      <div class="toolbar"><button class="btn secondary small-btn" id="issues-export" type="button">Controles exporteren</button></div>
+      <button class="btn full" id="issue-add" type="button">&#128190; Opmerking offline bewaren</button>
+      <div class="toolbar"><button class="btn secondary small-btn" id="issues-export" type="button">Alle opmerkingen exporteren</button></div>
       <div id="issue-list" class="compact-list" aria-live="polite"></div>
     </details>
     <details class="feature-fold legal-section" id="legal-section">

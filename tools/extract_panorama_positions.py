@@ -6,6 +6,7 @@ numeric piste labels and numeric lift labels may overlap. We print a structured
 candidate report for cross-checking with official lift/hut lists and imagery.
 """
 import collections
+import hashlib
 import json
 import re
 import urllib.request
@@ -17,6 +18,7 @@ req = urllib.request.Request(URL, headers={"User-Agent": "SKI-je-MapResearch/1.0
 with urllib.request.urlopen(req, timeout=45) as response:
     contents = response.read()
 assert contents[:4] == b"%PDF", "Source is not a PDF"
+print("PDF_SHA256", hashlib.sha256(contents).hexdigest(), flush=True)
 doc = fitz.open(stream=contents, filetype="pdf")
 print("PDF_INFO", json.dumps({"bytes":len(contents),"pages":len(doc),"dimensions":[[round(p.rect.width),round(p.rect.height)] for p in doc]}), flush=True)
 page=doc[0]
@@ -32,7 +34,10 @@ for block in page.get_text("dict", sort=False)["blocks"]:
                 continue
             x0,y0,x1,y1=span["bbox"]
             number_candidates.append({
-                "number":txt,"x":round((x0+x1)/(2*page.rect.width),5),
+                "number":txt,"page":1,
+                "bbox_pt":[round(x0,3),round(y0,3),round(x1,3),round(y1,3)],
+                "center_pt":[round((x0+x1)/2,3),round((y0+y1)/2,3)],
+                "x":round((x0+x1)/(2*page.rect.width),5),
                 "y":round((y0+y1)/(2*page.rect.height),5),
                 "color":f"#{span['color']:06x}","size":round(span["size"],1),
                 "font":span["font"][:40],

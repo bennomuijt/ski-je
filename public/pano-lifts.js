@@ -11,14 +11,18 @@
  if(!data||!layer||!view||!img||!toggle||!select||!search||!info)return;
  const areas=data.areas, lifts=data.lifts,connections=window.SKILiftConnections?.byNumber||{};
  const buttons=$('pano-lift-buttons'),areaInfo=$('pano-lift-area'),linked=$('pano-lift-connections'),pistes=$('pano-lift-pistes');
- // Printed BLACK numbers in WHITE boxes, not red piste markers. Validated by
- // comparing PDF vector text centres to official 2026/27 JPG (3537x2445).
- // These coordinates locate the printed labels only, NEVER GPS/lift stations.
- const printedPositions=[
-  {number:'23',x:.58060,y:.61025,type:'4-persoons stoeltjeslift',length:916,rise:319},
-  {number:'22',x:.60433,y:.61557,type:'8-persoons gondel',length:1775,rise:651}
- ];
- const officialImageSize={width:3537,height:2445};
+ // The positions are independently reviewed printed WHITE lift boxes, never GPS.
+ // Red/blue piste numbers are excluded by the 2026/27 vector-text style selection.
+ const printedData=window.SKIPrintedLiftLabels;
+ if(!printedData?.labels?.length)throw Error('SkiWelt gedrukte liftnummers ontbreken.');
+ const verifiedSpecs={
+  '22':{type:'8-persoons gondel',length:1775,rise:651},
+  '23':{type:'4-persoons stoeltjeslift',length:916,rise:319},
+  '26':{type:'10-persoons gondel',length:1900,rise:420}
+ };
+ const printedPositions=printedData.labels.map(([number,x,y])=>({number,x,y,...verifiedSpecs[number]}));
+ const printedConflicts=printedData.conflicts||{};
+ const officialImageSize=printedData.image;
  const printedZoomThreshold=3.3;
 
  const norm=s=>String(s||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -48,12 +52,21 @@
   select.value=lift.number;
   name.textContent='Lift '+lift.number+' · '+lift.name;
   const labelled=printedLabel?printedPositions.find(p=>p.number===lift.number):null;
-  areaInfo.textContent=labelled
-   ? 'Hopfgarten · '+labelled.type+' · '+labelled.length+' m lengte · '+labelled.rise+' hoogtemeters. De markering ligt op het gedrukte nummer, niet bij een GPS-liftstation.'
-   : 'Skigebied: '+lift.area+'. De markering op de illustratie is indicatief.';
+  const spec=verifiedSpecs[lift.number]||(lift.number==='40'?verifiedSpecs['26']:null);
+  const parts=['Skigebied: '+lift.area];
+  if(labelled&&spec){
+   parts.push(spec.type+' · '+spec.length+' m lengte · '+spec.rise+' hoogtemeters');
+  }else if(lift.number==='26'&&spec){
+   parts.push(spec.type+' · '+spec.length+' m lengte · '+spec.rise+' hoogtemeters');
+  }
+  if(labelled)parts.push('Dit is een gedrukt kaartlabel, geen GPS-liftstation.');
+  else parts.push('Gebiedsmarkeringen zijn indicatief, niet exact.');
+  areaInfo.textContent=parts.join(' · ');
   const connection=connections[lift.number];
-  linked.textContent=connection?'Gebiedsverbinding: '+connection.to+'. '+connection.details:'Verbindingen met andere gebieden: nog niet voor deze lift geverifieerd.';
-  pistes.textContent=connection?'Genoemde pistes: '+connection.pistes.join(', ')+'. Aansluitende liften: '+connection.via+'.':'Aansluitende pistes: nog niet voor deze lift geverifieerd.';
+  const conflict=printedLabel?printedConflicts[lift.number]:null;
+  linked.textContent=conflict?conflict.reason:
+   connection?'Gebiedsverbinding: '+connection.to+'. '+connection.details:'Bekijk de actuele liftinformatie bij SkiWelt.';
+  pistes.textContent=connection?'Genoemde pistes: '+connection.pistes.join(', ')+'. Aansluitende liften: '+connection.via+'.':conflict?'De nummering verschilt tussen officiële bronnen. Gebruik de naam op de borden.':'';
   const approved=window.SKIPublicPhotos?.getFor?.('lift',lift.name);
   photo.hidden=!approved;
   photo.removeAttribute('src');
@@ -64,8 +77,8 @@
   info.hidden=false;
   for(const b of buttons.querySelectorAll('button[data-lift-number]'))b.setAttribute('aria-pressed',String(b.dataset.liftNumber===lift.number));
  }
- function fillOptions(areaKey){
-  const list=areaKey?lifts.filter(l=>l.areaKey===areaKey):lifts;
+ function fillOptions(areaKey,choices=null){
+  const list=choices|| (areaKey?lifts.filter(l=>l.areaKey===areaKey):lifts);
   select.replaceChildren();
   for(const lift of list){
    const opt=document.createElement('option');opt.value=lift.number;opt.textContent=lift.number+' · '+lift.name+' ('+lift.area+')';select.append(opt);
@@ -92,15 +105,15 @@
   b.addEventListener('click',e=>{e.stopPropagation();search.value='';const first=fillOptions(area.key)[0];if(first)setLift(first);$('pano-hut-info').hidden=true;});
   layer.append(b);points.push({b,area});
  }
- // A small transparent outline surrounds ONLY the proven printed lift labels.
- // They are separate from the approximate area-group pins above.
+ // 80 printed labels (78 distinct numbers). Duplicated 80/112 positions both
+ // show the same lift. The printed 89 opens a choice between 89a/b/c.
  const printed=printedPositions.map(anchor=>{
   const lift=lifts.find(item=>item.number===anchor.number);
-  if(!lift)throw Error('Officieel liftnummer ontbreekt in SKI-je: '+anchor.number);
+  if(!lift&&anchor.number!=='89')throw Error('Gedrukt liftnummer ontbreekt in catalogus: '+anchor.number);
   const b=document.createElement('button');b.type='button';
-  b.className='pano-printed-lift';b.dataset.liftNumber=lift.number;
-  b.title='Lift '+lift.number+' · '+lift.name;
-  b.setAttribute('aria-label','Info gedrukte lift '+lift.number+' · '+lift.name);
+  b.className='pano-printed-lift';b.dataset.liftNumber=anchor.number;
+  b.title=lift?'Lift '+lift.number+' · '+lift.name:'Liften 89a, 89b en 89c kiezen';
+  b.setAttribute('aria-label',lift?'Info gedrukte lift '+lift.number+' · '+lift.name:'Kies lift 89a, 89b of 89c');
   b.addEventListener('pointerdown',event=>event.stopPropagation());
   b.addEventListener('pointerup',event=>event.stopPropagation());
   b.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();openPrinted(anchor);});
@@ -109,9 +122,24 @@
  });
  function openPrinted(anchor){
   if(!anchor)return;
-  const lift=lifts.find(item=>item.number===anchor.number);
-  if(!lift)return;
-  search.value='';fillOptions(lift.areaKey);setLift(lift,true);
+  search.value='';
+  if(anchor.number==='89'){
+   const choices=(printedConflicts['89']?.choices||[]).map(n=>lifts.find(l=>l.number===n)).filter(Boolean);
+   if(!choices.length)return;
+   fillOptions(null,choices);
+   name.textContent='Kaartnummer 89 · kies de juiste lift';
+   areaInfo.textContent='Ellmau · de officiële liftstatus onderscheidt 89a, 89b en 89c.';
+   linked.textContent=printedConflicts['89'].reason;
+   pistes.textContent='Kies hieronder het gewenste nummer. Dit gedrukte kaartlabel is geen individueel liftstation.';
+   photo.hidden=true;photo.removeAttribute('src');
+   status.textContent='Kies eerst een van de drie liften.';
+   link.href=data.source;link.textContent='Officiële liftstatus bekijken';
+   info.hidden=false;
+  }else{
+   const lift=lifts.find(item=>item.number===anchor.number);
+   if(!lift)return;
+   fillOptions(lift.areaKey);setLift(lift,true);
+  }
   if($('pano-hut-info'))$('pano-hut-info').hidden=true;
  }
  function searchLifts(){
@@ -176,9 +204,8 @@
    anchor.b.style.width=anchor.b.style.height=g.zoom>=9?'62px':'48px';
   }
  }
- // Tapping a printed number also works when "Liften weergeven" is OFF.
- // This transparent hit-test never matches red piste numbers: it only checks
- // the PDF-verified coordinates for WHITE lift-number boxes 22 and 23.
+ // Tapping a printed WHITE lift number works even when markers are hidden.
+ // Never perform number-only matching across red/blue pistes or huts.
  const starts=new Map();
  view.addEventListener('pointerdown',event=>{
   if(event.target!==view)return;
@@ -197,7 +224,7 @@
    const position=locationFor(anchor,g),dx=event.clientX-(g.box.left+position.x),dy=event.clientY-(g.box.top+position.y);
    return {anchor,distance:Math.hypot(dx,dy)};
   }).sort((a,b)=>a.distance-b.distance)[0];
-  if(hit?.distance<=Math.min(48,Math.max(26,g.zoom*2.8)))openPrinted(hit.anchor);
+  if(hit?.distance<=Math.min(35,Math.max(20,g.zoom*2.8)))openPrinted(hit.anchor);
  });
  for(const name of ['pointercancel','lostpointercapture'])view.addEventListener(name,event=>starts.delete(event.pointerId));
  function update(){
@@ -213,5 +240,5 @@
  $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));
  document.addEventListener('skije-photo-list-updated',()=>{if(!info.hidden&&select.value)setLift(lifts.find(l=>l.number===select.value));});
  fillOptions(null);update();
- window.SKILiftMap={lifts:()=>lifts.map(l=>({...l})),printedLabels:()=>printedPositions.map(p=>({...p})),precision:'area-only;printed-label-22-23-only'};
+ window.SKILiftMap={lifts:()=>lifts.map(l=>({...l})),printedLabels:()=>printedPositions.map(p=>({...p})),precision:'area-only;visually-checked-2026-27-print-labels'};
 })();

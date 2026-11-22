@@ -231,12 +231,16 @@
   const hopMid=graph.stations['lift:20:top']?.node,hopValley=graph.stations['Hopfgarten dalstation']?.node;
   const isHopfgarten=options.start==='Hopfgarten dalstation'&&
    (options.finish==='Hopfgarten dalstation'||options.finish==='Hopfgarten tussenstation'||options.finish==='lift:20:top');
-  const midRequested=options.finish!=='Hopfgarten dalstation'||options.hopfgartenEndMode==='middle';
+  const explicitMiddle=isHopfgarten&&options.finish!=='Hopfgarten dalstation';
+  const midRequested=explicitMiddle||options.hopfgartenEndMode==='middle';
   const endMode=isHopfgarten?(midRequested?'middle':'valley'):'normal';
   const preset=isHopfgarten?hopfgartenPresets[options.routePreset]||null:null;
   const descentOpts={...opts,noLifts:true};
-  const valleyDescent=isHopfgarten&&Number.isInteger(hopMid)&&Number.isInteger(hopValley)?
-   shortest(hopMid,hopValley,descentOpts,closures):null;
+  // Honour a manually chosen middle station exactly; Salvenbahn I upper and
+  // Salvenbahn II lower stations are nearby but distinct physical coordinates.
+  const routeFinish=isHopfgarten?(explicitMiddle?finish:hopMid):finish;
+  const valleyDescent=isHopfgarten&&Number.isInteger(routeFinish)&&Number.isInteger(hopValley)?
+   shortest(routeFinish,hopValley,descentOpts,closures):null;
   const descentLegs=valleyDescent?group(valleyDescent,opts):[];
   const descentIsValid=descentLegs.some(s=>s.type==='piste'&&s.code==='20a')&&
    descentLegs.every(s=>s.type!=='lift')&&
@@ -244,7 +248,6 @@
   const validDescent=descentIsValid?valleyDescent:null;
   if(endMode==='valley'&&!validDescent)return {ok:false,
    reason:'De laatste afdaling via piste 20a is niet aantoonbaar bereikbaar of is als gesloten gemeld. Kies het middenstation als eindpunt en controleer het vervoer naar het dal.'};
-  const routeFinish=isHopfgarten?hopMid:finish;
   const optionalDescent={available:!!validDescent,required:endMode==='valley',
    departureStation:'Salvenbahn I middenstation',arrivalStation:'Hopfgarten dalstation',
    piste:'20a',minutes:validDescent?descentLegs.reduce((n,s)=>n+s.minutes,0):0,

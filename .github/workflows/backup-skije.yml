@@ -1,0 +1,95 @@
+name: SKI-je volledige ZIP-back-up
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backup-skije.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies for a reproducible build
+        run: npm install --no-audit --no-fund
+      - name: Generate current application assets
+        run: npm run build:release
+      - name: Check application code, cache metadata and tests
+        run: npm run check
+      - name: Create complete, verified ZIP of the current source
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          today="$(date -u +%Y-%m-%d)"
+          folder="SKI-je-v${version}-${today}"
+          work="$RUNNER_TEMP/skije-full-backup"
+          mkdir -p "$work/$folder" backup-out
+          tar \
+            --exclude='./.git' \
+            --exclude='./node_modules' \
+            --exclude='./test-artifacts' \
+            --exclude='./.wrangler' \
+            --exclude='./backup-out' \
+            --exclude='./.env' \
+            --exclude='./.env.*' \
+            --exclude='./.dev.vars' \
+            --exclude='./.dev.vars.*' \
+            -cf - . | tar -xf - -C "$work/$folder"
+          cat > "$work/$folder/LEES_EERST_BACKUP.txt" <<'DOC'
+          SKI-je volledige broncode-back-up
+
+          Deze ZIP bevat de volledige actuele code en assets van SKI-je, inclusief:
+          - Cloudflare Worker en Durable Object broncode (src/)
+          - De mobiele app, offline serviceworker, SkiWelt-kaarten en foto's (public/)
+          - Installatie- en deploymentbestanden (wrangler.jsonc, package.json,
+            package-lock.json, handleidingen, .github/, scripts/)
+          - Tests, technische brondata en groepstesthandleiding
+
+          Herstellen of elders opnieuw publiceren:
+          1. Pak dit ZIP-bestand uit naar een aparte map.
+          2. Installeer Node.js 22 of hoger.
+          3. Voer 'npm ci' uit (internet nodig om afhankelijkheden te downloaden).
+          4. Controleer 'npm run check' en bouw met 'npm run build:release'.
+          5. Meld je aan bij de juiste Cloudflare-account, configureer het
+             Cloudflare PROJECT en de benodigde secrets/bindings.
+          6. Publiceer via 'npm run deploy' (na controle dat dit de juiste omgeving is).
+
+          BELANGRIJK - NIET IN DEZE ZIP:
+          - Cloudflare secrets/tokens en accounttoegang
+          - Actuele clouddata in Durable Objects, zoals groepsleden, berichten,
+            afspraken, groepsfoto's en realtime GPS (geheel los van GitHub)
+          - Op telefoons opgeslagen feedback, GPS-ijkpunten, voorkeuren en tracking
+          - Hostingconfiguratie op accountniveau of eventuele externe dienstdata
+          - Oude commits, branches en volledige Git-geschiedenis
+
+          Exporteer lokale groepsopmerkingen op IEDERE telefoon via
+          Meer > Groepstest: opmerkingen en correcties > Alle opmerkingen exporteren.
+          Maak een aparte veilige back-up van Cloudflare-instellingen en secretes.
+          Wis geen online groepsopslag of telefoondata voordat die apart veilig
+          zijn gesteld. Verwijder pas oude lokale ZIP-bestanden nadat je deze
+          back-up hebt gedownload, geopend en getest.
+
+          Alle bestanden worden met SHA-256 vastgelegd in SHA256SUMS.txt.
+          DOC
+          printf 'GitHub repository: bennomuijt/ski-je\nSource branch: main\nSource commit: %s\nGenerated at (UTC): %s\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$work/$folder/BRONVERSIE.txt"
+          (
+            cd "$work/$folder"
+            find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+          )
+          file="$GITHUB_WORKSPACE/backup-out/SKI-je-volledige-backup-v${version}-${today}.zip"
+          (cd "$work" && zip -q -r "$file" "$folder")
+          unzip -t "$file" | tail -n 1
+          ls -lh "$file"
+      - name: Upload complete ZIP back-up
+        uses: actions/upload-artifact@v4
+        with:
+          name: skije-complete-backup
+          path: backup-out/*.zip
+          if-no-files-found: error
+          retention-days: 30

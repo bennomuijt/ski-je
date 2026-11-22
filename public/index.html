@@ -511,6 +511,18 @@ body.legal-open{overflow:hidden}
       <div class="cf-panel" id="cf-group-active" hidden>
         <div class="row"><h3 id="cf-active-title">Mijn skigroep</h3><span class="pill" id="cf-group-count">0 online</span></div>
         <p class="cf-small" id="cf-active-name"></p>
+        <section id="cf-group-photo-section" class="cf-group-photo-section" aria-label="Groepsfoto">
+          <div class="cf-group-photo-frame" id="cf-group-photo-frame">
+            <img id="cf-group-photo-image" alt="Groepsfoto van onze skigroep" hidden>
+            <div id="cf-group-photo-placeholder" class="cf-group-photo-placeholder">👥<span>Onze groepsfoto</span></div>
+          </div>
+          <div class="cf-group-photo-controls" id="cf-group-photo-controls" hidden>
+            <input id="cf-group-photo-file" type="file" accept="image/*,.heic,.heif,.avif" hidden aria-label="Groepsfoto uit galerij selecteren">
+            <button id="cf-group-photo-upload" type="button" class="btn secondary small-btn">📷 Foto kiezen of vervangen</button>
+            <button id="cf-group-photo-remove" type="button" class="btn clear small-btn" hidden>Foto verwijderen</button>
+          </div>
+          <p class="cf-small" id="cf-group-photo-status" role="status" aria-live="polite">Iedereen in je groep ziet dezelfde foto. De beheerder kan deze aanpassen.</p>
+        </section>
         <div class="cf-actions"><button class="btn secondary" type="button" id="cf-group-invite">🔗 Deel uitnodiging</button><button class="btn clear" type="button" id="cf-group-copy">📋 Kopieer link</button></div>
         <label class="cf-label" for="cf-share-position">📍 Mijn GPS-locatie delen met groepsleden <input id="cf-share-position" type="checkbox"></label>
         <p id="cf-share-info" class="cf-small" role="status">Uit. Je positie wordt niet gedeeld.</p>
@@ -1246,6 +1258,7 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 <script src="share-location.js" defer></script>
 <script src="group-cloudflare.js" defer></script>
 <script src="group-social.js" defer></script>
+<script src="group-photo.js" defer></script>
 <script src="backup-migration.js" defer></script>
 </body>
 </html>

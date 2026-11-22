@@ -5,7 +5,7 @@
  const KEY='skije-cloudflare-room-v1',ROOM_RE=/^[A-Za-z0-9_-]{32}$/;
  const TTL=120000;
  const peers=new Map(),members=new Map(),pins=new Map();
- let group=null,ws=null,sharing=false,fixTimer=null,reconnectTimer=null,ageTimer=null,reconnectCount=0,lastFix=null,lastSent=null,map=null,leaving=false,shareBusy=false;
+ let pendingFocus=null,group=null,ws=null,sharing=false,fixTimer=null,reconnectTimer=null,ageTimer=null,reconnectCount=0,lastFix=null,lastSent=null,map=null,leaving=false,shareBusy=false;
  const status=(message,bad=false,mode='')=>{
   const el=$('cf-group-status');el.textContent=message;el.classList.toggle('cf-bad',bad);
   if(mode){const local=$(mode==='join'?'cf-join-status':'cf-create-status');if(local){local.textContent=message;local.classList.toggle('cf-bad',bad);}}
@@ -29,8 +29,10 @@
   const peer=peers.get(id),pos=peer?.last;
   if(!peer?.online||!pos||Date.now()-pos.at>TTL){status('Dit groepslid deelt momenteel geen actuele GPS-locatie.',true);return;}
   window.SKIApi?.goPage('map');
+  pendingFocus=id;
   const zoom=()=>{if(!map)return false;showPins();map.setView([pos.lat,pos.lng],Math.max(15,map.getZoom()));pins.get(id)?.openPopup();return true;};
-  if(!zoom())status('Kaart openen; de positie wordt zichtbaar zodra de kaart geladen is.');
+  if(zoom())pendingFocus=null;
+  else status('Kaart openen; de positie wordt zichtbaar zodra de kaart geladen is.');
  }
  function personColor(id){const colors=['#0b78c7','#fb7f1c','#009a84','#833fd4','#cc3657','#29763a','#9b6214','#1582a9'];let k=0;for(const c of id)k=(k*33+c.charCodeAt(0))>>>0;return colors[k%colors.length];}
  function showPins(){
@@ -225,7 +227,7 @@
   catch(e){status(e.message,true);}
  });
  $('group-section').addEventListener('toggle',()=>{if($('group-section').open&&group&&online())connect();});
- window.addEventListener('skije:mapready',e=>{map=e.detail?.map;showPins();});
+ window.addEventListener('skije:mapready',e=>{map=e.detail?.map;showPins();if(pendingFocus){const id=pendingFocus;pendingFocus=null;focusMember(id);}});
  window.addEventListener('skije:gpsfix',e=>{const p=e.detail?.position;if(p?.coords)lastFix=p;});
  window.addEventListener('skije:page',e=>{if(e.detail?.page==='map')showPins();});
  document.addEventListener('visibilitychange',()=>{

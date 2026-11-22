@@ -117,6 +117,18 @@ try{
   await page.mouse.click(point.x,point.y);
   assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 23 · Rigibahn/);
   assert.match(await page.locator('#pano-lift-area').innerText(),/916 m/);
+  // The white printed 89 must also work without decorative layer;
+  // it asks for 89a/89b/89c rather than guessing a single lift.
+  const printed89=await page.evaluate(()=>{
+   const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
+   const w=Math.min(rect.width,rect.height*img.naturalWidth/img.naturalHeight);
+   const h=Math.min(rect.height,rect.width*img.naturalHeight/img.naturalWidth);
+   const zoom=8;
+   img.style.transform='translate3d('+(.5-.46865)*w*zoom+'px,'+(.5-.37299)*h*zoom+'px,0) scale('+zoom+')';
+   return {x:rect.left+rect.width/2,y:rect.top+rect.height/2};
+  });
+  await page.mouse.click(printed89.x,printed89.y);
+  assert.match(await page.locator('#pano-lift-name').innerText(),/Kaartnummer 89/);
   await page.locator('#pano-lifts-visible').check();
   console.log('PASS 80 printed labels including 22/23, 40/59/89 choices and overlay-off selection');
   await page.screenshot({path:'test-artifacts/printed-lifts-22-23-mobile.png'});

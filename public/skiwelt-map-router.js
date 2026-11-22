@@ -148,6 +148,9 @@
    s.minutes=s.type==='lift'?Math.max(2,Math.ceil(metresToMin(s.metres,'lift',opts.speed)+4)):
     s.type==='piste'?Math.max(1,Math.ceil(metresToMin(s.metres,'piste',opts.speed)+0.5)):
     Math.max(1,Math.ceil(metresToMin(s.metres,'transfer',opts.speed)));
+   // SkiWelt's official piste listing gives 20a as 3,293m. The OSM
+   // way is shorter; do not underestimate a final red valley descent.
+   if(s.type==='piste'&&s.code==='20a'&&s.metres>1500)s.minutes=Math.max(20,s.minutes);
    s.label=(s.type==='lift'?'🚡 Lift ':s.type==='piste'?'⛷️ Piste ':'⇄ Overstap ')+
      (s.code?s.code+' · ':'')+s.name;
    s.detail=s.type==='transfer'?'Verbinding '+s.metres+' meter op de kaart. Controleer of deze overgang geopend en fysiek bereikbaar is.':

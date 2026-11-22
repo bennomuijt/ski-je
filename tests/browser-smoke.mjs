@@ -15,7 +15,7 @@ if(!process.env.SKIJE_URL){
   try{
    let path=decodeURIComponent(new URL(request.url,'http://localhost').pathname);
    if(path==='/api/health'){response.writeHead(200,{'content-type':'application/json','cache-control':'no-store'});
-    response.end(JSON.stringify({ok:true,service:'SKI-je Cloudflare',version:'4.5.13-cf'}));return;}
+    response.end(JSON.stringify({ok:true,service:'SKI-je Cloudflare',version:'4.5.14-cf'}));return;}
    if(path==='/api/skimap.jpg')path='/Kaart 2026-2027.png';
    if(path==='/')path='/index.html';
    const file=resolve(publicRoot,'.'+path);

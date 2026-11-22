@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07538c">
-<link rel="manifest" href="manifest.webmanifest?v=4512">
+<link rel="manifest" href="manifest.webmanifest?v=4513">
 <link rel="icon" type="image/svg+xml" href="icons/skije-logo-v455.svg">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192-v455.png">
 <link rel="apple-touch-icon" href="icons/icon-192-v455.png">
@@ -157,11 +157,12 @@ body.legal-open{overflow:hidden}
 @media(max-width:420px){.ski-hero .brand-lockup .ski-original-logo{width:104px}.ski-hero .brand-meta small{font-size:9px}.ski-hero .brand-update-btn{min-width:64px;font-size:11px;padding:6px}}
 @media(prefers-reduced-motion:reduce){.ski-intro-sign .ski-original-logo{animation:none!important}}
 
+#hopfgarten-route-settings{margin:12px 0;padding:14px;border:1px solid #a9d2e6;background:#edf8ff;border-radius:14px}#hopfgarten-route-settings[hidden]{display:none!important}#hopfgarten-route-settings .field{margin-bottom:10px}
 </style>
 <link rel="stylesheet" href="i18n.css">
 <link rel="stylesheet" href="extra.css">
 <link rel="stylesheet" href="group-cloudflare.css">
-<link rel="stylesheet" href="skiwelt-geometry-view.css?v=4512">
+<link rel="stylesheet" href="skiwelt-geometry-view.css?v=4513">
 </head>
 <body>
 <div class="ski-intro" id="ski-intro" role="region" aria-label="Korte SKI-je openingsanimatie" hidden>
@@ -177,7 +178,7 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.12</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.13</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -197,6 +198,23 @@ body.legal-open{overflow:hidden}
         <div class="field"><label for="finish">Eindpunt</label><select id="finish"></select></div>
       </div>
       <div class="switchrow"><label for="same-end">Terug naar mijn startpunt</label><input id="same-end" type="checkbox" checked></div>
+      <div class="hopfgarten-route-settings" id="hopfgarten-route-settings" hidden>
+        <div class="field"><label for="hopfgarten-route-preset">⛰️ Mooie dagroute vanuit Hopfgarten</label>
+          <select id="hopfgarten-route-preset">
+            <option value="">Automatisch — zo veel mogelijk afwisseling</option>
+            <option value="salve">Hohe Salve panoramarondje &amp; Schernthann</option>
+            <option value="foisching">Schernthann, Foisching &amp; Rigi</option>
+            <option value="itter">Itter, KRAFTalm &amp; Hohe Salve</option>
+          </select>
+        </div>
+        <div class="field"><label for="hopfgarten-end-mode">🏁 Laatste etappe naar Hopfgarten</label>
+          <select id="hopfgarten-end-mode">
+            <option value="valley">Via piste 20a helemaal naar het dalstation</option>
+            <option value="middle">Eindigen bij Salvenbahn I-middenstation — afdaling optioneel</option>
+          </select>
+          <p class="hint">De planner controleert een liftvrije dalafdaling via 20a. Bij de middenstation-optie blijft de afdaling een afzonderlijke keuze. Alleen skiën als de officiële piste open is; er wordt extra tijd gereserveerd.</p>
+        </div>
+      </div>
       <div class="grid"><div class="field"><label for="departure">Vertrek</label><input id="departure" type="time" lang="nl-NL" value="09:00"></div><div class="field"><label for="return-time">Uiterlijk terug</label><input id="return-time" type="time" lang="nl-NL" value="16:00"></div></div>
        <details class="buffer-options"><summary>⏱️ Veiligheidsmarge instellen</summary>
         <div class="switchrow"><label for="use-safety">Veiligheidsmarge vóór de uiterlijke eindtijd</label><input type="checkbox" id="use-safety" checked></div>
@@ -1150,28 +1168,28 @@ document.querySelectorAll('a[href="#legal-section"]').forEach(a=>a.addEventListe
 
 <script src="i18n-data.js" defer></script>
 <script src="i18n.js" defer></script>
-<script src="app-update.js?v=4512" defer></script>
+<script src="app-update.js?v=4513" defer></script>
 <script src="route-engine.js" defer></script>
 <script src="day-planner.js" defer></script>
-<script src="skiwelt-corridors.js?v=4512" defer></script>
+<script src="skiwelt-corridors.js?v=4513" defer></script>
 <script src="route-detail.js" defer></script>
 <script src="skiwelt-reference-tours.js?v=tour1" defer></script>
 <script src="skiwelt-tour-ui.js?v=tour1" defer></script>
-<script src="day-pdf.js?v=4512" defer></script>
+<script src="day-pdf.js?v=4513" defer></script>
 <script src="highlights-core.js?v=458" defer></script>
 <script src="ski-highlights.js?v=458" defer></script>
 <script src="extra.js" defer></script>
 <script src="panorama-tools.js" defer></script>
-<script src="hut-catalogue.js?v=4512" defer></script>
-<script src="skiwelt-lift-connections.js?v=4512" defer></script>
-<script src="pano-restaurants.js?v=4512" defer></script>
-<script src="lift-catalogue.js?v=4512" defer></script>
-<script src="pano-lifts.js?v=4512" defer></script>
+<script src="hut-catalogue.js?v=4513" defer></script>
+<script src="skiwelt-lift-connections.js?v=4513" defer></script>
+<script src="pano-restaurants.js?v=4513" defer></script>
+<script src="lift-catalogue.js?v=4513" defer></script>
+<script src="pano-lifts.js?v=4513" defer></script>
 <script src="photo-community.js?v=458" defer></script>
-<script src="ski-photo-sources.js?v=4512" defer></script>
-<script src="skiwelt-map-router.js?v=4512" defer></script>
-<script src="skiwelt-geometry-view.js?v=4512" defer></script>
-<script src="day-ui.js?v=4512" defer></script>
+<script src="ski-photo-sources.js?v=4513" defer></script>
+<script src="skiwelt-map-router.js?v=4513" defer></script>
+<script src="skiwelt-geometry-view.js?v=4513" defer></script>
+<script src="day-ui.js?v=4513" defer></script>
 <script src="return-home-ui.js" defer></script>
 <script src="lunch-minute.js" defer></script>
 <script src="share-location.js" defer></script>

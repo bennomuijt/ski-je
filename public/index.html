@@ -687,9 +687,22 @@ body.legal-open{overflow:hidden}
 (() => {
 const $ = (id) => document.getElementById(id);
 const dataSaver = navigator.connection?.saveData === true;
-// Gebruik een andere lokaal opgeslagen sfeerfoto bij een nieuwe appstart.
-// De volgorde wisselt vrouw/man en ski/snowboard af, zonder extra downloads.
+// Tien lokale, geoptimaliseerde beelden: zes volwassen vrouwen en vier mannen.
+// Een volledige cyclus van tien starts geeft precies 60% vrouw / 40% man.
+// Afwisseling van ski en snowboard, met een bestaande afbeelding als fallback.
 const introPhotos=[
+  'ski-intro-woman-action-01.webp',
+  'ski-intro-man-action-01.webp',
+  'ski-intro-woman-action-02.webp',
+  'ski-intro-man-portrait-03.webp',
+  'ski-intro-woman-portrait-03.webp',
+  'ski-intro-man-action-02.webp',
+  'ski-intro-woman-portrait-04.webp',
+  'ski-intro-man-portrait-04.webp',
+  'ski-intro-woman-portrait-05.webp',
+  'ski-intro-woman-portrait-06.webp'
+];
+const legacyIntroPhotos=[
   'ski-intro-woman-skis.webp',
   'ski-intro-man-skis.webp',
   'ski-intro-woman-snowboard.webp',
@@ -706,7 +719,7 @@ const chosenIntroPhoto=introPhotos[introPhotoIndex];
 if (!dataSaver) document.querySelectorAll('.hero-scene img[data-src], .ski-intro-photo[data-src]').forEach(img=>{
   img.dataset.src=chosenIntroPhoto;
   img.addEventListener('error',()=>{
-    if(!img.src.endsWith('/ski-sfeer.webp'))img.src='ski-sfeer.webp';
+    if(!img.src.endsWith('/ski-sfeer.webp'))img.src=legacyIntroPhotos[introPhotoIndex%legacyIntroPhotos.length];
   },{once:true});
   img.src=img.dataset.src;
 });

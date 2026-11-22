@@ -24,12 +24,23 @@ test('respects motion preferences, and splash does not block UI forever',()=>{
  assert.match(html,/document\.body\.classList\.remove\('brand-arriving'\)/);
 });
 
-test('startup photo rotates between women and men on skis or snowboards without timers',()=>{
- for(const name of ['woman-skis','man-skis','woman-snowboard','man-snowboard']) {
-  assert.match(html,new RegExp('ski-intro-'+name+'\\.webp'));
-  assert.ok(existsSync(new URL('../public/ski-intro-'+name+'.webp',import.meta.url)));
-  assert.match(html,new RegExp('ski-intro-'+name+'\\.webp'));
+test('startup photo gallery is 60% adult women and 40% adult men over 10 starts',()=>{
+ const match=html.match(/const introPhotos=\[([\s\S]*?)\];/);
+ assert.ok(match,'start gallery must be present');
+ const names=[...match[1].matchAll(/'([^']+\.webp)'/g)].map(x=>x[1]);
+ assert.equal(names.length,10);
+ assert.equal(names.filter(name=>name.includes('-woman-')).length,6);
+ assert.equal(names.filter(name=>name.includes('-man-')).length,4);
+ assert.equal(new Set(names).size,10,'do not duplicate a photo inside a cycle');
+ for(const name of names){
+  assert.ok(existsSync(new URL('../public/'+name,import.meta.url)),name+' must ship with the app');
+  assert.ok(sw.includes("'./"+name+"'"),name+' must be cached for offline use');
  }
  assert.match(html,/skije-intro-photo-last/);
  assert.match(html,/\(previous\+1\)%introPhotos.length/);
+ assert.match(html,/legacyIntroPhotos/);
+ for(const old of ['woman-skis','man-skis','woman-snowboard','man-snowboard']){
+  assert.match(html,new RegExp('ski-intro-'+old+'\\.webp'));
+  assert.ok(existsSync(new URL('../public/ski-intro-'+old+'.webp',import.meta.url)));
+ }
 });

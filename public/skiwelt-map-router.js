@@ -124,6 +124,32 @@
   return{type:f.kind,code:f.ref,name:f.name||(f.ref?'Piste '+f.ref:'nummer niet vastgelegd in kaartbron'),
    level,confidence:row[4],feature:row[2]};
  }
+ function labelUnverifiedMapFragments(segments){
+  for(let i=0;i<segments.length;i++){
+   const step=segments[i];if(step.type!=='piste'||step.code)continue;
+   const neighboring=direction=>{
+    for(let j=i+direction;j>=0&&j<segments.length;j+=direction){
+     const p=segments[j];
+     if(p.type==='lift'||p.type==='transfer'&&p.metres>3)return null;
+     if(p.type==='piste'&&p.code)return p;
+    }
+    return null;
+   };
+   const prev=neighboring(-1),next=neighboring(1);
+   if(prev&&next&&prev.code===next.code&&step.metres<=180){
+    step.displayCode=prev.code;
+    step.numberStatus='inferred-neighbors';
+    step.label='⛷️ Aansluitend deel piste '+prev.code+' (nummer controleren)';
+    step.detail+=' Nummer gebaseerd op gelijk genummerde aangrenzende kaartdelen, nog niet onafhankelijk bevestigd.';
+   }else{
+    step.numberStatus='unverified';
+    const neighbor=prev?.code||next?.code;
+    step.label='⇄ Pisteverbinding'+(neighbor?' bij '+neighbor:'')+' (nummer te controleren)';
+    step.detail+=' De afzonderlijke kaartlijn heeft geen eigen pistennummer; deze is niet verzonnen.';
+   }
+  }
+  return segments;
+ }
  function group(path,opts){
   const result=[];let previous=null;
   for(const edgeId of path.edgeIds){
@@ -157,7 +183,7 @@
      'Kaartlijn '+s.metres+' m · '+(s.level!=='unknown'?s.level:'kleur niet bevestigd')+
      ' · Bron: OpenSkiData/OSM; geen live lift-/pistestatus';
   }
-  return result;
+  return labelUnverifiedMapFragments(result);
  }
  function routeSummary(groups){
   return groups.map(s=>({from:s.from,to:s.to,code:s.code,type:s.type,minutes:s.minutes,label:s.label,
@@ -178,7 +204,7 @@
   }
   const addRoute=(path,phase)=>{
    for(const step of group(path,options)){insert(step.type,step.label,step.minutes,step.detail,
-    {phase,code:step.code,level:step.level,from:step.from,to:step.to,feature:step.feature,
+    {phase,code:step.code,displayCode:step.displayCode||step.code,numberStatus:step.numberStatus||'source',level:step.level,from:step.from,to:step.to,feature:step.feature,
      lengthKm:step.lengthKm,coordinates:step.points,confidence:step.confidence});}
   };
   const lunchAt=clock(options.lunchTime||'12:30');

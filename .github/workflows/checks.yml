@@ -37,6 +37,14 @@ jobs:
           npm install --no-save --no-package-lock playwright-core
       - name: Test proposed clickable lift and restaurant panels in mobile browser
         run: node tests/panorama-layers-browser.mjs
+      - name: Test service worker upgrades in mobile Chrome
+        run: |
+          # Exercise migration from the actual 4.5.14 release before the new photos.
+          git fetch --no-tags --depth=1 origin 4868b58fd19d3070ca819d2040fa19a33ebe6ad3
+          legacy="$(mktemp -d)"
+          git archive FETCH_HEAD | tar -x -C "$legacy"
+          cp public/icons/icon-{192,512}-v455.png "$legacy/public/icons/"
+          node tests/app-update-browser.mjs "$legacy"
       - name: Test actual SKI-je UI, PDF, map and webcam on mobile viewport
         run: node tests/browser-smoke.mjs
       - name: Save browser screenshots and PDF for QA

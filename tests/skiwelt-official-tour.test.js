@@ -58,7 +58,7 @@ test('unproven lift-to-lift connections remain explicitly flagged',()=>{
 });
 test('static resources and route UI include tour, gap audit, offline caching and pdf safety warnings',()=>{
  const html=read('public/index.html'),js=read('public/day-ui.js'),pdf=read('public/day-pdf.js'),sw=read('public/sw.js');
- for(const id of ['skiwelt-reference-tours.js','skiwelt-tour-ui.js']){assert.ok(html.includes(id));assert.ok(sw.includes("'./"+id+"'"));}
+ for(const id of ['skiwelt-reference-tours.js','skiwelt-tour-ui.js']){assert.ok(html.includes(id));assert.ok(sw.includes(JSON.stringify("./"+id)+":"));}
  assert.match(js,/SKIOfficialTourUI\?\.mount/);
  assert.match(js,/missingSteps/);
  assert.match(js,/unverifiedTransitions/);

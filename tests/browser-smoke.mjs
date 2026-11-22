@@ -5,6 +5,7 @@ import fs from 'node:fs/promises';
 import {createServer} from 'node:http';
 import {resolve,sep,extname} from 'node:path';
 import {chromium} from 'playwright-core';
+import {release} from '../src/release.js';
 // Test the actual proposed branch on localhost, NEVER an older deployed Worker.
 const publicRoot=resolve('public');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8',
@@ -15,7 +16,7 @@ if(!process.env.SKIJE_URL){
   try{
    let path=decodeURIComponent(new URL(request.url,'http://localhost').pathname);
    if(path==='/api/health'){response.writeHead(200,{'content-type':'application/json','cache-control':'no-store'});
-    response.end(JSON.stringify({ok:true,service:'SKI-je Cloudflare',version:'4.5.14-cf'}));return;}
+    response.end(JSON.stringify({ok:true,service:'SKI-je Cloudflare',...release}));return;}
    if(path==='/api/skimap.jpg')path='/Kaart 2026-2027.png';
    if(path==='/')path='/index.html';
    const file=resolve(publicRoot,'.'+path);

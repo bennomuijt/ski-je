@@ -1,69 +1,107 @@
-/* SKI-je v4.5.14: online update; existing local user data remain untouched. */
-(()=>{
- 'use strict';
- const CURRENT='4.5.14-cf';
- const buttons=['app-update-now','check-update'].map(id=>document.getElementById(id)).filter(Boolean);
- const status=document.getElementById('app-update-status');
- let busy=false;
- const setState=state=>{for(const b of buttons){b.classList.remove('is-updating','is-current','is-failed');if(state)b.classList.add(state);if(b.id==='app-update-now')b.textContent=state==='is-updating'?'⏳ Controleren…':state==='is-current'?'✓ Bijgewerkt':state==='is-failed'?'⚠ Opnieuw':'↻ Update';}};
- const say=(message)=>{if(status)status.textContent=message;};
- const semver=(value)=>String(value||'').match(/^\s*v?(\d+)\.(\d+)\.(\d+)/)?.slice(1).map(Number)||null;
- function newer(a,b){
-   const aa=semver(a),bb=semver(b);if(!aa||!bb)return false;
-   return aa.some((number,i)=>number>bb[i]&&aa.slice(0,i).every((x,j)=>x===bb[j]));
- }
- async function withTimeout(promise,ms){
-   let id;try{return await Promise.race([promise,new Promise((_,reject)=>{id=setTimeout(()=>reject(new Error('timeout')),ms);})]);}finally{clearTimeout(id);}
- }
- async function refresh(){
-   if(busy)return;
-   setState('is-updating');
-   if(!navigator.onLine){setState('is-failed');say('Offline: internetverbinding nodig om SKI-je bij te werken.');return;}
-   busy=true;for(const b of buttons){b.disabled=true;b.setAttribute('aria-busy','true');}
-   say('Controleren of er een nieuwe SKI-je-versie is…');
-   try{
-     const response=await withTimeout(fetch('/api/health?versioncheck='+Date.now(),{cache:'no-store',headers:{Accept:'application/json'}}),10000);
-     if(!response.ok)throw new Error('server bereikbaar, maar versiecontrole mislukt');
-     const data=await response.json();
-     const live=String(data.version||'');
-     if(!semver(live))throw new Error('versienummer niet gevonden');
-     // The server and displayed version are both checked, avoiding a mixed old/new PWA.
-     const displayed=document.querySelector('.app-version')?.textContent?.trim()||'';
-     const needsRefresh=newer(live,CURRENT)||newer(live,displayed);
-     let workerActivated=true;
-     if('serviceWorker' in navigator){
-       const reg=await navigator.serviceWorker.getRegistration();
-       if(reg){
-         await withTimeout(reg.update(),12000);
-         if(reg.waiting){
-           const waiting=reg.waiting;
-           const activeChange=new Promise(resolve=>{
-             if(navigator.serviceWorker.controller)navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true});
-             else resolve();
-           });
-           waiting.postMessage({type:'SKIP_WAITING'});
-           try{await withTimeout(activeChange,8000);}catch{workerActivated=false;}
-         }
-       }else{
-         navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).catch(()=>{});
-       }
-     }
-     if(needsRefresh){
-       say('Nieuwe versie '+live+' beschikbaar. SKI-je wordt vernieuwd…');
-       if(!workerActivated)say('Update is gedownload, maar de nieuwe cache is nog niet actief. Ververs zo nodig opnieuw.');
-       const url=new URL(location.href);url.searchParams.set('skije-update',live);url.searchParams.set('t',String(Date.now()));
-       location.replace(url.href);
-     }else if(semver(live).join('.')===semver(CURRENT).join('.') && semver(displayed)?.join('.')===semver(CURRENT).join('.')){
-       setState('is-current');say('Je gebruikt de nieuwste versie '+CURRENT+'. Je routes, GPS-ijkpunten en groepen blijven bewaard.');
-     }else{
-       setState('is-failed');say('De server meldt '+live+', maar deze pagina toont '+displayed+'. Vernieuw de pagina in Chrome.');
-     }
-   }catch(error){
-     setState('is-failed');say('Updatecontrole niet gelukt. Controleer je internetverbinding en probeer opnieuw.');
-   }finally{
-     busy=false;for(const b of buttons){b.disabled=false;b.removeAttribute('aria-busy');}
-   }
- }
- buttons.forEach(b=>b.addEventListener('click',refresh));
- window.SKIUpdate={version:CURRENT,check:refresh,newer};
+/* Compare the server build with the open page and the controlling worker. */
+(() => {
+  'use strict';
+  const buttons = ['app-update-now', 'check-update'].map(id => document.getElementById(id)).filter(Boolean);
+  const status = document.getElementById('app-update-status');
+  const pageBuild = document.querySelector('meta[name="skije-build"]')?.content;
+  const version = document.querySelector('.app-version')?.textContent?.trim();
+  let busy = false;
+
+  function show(state, message) {
+    for (const button of buttons) {
+      button.classList.remove('is-updating', 'is-current', 'is-failed');
+      button.classList.add('is-' + state);
+      if (button.id === 'app-update-now') {
+        button.textContent = { updating: '⏳ Controleren…', current: '✓ Bijgewerkt', failed: '⚠ Opnieuw' }[state];
+      }
+    }
+    if (status) status.textContent = message;
+  }
+
+  async function withTimeout(promise, ms) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('timeout')), ms); })
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  async function controllerHasBuild(serviceWorker, build) {
+    const controller = serviceWorker.controller;
+    if (!controller) return false;
+    const channel = new MessageChannel();
+    try {
+      const reply = new Promise(resolve => {
+        channel.port1.onmessage = event => resolve(event.data);
+        controller.postMessage({ type: 'SKIJE_GET_BUILD' }, [channel.port2]);
+      });
+      return await withTimeout(reply, 500) === build && serviceWorker.controller === controller;
+    } catch {
+      return false;
+    } finally {
+      channel.port1.close();
+    }
+  }
+
+  async function installBuild(serviceWorker, build) {
+    const registration = await withTimeout(serviceWorker.getRegistration(), 5000);
+    if (registration) {
+      await withTimeout(registration.update(), 12000);
+    } else {
+      await withTimeout(serviceWorker.register('./sw.js', { updateViaCache: 'none' }), 12000);
+    }
+    // update() can finish before install and activation do. An older worker
+    // may also take control first, so wait for the specific server build.
+    const deadline = Date.now() + 20000;
+    do {
+      if (await controllerHasBuild(serviceWorker, build)) return;
+      await new Promise(resolve => setTimeout(resolve, 250));
+    } while (Date.now() < deadline);
+    throw new Error('The requested build did not take control');
+  }
+
+  async function refresh() {
+    if (busy) return;
+    if (!navigator.onLine) {
+      show('failed', 'Offline. Maak verbinding met internet om SKI-je bij te werken.');
+      return;
+    }
+    busy = true;
+    for (const button of buttons) {
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+    }
+    show('updating', 'Controleren op nieuwe appbestanden…');
+    try {
+      const response = await withTimeout(fetch('/api/health?versioncheck=' + Date.now(), {
+        cache: 'no-store', headers: { Accept: 'application/json' }
+      }), 10000);
+      const data = response.ok ? await withTimeout(response.json(), 5000) : {};
+      if (!/^[a-f0-9]{24}$/.test(data.build) || !data.version || !navigator.serviceWorker) {
+        throw new Error('Missing release metadata or service worker support');
+      }
+      await installBuild(navigator.serviceWorker, data.build);
+      if (pageBuild === data.build) {
+        show('current', 'Je gebruikt de nieuwste SKI-je-build (' + data.version + ').');
+        return;
+      }
+      show('updating', 'Nieuwe appbestanden geïnstalleerd. SKI-je wordt vernieuwd…');
+      location.reload();
+    } catch {
+      show('failed', 'Bijwerken is nog niet gelukt. Controleer je internetverbinding en probeer opnieuw.');
+    } finally {
+      busy = false;
+      for (const button of buttons) {
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+      }
+    }
+  }
+
+  buttons.forEach(button => button.addEventListener('click', refresh));
+  window.SKIUpdate = { version, build: pageBuild, check: refresh };
 })();

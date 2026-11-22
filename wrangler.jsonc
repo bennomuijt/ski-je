@@ -3,6 +3,9 @@
   "name": "ski-je",
   "main": "src/index.js",
   "compatibility_date": "2026-11-20",
+  "build": {
+    "command": "npm run build:release"
+  },
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",

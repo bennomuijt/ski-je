@@ -33,9 +33,8 @@ test('op panorama zelfstandige liftlaag, zoekveld, select en aparte schakelaar',
  assert.doesNotMatch(script,/getCurrentPosition|watchPosition/);
 });
 test('PWA haalt liftcatalogus en liftlaag offline binnen',()=>{
- const sw=read('public/sw.js'),packageJson=JSON.parse(read('package.json'));
+ const sw=read('public/sw.js');
  assert.match(sw,/lift-catalogue\.js/);
  assert.match(sw,/pano-lifts\.js/);
- assert.match(sw,/v4-5-14-android-nav/);
- assert.equal(packageJson.version,'4.5.14');
+
 });

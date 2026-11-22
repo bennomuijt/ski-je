@@ -3,6 +3,8 @@
  * Group GPS is never written to storage; the short-lived fix is attached to active sockets only.
  * No third-party database, no paid plan required within Cloudflare Free quotas.
  */
+import { release } from './release.js';
+
 const JSON_HEADERS={"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff","referrer-policy":"no-referrer"};
 const ROOM_RE=/^[A-Za-z0-9_-]{32}$/;
 const MEMBER_RE=/^[a-f0-9-]{36}$/;
@@ -26,7 +28,7 @@ function adminReady(env){return typeof env.GROUP_CREATE_SECRET==='string'&&env.G
 export default {
  async fetch(request,env){
   const url=new URL(request.url);const p=url.pathname;
-  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',version:'4.5.14-cf',groups:!!env.GROUPS,photos:!!env.PHOTOS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
+  if(p==='/api/health')return result({ok:true,service:'SKI-je Cloudflare',...release,groups:!!env.GROUPS,photos:!!env.PHOTOS,createConfigured:adminReady(env),defaultBroadcastSeconds:30,maxMembersPerGroup:GROUP_LIMIT});
   if(p==='/api/skimap.pdf'){
    if(request.method!=='GET')return fail('Alleen GET toegestaan.',405);
    // Fixed, official source; no GPS or user-supplied URLs are transmitted.

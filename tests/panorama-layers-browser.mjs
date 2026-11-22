@@ -88,7 +88,7 @@ try{
    const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
    const w=Math.min(rect.width,rect.height*img.naturalWidth/img.naturalHeight);
    const h=Math.min(rect.height,rect.width*img.naturalHeight/img.naturalWidth);
-   const m=img.style.transform.match(/translate3d\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px,\s*0\)\s*scale\(\s*([\d.]+)\s*\)/);
+   const m=img.style.transform.match(/translate3d\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px\s*,\s*0(?:px)?\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
    return {x:rect.left+rect.width/2+(.5806-.5)*w*Number(m[3])+Number(m[1]),
            y:rect.top+rect.height/2+(.61025-.5)*h*Number(m[3])+Number(m[2])};
   });

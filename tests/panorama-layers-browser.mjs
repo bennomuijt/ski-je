@@ -68,7 +68,7 @@ try{
  // In CI the official 3537x2445 JPG is provided by panorama-label-reference.mjs.
  // Project exact PDF text centres onto the panorama and verify each lift panel.
  if(await page.locator('#pano-img').evaluate(img=>img.naturalWidth===3537&&img.naturalHeight===2445)){
-  assert.equal(await page.locator('#pano-lifts .pano-printed-lift').count(),2);
+  assert.equal(await page.locator('#pano-lifts .pano-printed-lift').count(),80);
   await page.evaluate(()=>{
    const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
    const w=Math.min(rect.width,rect.height*img.naturalWidth/img.naturalHeight);
@@ -82,6 +82,28 @@ try{
   assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 22 · 8er Gondelbahn Salvenbahn II/);
   assert.match(await page.locator('#pano-lift-area').innerText(),/1775 m/);
   assert.ok(await page.locator('.pano-printed-lift[data-lift-number="23"]').count());
+  // Duplicated white labels show one physical lift. Ambiguous labels stay explicit.
+  for(const [n,regex] of [['80',/Lift 80/],['112',/Lift 112/],['59',/Lift 59 · Hexenteppich 2/],['40',/Lift 40 · Hexenwasser/]]){
+   const targets=page.locator('.pano-printed-lift[data-lift-number="'+n+'"]');
+   assert.equal(await targets.count(),n==='80'||n==='112'?2:1);
+   await targets.first().evaluate(el=>el.click());
+   assert.match(await page.locator('#pano-lift-name').innerText(),regex);
+  }
+  assert.match(await page.locator('#pano-lift-connections').innerText(),/officiële SkiWelt Tour gebruikt 40|actuele liftstatus gebruikt 26/i);
+  await page.locator('.pano-printed-lift[data-lift-number="89"]').evaluate(el=>el.click());
+  assert.match(await page.locator('#pano-lift-name').innerText(),/Kaartnummer 89/);
+  assert.equal(await page.locator('#pano-lift-select option').count(),3);
+  assert.deepEqual(await page.locator('#pano-lift-select option').evaluateAll(options=>options.map(x=>x.value)),['89a','89b','89c']);
+  await page.locator('#pano-lift-select').selectOption('89b');
+  assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 89b/);
+  await page.evaluate(()=>{
+   const data=window.SKILiftMap.printedLabels();
+   if(data.length!==80)throw Error('Not all printed lift numbers registered');
+   for(const anchor of data){
+    const marker=[...document.querySelectorAll('.pano-printed-lift')].find(el=>el.dataset.liftNumber===anchor.number);
+    if(!marker)throw Error('Missing lift '+anchor.number);
+   }
+  });
   await page.locator('#pano-lifts-visible').uncheck();
   assert.equal(await page.locator('#pano-lifts').isHidden(),true);
   const point=await page.evaluate(()=>{
@@ -96,7 +118,7 @@ try{
   assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 23 · Rigibahn/);
   assert.match(await page.locator('#pano-lift-area').innerText(),/916 m/);
   await page.locator('#pano-lifts-visible').check();
-  console.log('PASS exact printed lift 22 and lift 23, even with overlay switched off');
+  console.log('PASS 80 printed labels including 22/23, 40/59/89 choices and overlay-off selection');
   await page.screenshot({path:'test-artifacts/printed-lifts-22-23-mobile.png'});
  }
  assert.equal(await page.locator('#pano-lifts-visible').isChecked(),true);

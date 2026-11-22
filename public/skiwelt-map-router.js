@@ -204,6 +204,7 @@
   }
   for(const s of result){
    s.lengthKm=Math.round(s.metres)/1000;
+   s.heightDelta=Math.round((graph.nodes[s.to]?.[2]||0)-(graph.nodes[s.from]?.[2]||0));
    s.minutes=s.type==='lift'?Math.max(2,Math.ceil(metresToMin(s.metres,'lift',opts.speed)+4)):
     s.type==='piste'?Math.max(1,Math.ceil(metresToMin(s.metres,'piste',opts.speed)+0.5)):
     s.confidence==='walk-pole'?Math.max(3,Math.ceil(s.metres/30)+2):
@@ -214,7 +215,7 @@
    s.label=(s.type==='lift'?'🚡 Lift ':s.type==='piste'?'⛷️ Piste ':s.confidence==='walk-pole'?'🚶 Loop/prik ':'⇄ Overstap ')+
      (s.code?s.code+' · ':'')+s.name;
    s.detail=s.confidence==='walk-pole'?
-    'Kaartgestuurde korte loop-/prikoverstap, '+s.metres+' m. Hoogteverschil maximaal 12 m volgens bron (DEM kan onnauwkeurig zijn). Geen GPS nodig. Let op officiële borden en toegestane looproute.':
+    'Loop/prik '+s.metres+' m; hoogteverschil '+(s.heightDelta>=0?'+':'')+s.heightDelta+' m (hoogte geschat). Rustig rekenen: '+s.minutes+' min. Op kaart gecontroleerd, fysieke doorgang niet overal officieel bevestigd. Volg de borden.':
     s.type==='transfer'?'Verbinding '+s.metres+' meter op de kaart. Controleer of deze overgang geopend en fysiek bereikbaar is.':
      'Kaartlijn '+s.metres+' m · '+(s.level!=='unknown'?s.level:'kleur niet bevestigd')+
      ' · Bron: OpenSkiData/OSM; geen live lift-/pistestatus';
@@ -240,7 +241,7 @@
   }
   const addRoute=(path,phase)=>{
    for(const step of group(path,options)){insert(step.type,step.label,step.minutes,step.detail,
-    {phase,code:step.code,displayCode:step.displayCode||step.code,numberStatus:step.numberStatus||'source',level:step.level,from:step.from,to:step.to,feature:step.feature,
+    {phase,code:step.code,displayCode:step.displayCode||step.code,numberStatus:step.numberStatus||'source',level:step.level,heightDelta:step.heightDelta,from:step.from,to:step.to,feature:step.feature,
      lengthKm:step.lengthKm,coordinates:step.points,confidence:step.confidence});}
   };
   const lunchAt=clock(options.lunchTime||'12:30');

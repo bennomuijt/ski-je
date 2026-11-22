@@ -17,11 +17,11 @@ test('original image on intro, header and fresh app icons',()=>{
   assert.match(manifest,/icon-192-v455\.png/);
 });
 
-test('4.5.12 PWA update and PDF watermark are in sync',()=>{
+test('4.5.13 PWA update and PDF watermark are in sync',()=>{
  const pdf=read('public/day-pdf.js'),api=read('src/index.js'),pkg=JSON.parse(read('package.json'));
- assert.equal(pkg.version,'4.5.12');
+ assert.equal(pkg.version,'4.5.13');
  assert.match(html,/v4\.5\.12/);assert.match(js,/4\.5\.12-cf/);assert.match(api,/4\.5\.12-cf/);
- assert.match(sw,/v4-5-12-geographic-route/);
- assert.match(html,/app-update\.js\?v=4512/);assert.match(html,/day-pdf\.js\?v=4512/);
+ assert.match(sw,/v4-5-13-hopfgarten-escape/);
+ assert.match(html,/app-update\.js\?v=4513/);assert.match(html,/day-pdf\.js\?v=4513/);
  assert.match(pdf,/globalAlpha=0\.12/);
 });

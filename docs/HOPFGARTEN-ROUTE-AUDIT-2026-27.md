@@ -55,3 +55,23 @@ Let op: een terugkeer naar het middenstation is **niet automatisch lift-onafhank
 - Controle van officiële codes versus aanwezige kaartgegevens; ontbrekende varianten blijven als openstaand in dit dossier.
 
 **Bronvermelding kaartlijnbestand**: OpenSkiData/OpenStreetMap (ODbL); terreinrichting gebaseerd op Open-Meteo/Copernicus GLO-90. Alle kaartovergangen zijn voorlopig tot aanvullend gecontroleerd op de officiële SkiWelt kaart.
+
+## Update 22 november — korte loop- en prikoverstappen
+De routeplanner accepteert korte verplaatsingen tussen **vooraf benoemde liftstations** als aparte transfer. Een lijn wordt **niet** op basis van afstand alleen aan willekeurige andere pistes gekoppeld.
+
+Controles in de geografische motor:
+- Beide stations moeten al met coördinaten in de lokale kaartgrafiek staan.
+- Horizontale afstand maximaal 130 m; geschat hoogteverschil maximaal 12 m, positief of negatief.
+- Bron en stationspaar staan in de gecodeerde controlelijst; de lijst is niet generiek.
+- Extra rekentijd minimaal drie minuten, oplopend met de afstand; afzonderlijk zichtbaar in skiroute en PDF.
+- Als een gegevensbron ontoereikend is, wordt de overstap als voorlopig gelabeld en niet als officieel bevestigde piste- of looproute.
+
+Hochbrixen voorbeelden:
+- **8 Würstlexpress bergstation → 1 Hochbrixen gondel bergstation:** ca. 90 m, geschat 0 m verschil. Kartografisch dichtbij en technisch opgenomen als **voorlopige** prik-/loopoverstap. De exacte toegestane loopstrook is niet onafhankelijk bevestigd.
+- **12 Sonnenlift bergstation → 1 Hochbrixen gondel dalstation:** ca. 111 m, geschat +1 m. De officiële SkiWelt-verbindingsbeschrijving bevestigt dat de verbinding via Sonnenband 18 en Sonnenlift 12 naar gondel 1 loopt; de laatste 111 m is kaartmatig benaderd.
+- **12 Sonnenlift bergstation → 11 SkiWeltbahn dalstation:** ca. 93 m, geschat -1 m, voorlopig.
+- **1 Hochbrixen gondel dalstation → 11 SkiWeltbahn dalstation:** ca. 74 m, geschat -2 m, voorlopig.
+
+Officiële verbinding: https://www.skiwelt.at/nl/verbindingen.html; officiële liften: https://skimap.skiwelt.at/ .
+
+**Belangrijk:** het 90-meter hoogtemodel bewijst géén kleine hoogteverschillen op de meter nauwkeurig. Dit zijn controlegrenzen en indicaties, geen veiligheidsvrijgave. Een gesloten weg, afgezette skischoolzone of ongelijkvloerse kruising mag nooit via een automatische afstandsregel worden overgeslagen.

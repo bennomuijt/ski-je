@@ -11,6 +11,9 @@ const MEMBER_RE=/^[a-f0-9-]{36}$/;
 const GROUP_LIMIT=50;
 const GPS_TTL_MS=120000;
 const GROUP_LIFETIME_MS=90*86400000;
+const SOCIAL_KEEP_MS=30*86400000;
+const CHAT_LIMIT=100;
+const CHAT_TEXT_LIMIT=500;
 export {SkiPhotoBoard} from './photos.js';
 
 function result(data,status=200,extra={}) {return new Response(JSON.stringify(data),{status,headers:{...JSON_HEADERS,...extra}});}
@@ -112,7 +115,7 @@ export default {
      return result({...payload,room},response.status);
     }catch{return fail('De groepsopslag kon de groep niet bewaren. Controleer de Cloudflare Durable Objects-logs.',503);}
    }
-   if(['/api/group/join','/api/group/leave','/api/group/close'].includes(p)){
+   if(['/api/group/join','/api/group/leave','/api/group/close','/api/group/state','/api/group/message','/api/group/meeting'].includes(p)){
     const room=data.room||'';
     if(!ROOM_RE.test(room))return fail('Groepscode niet geldig.',400);
     const op=p.slice('/api/group/'.length);
@@ -151,7 +154,7 @@ export class SkiGroup {
    const pair=new WebSocketPair();const [client,server]=Object.values(pair);
    const attachment={id:member.id,name:member.name,last:null,at:0};
    this.ctx.acceptWebSocket(server);server.serializeAttachment(attachment);
-   this.safeSend(server,{type:'welcome',groupName:meta.name,you:member.id,owner:!!member.owner,maxMembers:GROUP_LIMIT,members:await this.members(),peers:this.peers(server)});
+   this.safeSend(server,{type:'welcome',groupName:meta.name,you:member.id,owner:!!member.owner,maxMembers:GROUP_LIMIT,members:await this.members(),peers:this.peers(server),...await this.socialState()});
    this.broadcast({type:'joined',id:member.id,name:member.name,at:Date.now()},server);
    return new Response(null,{status:101,webSocket:client});
   }
@@ -181,6 +184,41 @@ export class SkiGroup {
    await this.ctx.storage.setAlarm(t+GROUP_LIFETIME_MS);
    this.broadcast({type:'member-added',id,name:memberName,at:t});
    return result({ok:true,groupName:meta.name,memberId:id,token,owner:false,maxMembers:GROUP_LIMIT});
+  }
+  if(op==='/state'||op==='/message'||op==='/meeting'){
+   const member=await this.memberAuth(data.memberId,data.token);
+   if(!member)return fail('Je bent niet aangemeld bij deze skigroep.',401);
+   if(op==='/state')return result({ok:true,...await this.socialState()});
+   if(op==='/message'){
+    const messageText=String(data.text??'').normalize('NFC').replace(/[\u0000-\u001f\u007f]/g,' ').trim();
+    if(!messageText||messageText.length>CHAT_TEXT_LIMIT)return fail('Bericht moet 1 tot 500 tekens bevatten.');
+    const now=Date.now(),last=Number(await this.ctx.storage.get('chat:rate:'+member.id)||0);
+    if(now-last<2000)return fail('Even wachten voordat je nog een bericht stuurt.',429);
+    const messages=(await this.chatHistory()).slice(-(CHAT_LIMIT-1));
+    const message={id:crypto.randomUUID(),memberId:member.id,name:member.name,text:messageText,at:now};
+    messages.push(message);
+    await this.ctx.storage.put('chat:messages',messages);
+    await this.ctx.storage.put('chat:rate:'+member.id,now);
+    this.broadcast({type:'chat-message',message});
+    return result({ok:true,message});
+   }
+   const previous=await this.ctx.storage.get('group:meeting');
+   if(data.action==='clear'){
+    if(previous&&previous.by!==member.id&&!member.owner)return fail('Alleen de organisator of groepsbeheerder kan de afspraak verwijderen.',403);
+    await this.ctx.storage.delete('group:meeting');
+    this.broadcast({type:'meeting-updated',meeting:null});
+    return result({ok:true,meeting:null});
+   }
+   const place=nameText(data.place,90),note=nameText(data.note,180);
+   const when=typeof data.when==='string'?data.when:'';
+   const timestamp=Date.parse(when);
+   const now=Date.now();
+   if(!place)return fail('Vul een ontmoetingsplek in.');
+   if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(when)||!Number.isFinite(timestamp)||timestamp<now-300000||timestamp>now+180*86400000)return fail('Kies een geldige afspraak binnen 180 dagen.');
+   const meeting={place,note,when:new Date(timestamp).toISOString(),by:member.id,name:member.name,at:now};
+   await this.ctx.storage.put('group:meeting',meeting);
+   this.broadcast({type:'meeting-updated',meeting});
+   return result({ok:true,meeting});
   }
   if(op==='/leave'||op==='/close'){
    const member=await this.memberAuth(data.memberId,data.token);
@@ -213,6 +251,14 @@ export class SkiGroup {
   const previous=unique.get(a.id);if(previous&&previous.at>=a.at)continue;
   unique.set(a.id,{id:a.id,name:a.name,at:a.at||0,last:a.last&&t-a.last.at<GPS_TTL_MS?a.last:null});
  }return [...unique.values()].slice(0,GROUP_LIMIT);}
+ async chatHistory(){
+  const all=await this.ctx.storage.get('chat:messages');
+  return Array.isArray(all)?all.filter(item=>item&&Number.isFinite(item.at)&&Date.now()-item.at<SOCIAL_KEEP_MS).slice(-CHAT_LIMIT):[];
+ }
+ async socialState(){
+  const [meeting,messages]=await Promise.all([this.ctx.storage.get('group:meeting'),this.chatHistory()]);
+  return {meeting:meeting||null,messages};
+ }
  async members(){
   const stored=await this.ctx.storage.list({prefix:'m:'});
   const active=new Map(this.peers().map(peer=>[peer.id,peer]));

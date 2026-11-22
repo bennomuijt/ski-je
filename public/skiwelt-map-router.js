@@ -56,14 +56,60 @@
   }
   return{out,rejected};
  }
+
+ // The 2026/27 official SkiWelt Tour explicitly routes the skier from piste
+ // 111 (Windau) to piste 117 (Neuhögen), before Fleidingbahn 117. The OSM
+ // lines are ~22m apart here, but their independent 90m DEM heights disagree
+ // by ~52m. This is a single, source-backed, ONE-WAY provisional connection,
+ // not a measured ski trail or permission to bridge arbitrary nearby tracks.
+ // Coordinates pin both selected directed graph vertices: fail closed after
+ // any source-data rebuild that changes their position or piste identity.
+ const AUDITED_OFFICIAL_PISTE_JUNCTIONS=Object.freeze([
+  {fromRef:'111',toRef:'117',from:[12.23968,47.40151],to:[12.23993,47.40141],
+   maxDriftMetres:4,maxGapMetres:30,expectedHeightMismatch:[35,75],
+   source:'https://www.skiwelt.at/media/gruppen-info-busfolder/Infofolder-fuer-Reisebueros.pdf',
+   note:'Officiele SkiWelt Tour 2026/27 noemt 111 naar 117; exact aansluitpunt en hoogte moeten nog lokaal worden geijkt.'}
+ ]);
+ function auditedOfficialPisteEdges(data){
+  const accepted=[],rejected=[],edges=[];
+  const metres=(a,b)=>Math.hypot((a[0]-b[0])*111320*Math.cos((a[1]+b[1])*Math.PI/360),(a[1]-b[1])*111320);
+  for(const entry of AUDITED_OFFICIAL_PISTE_JUNCTIONS){
+   // Directed incident edges are required. A coincident unrelated line is
+   // never enough evidence for a physical piste/piste connection.
+   const incoming=data.edges.filter(e=>data.features[e[2]]?.kind==='piste'&&
+    data.features[e[2]].ref===entry.fromRef).map(e=>e[1]);
+   const outgoing=data.edges.filter(e=>data.features[e[2]]?.kind==='piste'&&
+    data.features[e[2]].ref===entry.toRef).map(e=>e[0]);
+   const from=[...new Set(incoming)].map(id=>({id,point:data.nodes[id]}))
+    .filter(x=>x.point&&metres(x.point,entry.from)<=entry.maxDriftMetres)
+    .sort((a,b)=>metres(a.point,entry.from)-metres(b.point,entry.from))[0];
+   const to=[...new Set(outgoing)].map(id=>({id,point:data.nodes[id]}))
+    .filter(x=>x.point&&metres(x.point,entry.to)<=entry.maxDriftMetres)
+    .sort((a,b)=>metres(a.point,entry.to)-metres(b.point,entry.to))[0];
+   if(!from||!to){rejected.push({...entry,reason:'directed piste geometry anchor changed or missing'});continue;}
+   const gap=metres(from.point,to.point),heightDelta=to.point[2]-from.point[2];
+   if(!Number.isFinite(gap)||gap<8||gap>entry.maxGapMetres||
+      !Number.isFinite(heightDelta)||heightDelta<entry.expectedHeightMismatch[0]||
+      heightDelta>entry.expectedHeightMismatch[1]){
+    rejected.push({...entry,reason:'geometry/DEM changed; connection must be re-audited',gap,heightDelta});continue;
+   }
+   const row=[from.id,to.id,-1,Math.round(gap),'official-tour-provisional'];
+   edges.push(row);
+   accepted.push({fromRef:entry.fromRef,toRef:entry.toRef,fromNode:from.id,toNode:to.id,
+    metres:Math.round(gap),demHeightConflict:Math.round(heightDelta),source:entry.source,
+    status:'official-piste-sequence; physical junction not independently verified'});
+  }
+  return{edges,accepted,rejected};
+ }
  function initialize(data){
   if(!data||data.version!==1||!Array.isArray(data.nodes)||!Array.isArray(data.edges)||
      data.nodes.length<1000||!data.stations)throw Error('SkiWelt-kaartnetwerk ontbreekt of is onjuist.');
-  const audit=auditedWalkEdges(data);
-  graph={...data,edges:[...data.edges,...audit.out.flatMap(pair=>pair.edges)],
+  const audit=auditedWalkEdges(data),tourAudit=auditedOfficialPisteEdges(data);
+  graph={...data,edges:[...data.edges,...audit.out.flatMap(pair=>pair.edges),...tourAudit.edges],
    localTransferAudit:{accepted:audit.out.map(({entry,metres,gain})=>({
     from:entry.a,to:entry.b,metres,heightDelta:gain,source:entry.source,status:entry.status
-   })),rejected:audit.rejected}};
+   })),rejected:audit.rejected},
+   officialPisteJunctionAudit:{accepted:tourAudit.accepted,rejected:tourAudit.rejected}};
   adj=Array.from({length:graph.nodes.length},()=>[]);
   for(let i=0;i<graph.edges.length;i++){
    const [a,b,f,m]=graph.edges[i];
@@ -71,7 +117,7 @@
       !Number.isInteger(f)||f>=graph.features.length||m<0||m>16000)throw Error('Kaartnetwerk heeft een ongeldige verbinding '+i);
    adj[a].push(i);
   }
-  return{nodes:graph.nodes.length,edges:graph.edges.length,stations:Object.keys(graph.stations).length,localTransferAudit:graph.localTransferAudit};
+  return{nodes:graph.nodes.length,edges:graph.edges.length,stations:Object.keys(graph.stations).length,localTransferAudit:graph.localTransferAudit,officialPisteJunctionAudit:graph.officialPisteJunctionAudit};
  }
  async function load(){
   if(graph)return graph;
@@ -99,11 +145,17 @@
    .map(x=>x.kind+':'+String(x.code||'').toLowerCase()));
  }
  function usable(row,opts,closed){
+  // An official tour's junction still cannot bypass a closure of either
+  // piste on which that route depends.
+  if(row[4]==='official-tour-provisional' &&
+     (closed.has('piste:111')||closed.has('piste:117')))return false;
   const feature=row[2]===-1?null:graph.features[row[2]];
   if(!feature)return true;
   if(closed.has(feature.kind+':'+String(feature.ref||'').toLowerCase()))return false;
   if(feature.kind==='lift')return opts.noLifts!==true;
-  const difficulty=feature.difficulty;
+  // Official SkiWelt piste listing classifies the ENTIRE 20a valley run red,
+  // even though its OSM geometry contains a short easy-classified tail.
+  const difficulty=feature.kind==='piste'&&feature.ref==='20a'?'intermediate':feature.difficulty;
   if(difficulty==='freeride'||difficulty==='extreme')return false; // Ski touring is not a groomed piste.
   if(['advanced','expert'].includes(difficulty))return opts.allowBlack===true&&opts.skill!=='blue';
   if(difficulty==='intermediate')return opts.skill!=='blue';
@@ -162,8 +214,14 @@
  }
  function labelFeature(row){
   const f=row[2]<0?null:graph.features[row[2]];
-  if(!f)return{type:'transfer',code:'',name:row[4]==='walk-pole'?'Korte loop-/prikoverstap (kaartlocaties gecontroleerd)':row[4]==='village-walk'?'Loopoverstap tussen Going en Hartkaiserbahn':row[4]==='station-walk'?'Loopverbinding bij liftstation':'Pisteovergang op kaart',level:'unknown',confidence:row[4]};
-  const level={novice:'blue',easy:'blue',intermediate:'red',advanced:'black',expert:'black'}[f.difficulty]||'unknown';
+  if(!f)return{type:'transfer',code:'',name:row[4]==='official-tour-provisional'?
+   'SkiWelt Tour: piste 111 naar 117 (fysieke aansluiting controleren)':
+   row[4]==='walk-pole'?'Korte loop-/prikoverstap (kaartlocaties gecontroleerd)':
+   row[4]==='village-walk'?'Loopoverstap tussen Going en Hartkaiserbahn':
+   row[4]==='station-walk'?'Loopverbinding bij liftstation':'Pisteovergang op kaart',
+   level:'unknown',confidence:row[4]};
+  const difficulty=f.kind==='piste'&&f.ref==='20a'?'intermediate':f.difficulty;
+  const level={novice:'blue',easy:'blue',intermediate:'red',advanced:'black',expert:'black'}[difficulty]||'unknown';
   return{type:f.kind,code:f.ref,name:f.name||(f.ref?'Piste '+f.ref:'nummer niet vastgelegd in kaartbron'),
    level,confidence:row[4],feature:row[2]};
  }
@@ -218,13 +276,16 @@
    s.minutes=s.type==='lift'?Math.max(2,Math.ceil(metresToMin(s.metres,'lift',opts.speed,graph.features[s.feature]?.liftType)+2)):
     s.type==='piste'?Math.max(1,Math.ceil(metresToMin(s.metres,'piste',opts.speed)+0.5)):
     s.confidence==='walk-pole'?Math.max(3,Math.ceil(s.metres/30)+2):
+    s.confidence==='official-tour-provisional'?4:
     Math.max(1,Math.ceil(metresToMin(s.metres,'transfer',opts.speed)));
    // SkiWelt's official piste listing gives 20a as 3,293m. The OSM
    // way is shorter; do not underestimate a final red valley descent.
    if(s.type==='piste'&&s.code==='20a'&&s.metres>1500)s.minutes=Math.max(20,s.minutes);
    s.label=(s.type==='lift'?'🚡 Lift ':s.type==='piste'?'⛷️ Piste ':s.confidence==='walk-pole'?'🚶 Loop/prik ':'⇄ Overstap ')+
      (s.code?s.code+' · ':'')+s.name;
-   s.detail=s.confidence==='walk-pole'?
+   s.detail=s.confidence==='official-tour-provisional'?
+    'De SkiWelt Tour 2026/27 bevestigt piste 111 naar 117 als routevolgorde. In OSM ligt 22 m tussen de gekozen kaartlijnen; het grove hoogtemodel geeft een tegenstrijdig hoogteverschil. Dit is geen GPS-gecontroleerde fysieke oversteek of nieuw officieel pistedeel. Controleer ter plaatse de borden.':
+    s.confidence==='walk-pole'?
     'Loop/prik '+s.metres+' m; hoogteverschil '+(s.heightDelta>=0?'+':'')+s.heightDelta+' m (hoogte geschat). Rustig rekenen: '+s.minutes+' min. Op kaart gecontroleerd, fysieke doorgang niet overal officieel bevestigd. Volg de borden.':
     s.type==='lift'?'Lift '+s.metres+' m · circa '+s.minutes+' min inclusief 2 min voor instappen en een korte wachtrij. Bij drukte langer; geen live wachttijd of sluitingscontrole.':
      s.type==='transfer'?'Verbinding '+s.metres+' meter op de kaart. Controleer of deze overgang geopend en fysiek bereikbaar is.':
@@ -484,13 +545,14 @@
    '⚠️ Terreinhoogtes zijn afgeleid uit een 90 m hoogtemodel; voor kleine paden en kruisingen kan de richting afwijken.'
   ];
   if(steps.some(s=>s.type==='transfer'))notes.push('⚠️ '+steps.filter(s=>s.type==='transfer').length+' kaartovergangen zijn slechts op afstand gekoppeld. Controleer deze overstappen ter plaatse.');
+  if(steps.some(s=>s.confidence==='official-tour-provisional'))notes.push('⚠️ SkiWelt Tour bevestigt 111 → 117 als route, maar het exacte OSM-overstappunt heeft een tegenstrijdige DEM-hoogte. Volg de pisteborden; deze verbinding is voorlopig.');
   if(steps.some(s=>s.confidence==='walk-pole'))notes.push('Loop-/prikoverstappen zijn beperkt tot afzonderlijk gecontroleerde liftstationparen; ze volgen kaartgegevens, maar de exacte toegestane doorgang is niet voor elk paar officieel bevestigd.');
   if(steps.some(s=>s.confidence==='village-walk'))notes.push('⚠️ Going–Ellmau: circa 80 meter aparte loopoverstap. SkiWelt bevestigt de gebiedsroute, niet deze exacte looproute; oversteek ter plaatse controleren.');
   if(steps.some(s=>s.level==='unknown'&&s.type==='piste'))notes.push('⚠️ Een of meer pistekleuren zijn niet bevestigd. Controleer of het niveau geschikt is.');
   const unnamedPistes=steps.filter(s=>s.type==='piste'&&!s.code);
   const flatPistes=steps.filter(s=>s.type==='piste'&&s.confidence==='flat-possible');
   const uncertainTransfers=steps.map((step,index)=>({step,index})).filter(({step})=>
-   step.type==='transfer'&&(step.metres>18||step.confidence==='village-walk'));
+   step.type==='transfer'&&(step.metres>18||step.confidence==='village-walk'||step.confidence==='official-tour-provisional'));
   if(unnamedPistes.length)notes.push('⚠️ '+unnamedPistes.length+' pisteonderdelen zonder bevestigd nummer in de kaartbron. Deze stukken volgen de lijngeometrie, maar zijn geen officieel gecontroleerde piste-identificatie.');
   if(flatPistes.length)notes.push('⚠️ '+flatPistes.length+' korte vlakke/hoogte-onzekere lijnstukken. Richting en kruisingen zijn hier niet onafhankelijk bevestigd.');
   if(uncertainTransfers.length)notes.push('⚠️ '+uncertainTransfers.length+' overstappen langer dan 18 meter vragen extra controle op de officiële pistekaart.');

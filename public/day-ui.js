@@ -18,6 +18,7 @@
   const input=id=>$(id)?.value||'',checked=id=>$(id)?.checked===true;
   const option=$('lunch-restaurant')?.selectedOptions?.[0];
   return {start:input('start'),finish:input('finish'),departure:input('departure'),returnTime:input('return-time'),
+   routePreset:input('hopfgarten-route-preset'),hopfgartenEndMode:input('hopfgarten-end-mode')||'valley',
    date:input('day')||(()=>{const d=new Date();const pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());})(),style:document.querySelector('[data-style][aria-pressed="true"]')?.dataset.style||'relaxed',
    skill:input('skill')||'red',speed:input('speed')||'normal',allowBlack:checked('allow-black')&&input('skill')!=='blue',
    wishes:[...document.querySelectorAll('#wishes-list select')].map(x=>x.value).filter(Boolean),
@@ -77,7 +78,8 @@
    return;
   }
   const {plan,route,itinerary}=routeResult;
-  current={plan,route,options,itinerary,graphBased:true,path:routeResult.path};
+  current={plan,route,options,itinerary,graphBased:true,path:routeResult.path,
+   optionalDescent:routeResult.optionalDescent,endMode:routeResult.endMode,routePreset:routeResult.routePreset};
 
   output.append(el('strong','plan-heading',itinerary.missingSteps?.length||itinerary.unverifiedTransitions?.length||itinerary.steps.some(s=>s.unplanned)?'⚠️ Voorlopige skidag — niet alle pistes en liften gecontroleerd':t('Jouw volledige skidag')));
   const intro=el('div','day-intro');
@@ -86,6 +88,41 @@
   intro.append(el('span','day-pill',plan.lunchMinutes+' '+t('minuten lunch')));
   output.append(intro);
   output.append(el('p','plan-locations',plan.startPoint+' → '+plan.endPoint));
+  if(routeResult.optionalDescent){
+   const desc=routeResult.optionalDescent;
+   const escape=el('section','hopfgarten-escape-panel');
+   escape.append(el('h3','',routeResult.endMode==='middle'?
+    '🏁 Middenstation bereikt — piste 20a optioneel':
+    '🏁 Terug tot dalstation via piste 20a'));
+   escape.append(el('p','',desc.reason));
+   const condition=desc.available?
+    'Gerekend zonder liften: '+desc.minutes+' min skiën/overstappen (indicatief). De officiële openstelling en sneeuwcondities blijven leidend.':
+    'Geen controleerbare liftvrije dalafdaling. Controleer officiële piste- en gondelstatus.';
+   escape.append(el('p','hint',condition));
+   if(routeResult.endMode==='middle'){
+    escape.append(el('p','hint','Je bent uiterlijk '+plan.safeArrival+' bij het middenstation; de planner heeft extra tijd voor piste 20a gereserveerd. Als 20a gesloten is, ben je mogelijk wél afhankelijk van de gondel.'));
+    if(desc.available){
+     const details=el('details','hopfgarten-descent-steps');
+     details.append(el('summary','','⛷️ Toon de optionele afdaling naar het dal ('+desc.steps.length+' onderdelen)'));
+     for(const [i,step] of desc.steps.entries()){
+      details.append(el('p','',String(i+1)+'. '+step.label+' · ±'+step.minutes+' min'));
+     }
+     escape.append(details);
+     const book=el('button','btn secondary small-btn','⛷️ Neem piste 20a op in mijn dagroute');
+     book.type='button';book.addEventListener('click',()=>{
+      $('hopfgarten-end-mode').value='valley';render();
+     });
+     escape.append(book);
+    }
+   }else{
+    escape.append(el('p','hint','Piste 20a staat als laatste daadwerkelijke afdaling in het tijdschema en op de kaart. Er staat daarna geen lift meer.'));
+    const middle=el('button','btn secondary small-btn','🏁 Liever eindigen bij het middenstation?');
+    middle.type='button';middle.addEventListener('click',()=>{
+     $('hopfgarten-end-mode').value='middle';render();
+    });escape.append(middle);
+   }
+   output.append(escape);
+  }
   const lengths=detail.routeDistances?.(itinerary,options)||{pisteKm:0,liftKm:0,pisteCount:0,liftCount:0};
   const kms=el('div','day-intro ski-distance-summary');
   for(const [title,km,count,estimated] of [['⛷️ Pistekilometers',lengths.pisteKm,lengths.pisteCount,lengths.pisteEstimated],['🚡 Liftkilometers',lengths.liftKm,lengths.liftCount,lengths.liftEstimated]]){
@@ -239,7 +276,20 @@
    if(desired&&[...select.options].some(option=>option.value===desired))select.value=desired;
   }
   if($('same-end')?.checked&&$('start')?.value)$('finish').value=$('start').value;
+  updateHopfgartenTools();
  }
+ function updateHopfgartenTools(){
+  const box=$('hopfgarten-route-settings');if(!box)return;
+  const finish=$('finish')?.value||'',start=$('start')?.value||'';
+  const enabled=start==='Hopfgarten dalstation'&&
+    ['Hopfgarten dalstation','Hopfgarten tussenstation','lift:20:top'].includes(finish);
+  box.hidden=!enabled;
+  if(enabled&&finish!=='Hopfgarten dalstation')$('hopfgarten-end-mode').value='middle';
+ }
+ for(const id of ['start','finish','same-end']){
+  $(id)?.addEventListener('change',()=>queueMicrotask(updateHopfgartenTools));
+ }
+ updateHopfgartenTools();
  // Load once in the foreground so choices are ready before route creation.
  window.SKIMapRouter?.load().then(populateLiftStations).catch(error=>{
   const hint=$('plan-output');

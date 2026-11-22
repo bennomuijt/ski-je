@@ -27,6 +27,15 @@ try{
  await page.addStyleTag({content:'#ski-intro,#legal-gate{display:none!important}'});
  // Exercise the NEW route-reference UI on the actual proposed branch.
  await page.locator('#create').click();
+ // The full itinerary is intentionally collapsed by default. Export and share
+ // buttons stay visible above it; expand the route before checking its contents.
+ const itinerary=page.locator('#day-route-collapsible');
+ await itinerary.waitFor({state:'attached',timeout:25000});
+ assert.equal(await itinerary.evaluate(el=>el.open),false,'the computed itinerary should start collapsed');
+ for(const id of ['#download-day-pdf','#share-day-plan','#share-day-pdf','#show-day-panorama']){
+  assert.ok(await page.locator(id).isVisible(),id+' must be available above the collapsed itinerary');
+ }
+ await itinerary.evaluate(el=>el.open=true);
  const refs=page.locator('.official-tour-reference');
  await refs.waitFor({state:'attached',timeout:25000});
  assert.equal(await refs.count(),1,'official tour is not rendered in day planner');

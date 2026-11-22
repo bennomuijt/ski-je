@@ -20,7 +20,7 @@ function verifyChain(result,finish){
  assert.ok(lunch);
  assert.equal(lunch.minutes,60);
  for(const edgeId of result.path.edgeIds){
-  const edge=graph.edges[edgeId],feature=graph.features[edge[2]];
+  const edge=router.getEdge(edgeId),feature=graph.features[edge[2]];
   assert.ok(!feature||!['freeride','extreme'].includes(feature.difficulty),'off-piste route selected');
  }
 }
@@ -44,7 +44,7 @@ for(const preset of Object.keys(router.hopfgartenPresets)){
   assert.ok(result.features.some(s=>s.type==='lift'&&s.code==='20'),'start gondola must be used');
   assert.ok(result.features.every(s=>!(s.type==='lift'&&s.confidence==='piste-descent')));
   const returnIDs=result.route.phases.return.edgeIds;
-  assert.ok(returnIDs.every(id=>graph.edges[id][2]===-1||graph.features[graph.edges[id][2]].kind==='piste'),
+  assert.ok(returnIDs.every(id=>router.getEdge(id)[2]===-1||graph.features[router.getEdge(id)[2]].kind==='piste'),
    'return phase used lift; final return must work without lifts');
  });
  test('Hopfgarten '+preset+': midpoint finish keeps optional descent separate',()=>{

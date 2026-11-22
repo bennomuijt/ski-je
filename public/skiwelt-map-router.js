@@ -355,16 +355,20 @@
    [/filzalm|skiwelt hütte|brantlalm|hochbrixen/i,'lift:1:top','Hochbrixen · restaurantomgeving'],
    [/hochsöll|gründlalm|stöcklalm/i,'lift:40:top','Hochsöll · restaurantomgeving'],
    [/salvenalm/i,'lift:20:top','Salvenalm · Salvenbahn I'],
+   // SkiWelt lists lift 114 and Alpenrosenbahn II (111) as winter access.
+   // They are alternative boarding areas, never an invented connecting piste.
    [/talkaser/i,'lift:114:top','Bergrestaurant Talkaser'],
+   [/talkaser/i,'lift:111:top','Bergrestaurant Talkaser · Alpenrosenbahn II'],
    [/choralpe/i,'lift:112:top','Panorama Restaurant Choralpe'],
    [/salvista/i,'lift:30:middle1','KRAFTalm · Salvistabahn tussenstation']
   ];
   let requestedLunch=null;
   if(rest){
-   const mapped=restaurantPairs.find(([pattern])=>pattern.test(rest));
-   if(!mapped)return{ok:false,reason:'De aansluiting naar '+rest+' is nog niet aan een passend liftstation gekoppeld.'};
-   requestedLunch=graph.stations[mapped[1]]?.node;
-   if(!Number.isInteger(requestedLunch))return{ok:false,reason:'Liftstation bij '+rest+' ontbreekt in de kaartgrafiek.'};
+   // Check all officially documented lift entrances to this restaurant.
+   const mapped=restaurantPairs.filter(([pattern])=>pattern.test(rest));
+   if(!mapped.length)return{ok:false,reason:'De aansluiting naar '+rest+' is nog niet aan een passend liftstation gekoppeld.'};
+   requestedLunch=[...new Set(mapped.map(([,station])=>graph.stations[station]?.node).filter(Number.isInteger))];
+   if(!requestedLunch.length)return{ok:false,reason:'Liftstation bij '+rest+' ontbreekt in de kaartgrafiek.'};
   }
   // No restaurant name is invented: automatic choices are sourced from huts
   // mentioned in the SkiWelt catalogue near mapped lift boarding points.
@@ -374,10 +378,10 @@
    if(Number.isInteger(id)&&!lunchLabels.has(id))lunchLabels.set(id,title);
   }
   const autoStations=['Brandstadl bergstation','Hartkaiser bergstation','Hohe Salve',
-   'lift:30:middle1','lift:40:top','lift:112:top','lift:114:top'];
+   'lift:30:middle1','lift:40:top','lift:112:top','lift:114:top','lift:111:top'];
   const autoLunch=autoStations.map(id=>graph.stations[id]?.node).filter(id=>Number.isInteger(id)&&lunchLabels.has(id));
   const presetLunch=preset?graph.stations[preset.lunch]?.node:null;
-  const candidates=useLunch?(requestedLunch!==null?[requestedLunch]:
+  const candidates=useLunch?(requestedLunch!==null?requestedLunch:
    Number.isInteger(presetLunch)?[presetLunch]:autoLunch):[start];
   const scenic=['Brandstadl bergstation','Hartkaiser bergstation','Hohe Salve','Hopfgarten tussenstation',
    'Brixen dalstation','Söll dalstation'].map(x=>graph.stations[x]?.node).filter(Number.isInteger);

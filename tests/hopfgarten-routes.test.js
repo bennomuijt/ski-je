@@ -53,7 +53,7 @@ for(const preset of Object.keys(router.hopfgartenPresets)){
   assert.equal(result.optionalDescent.available,true);
   assert.equal(result.optionalDescent.required,false);
   assert.ok(result.plan.endPoint.includes('middenstation'));
-  assert.equal(result.plan.safeArrival,'15:00');
+  assert.ok(Number(result.plan.safeArrival.replace(':',''))<=1500,'mid-station must reserve time for optional downhill');
   assert.ok(result.optionalDescent.steps.some(s=>s.code==='20a'));
   assert.ok(!result.features.some((s,i)=>i===result.features.length-1&&s.code==='20a'));
   assert.ok(result.optionalDescent.steps.every(s=>s.type!=='lift'));

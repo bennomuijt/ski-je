@@ -454,6 +454,10 @@
    lunchName,begin,routeLimit,margin+endReserve);
   if(!made.plan.ok)return{ok:false,reason:made.plan.reason};
   const path={edgeIds:[...chosen.before.edgeIds,...chosen.post.edgeIds,...chosen.back.edgeIds]};
+  // Store exact graph edges in output: generated local walk links are appended
+  // to the in-memory graph and therefore are absent from the shipped JSON.
+  // Consumers must validate against these edges, not raw JSON indexes.
+  path.edgeSegments=path.edgeIds.map(id=>graph.edges[id].slice());
   const steps=chosen.grouped;
   const notes=[
    ...(isHopfgarten?['Hopfgarten: de volledige terugweg eindigt '+(endMode==='valley'?'na piste 20a in het dal.':'bij het middenstation van Salvenbahn I.'),
@@ -504,5 +508,5 @@
    graphBased:true,notes,options,endMode,routePreset:preset?.label||null,
    optionalDescent:isHopfgarten?optionalDescent:null};
  }
- return{initialize,load,build,shortest,validateRoute,group,clock,hhmm,closureSet,hopfgartenPresets};
+ return{initialize,load,build,shortest,validateRoute,group,clock,hhmm,closureSet,hopfgartenPresets,getEdge:id=>graph?.edges[id]?.slice()||null};
 });

@@ -4,7 +4,7 @@
  const $=id=>document.getElementById(id);
  const KEY='skije-cloudflare-room-v1',ROOM_RE=/^[A-Za-z0-9_-]{32}$/;
  const TTL=120000;
- const peers=new Map(),pins=new Map();
+ const peers=new Map(),members=new Map(),pins=new Map();
  let group=null,ws=null,sharing=false,fixTimer=null,reconnectTimer=null,ageTimer=null,reconnectCount=0,lastFix=null,lastSent=null,map=null,leaving=false,shareBusy=false;
  const status=(message,bad=false,mode='')=>{
   const el=$('cf-group-status');el.textContent=message;el.classList.toggle('cf-bad',bad);
@@ -23,20 +23,30 @@
  function stopTimers(){clearTimeout(fixTimer);fixTimer=null;clearTimeout(reconnectTimer);reconnectTimer=null;}
  function removePins(){for(const m of pins.values())try{map?.removeLayer(m);}catch{}pins.clear();}
  function currentPeers(){return [...peers.values()].sort((a,b)=>(Number(b.at||0)-Number(a.at||0)));}
+ function currentMembers(){return [...members.values()].sort((a,b)=>Number(b.online)-Number(a.online)||a.name.localeCompare(b.name,'nl'));}
+ function syncMembers(list){members.clear();for(const m of list||[]){if(m?.id&&m.id!==group?.memberId)members.set(m.id,{id:m.id,name:cleanName(m.name),online:!!m.online});}}
+ function focusMember(id){
+  const peer=peers.get(id),pos=peer?.last;
+  if(!peer?.online||!pos||Date.now()-pos.at>TTL){status('Dit groepslid deelt momenteel geen actuele GPS-locatie.',true);return;}
+  window.SKIApi?.goPage('map');
+  const zoom=()=>{if(!map)return false;showPins();map.setView([pos.lat,pos.lng],Math.max(15,map.getZoom()));pins.get(id)?.openPopup();return true;};
+  if(!zoom())status('Kaart openen; de positie wordt zichtbaar zodra de kaart geladen is.');
+ }
  function personColor(id){const colors=['#0b78c7','#fb7f1c','#009a84','#833fd4','#cc3657','#29763a','#9b6214','#1582a9'];let k=0;for(const c of id)k=(k*33+c.charCodeAt(0))>>>0;return colors[k%colors.length];}
  function showPins(){
   if(!map||typeof window.L==='undefined')return;
   const valid=new Set(),t=Date.now();
   for(const peer of currentPeers()){
-   if(peer.id===group?.memberId||!peer.last||t-peer.last.at>TTL)continue;
+   if(peer.id===group?.memberId||!peer.online||!peer.last||t-peer.last.at>TTL)continue;
    const pos=peer.last;if(!Number.isFinite(pos.lat)||!Number.isFinite(pos.lng))continue;
    valid.add(peer.id);
    let marker=pins.get(peer.id);
-   if(!marker){marker=L.circleMarker([pos.lat,pos.lng],{radius:10,color:'#fff',weight:2,fillColor:personColor(peer.id),fillOpacity:.9});marker.addTo(map);pins.set(peer.id,marker);}
+   if(!marker){marker=L.circleMarker([pos.lat,pos.lng],{radius:11,color:'#fff',weight:3,fillColor:personColor(peer.id),fillOpacity:1});marker.addTo(map);pins.set(peer.id,marker);}
    marker.setLatLng([pos.lat,pos.lng]);
    const content=document.createElement('div');const title=document.createElement('strong');title.textContent=peer.name;content.append(title);
    const info=document.createElement('p');info.textContent=`GPS ±${pos.accuracy} m · laatste meting ${labelTime(pos.at)} (${Math.floor((t-pos.at)/1000)} sec geleden)`;content.append(info);
    marker.bindPopup(content);
+   marker.bindTooltip(peer.name,{permanent:true,direction:'top',offset:[0,-10],className:'cf-map-name'});
   }
   for(const [id,m] of pins){if(!valid.has(id)){map.removeLayer(m);pins.delete(id);}}
  }
@@ -50,33 +60,47 @@
   $('cf-close').hidden=!group.owner;
   $('group-quick').textContent='👥 Mijn groep';
   const list=$('cf-members');list.replaceChildren();
-  const everyone=[{id:group.memberId,name:group.memberName,at:Date.now(),last:null,self:true},...currentPeers().filter(p=>p.id!==group.memberId)];
-  for(const p of everyone){const el=document.createElement('div');el.className='cf-member';
-   const name=document.createElement('strong');name.textContent=(p.self?'● ':'○ ')+p.name+(p.self?' (jij)':'');
-   const detail=document.createElement('small');const age=p.last?Date.now()-p.last.at:null;
-   detail.textContent=p.self?(sharing?'Locatie delen AAN – alleen bij open app':'Locatie delen UIT'):(age!==null&&age<TTL?'📍 Laatste GPS '+Math.floor(age/1000)+' sec geleden · ±'+p.last.accuracy+' m':'Geen recente gedeelde GPS-positie');
-   if(age!==null&&age>=TTL)el.classList.add('cf-old');el.append(name,detail);list.append(el);
+  const everyone=[{id:group.memberId,name:group.memberName,self:true,online:!!ws&&ws.readyState===WebSocket.OPEN},...currentMembers()];
+  for(const member of everyone){
+   const peer=peers.get(member.id),age=peer?.last?Date.now()-peer.last.at:null;
+   const canShow=!member.self&&member.online&&age!==null&&age<TTL;
+   const el=document.createElement('div');el.className='cf-member';
+   const name=document.createElement('strong');name.textContent=(member.online?'🟢 ':'⚪ ')+member.name+(member.self?' (jij)':'');
+   const detail=document.createElement('small');
+   const presence=member.online?'Online':'Offline';
+   detail.textContent=member.self?presence+' · '+(sharing?'Locatie delen AAN':'Locatie delen UIT'):
+    presence+(canShow?' · 📍 GPS '+Math.floor(age/1000)+' sec geleden · ±'+peer.last.accuracy+' m':' · Geen actuele gedeelde locatie');
+   el.append(name,detail);
+   if(canShow){const show=document.createElement('button');show.type='button';show.className='btn secondary small-btn cf-show-member';show.textContent='📍 Toon op kaart';show.addEventListener('click',()=>focusMember(member.id));el.append(show);}
+   list.append(el);
   }
-  $('cf-group-count').textContent=`${currentPeers().filter(x=>x.id!==group.memberId).length+1} online (max. 50 leden)`;
+  const onlineCount=everyone.filter(p=>p.online).length;
+  $('cf-group-count').textContent=`${everyone.length} leden · ${onlineCount} online`;
   showPins();
  }
- function setPeers(list){peers.clear();for(const p of list||[]){if(p&&p.id&&p.id!==group?.memberId)peers.set(p.id,{id:p.id,name:cleanName(p.name),last:p.last||null,at:p.at||0});}render();}
+ function setPeers(list){peers.clear();for(const p of list||[]){if(p&&p.id&&p.id!==group?.memberId){peers.set(p.id,{id:p.id,name:cleanName(p.name),last:p.last||null,at:p.at||0,online:true});const m=members.get(p.id);if(m)m.online=true;}}render();}
  function handleMessage(value){let data;try{data=JSON.parse(value);}catch{return;}
   if(!data||typeof data!=='object')return;
   if(data.type==='welcome'){
    reconnectCount=0;if(group){group.groupName=data.groupName||group.groupName;group.owner=!!data.owner;saveGroup();}
-   setPeers(data.peers);status('Verbonden. Groepslocaties alleen zichtbaar als iemand delen aanzet.');
+   syncMembers(data.members||data.peers);setPeers(data.peers);status('Verbonden. Groepslocaties alleen zichtbaar als iemand delen aanzet.');
    if(sharing)scheduleFix(0);
   }
-  else if(data.type==='joined'&&data.id!==group?.memberId){peers.set(data.id,{id:data.id,name:cleanName(data.name),last:null,at:0});render();}
+  else if(data.type==='member-added'&&data.id!==group?.memberId){members.set(data.id,{id:data.id,name:cleanName(data.name),online:false});render();}
+  else if(data.type==='member-removed'){members.delete(data.id);peers.delete(data.id);render();}
+  else if(data.type==='group-closed'){stopSharing();endSocket();group=null;saveGroup();render();status('Deze groep is gesloten door de beheerder.');}
+  else if(data.type==='joined'&&data.id!==group?.memberId){members.set(data.id,{id:data.id,name:cleanName(data.name),online:true});peers.set(data.id,{id:data.id,name:cleanName(data.name),last:null,at:0,online:true});render();}
   else if(data.type==='position'){
    if(data.id===group?.memberId)return;
-   const p=peers.get(data.id)||{id:data.id,name:cleanName(data.name),last:null,at:0};
+   const p=peers.get(data.id)||{id:data.id,name:cleanName(data.name),last:null,at:0,online:true};
    if(!Number.isFinite(data.lat)||!Number.isFinite(data.lng)||!Number.isFinite(data.at))return;
-   p.last={lat:data.lat,lng:data.lng,accuracy:Number(data.accuracy)||0,at:data.at};p.at=data.at;peers.set(p.id,p);render();
+   p.last={lat:data.lat,lng:data.lng,accuracy:Number(data.accuracy)||0,at:data.at};p.at=data.at;p.online=true;peers.set(p.id,p);
+   const m=members.get(p.id);if(m)m.online=true;else members.set(p.id,{id:p.id,name:p.name,online:true});render();
   }
   else if(['stopped','left'].includes(data.type)){
-   const p=peers.get(data.id);if(p){if(data.type==='left')peers.delete(data.id);else p.last=null;render();}
+   const p=peers.get(data.id);if(p){if(data.type==='left')peers.delete(data.id);else p.last=null;}
+   const m=members.get(data.id);if(m&&data.type==='left')m.online=false;
+   render();
   }
  }
  function connect(){
@@ -91,7 +115,7 @@
   sock.onerror=()=>{if(sock===ws)status('Groepsverbinding gestoord. Je route en GPS-opslag blijven lokaal werken.',true);};
   sock.onclose=()=>{
    if(sock!==ws)return;
-   ws=null;peers.clear();render();
+   ws=null;peers.clear();for(const m of members.values())m.online=false;render();
    if(!group||leaving)return;
    if(!online()){status('Offline / op achtergrond. Geen locatie delen.');return;}
    const wait=Math.min(45000,2000*Math.pow(1.6,reconnectCount++));
@@ -122,7 +146,7 @@
   if(ws?.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'stop'}));
   $('cf-share-info').textContent='Uit. Je GPS-positie wordt niet naar groepsleden verzonden.';render();
  }
- function endSocket(){clearTimeout(reconnectTimer);reconnectTimer=null;if(ws){const old=ws;ws=null;try{old.close(1000,'App gepauzeerd');}catch{}}peers.clear();render();}
+ function endSocket(){clearTimeout(reconnectTimer);reconnectTimer=null;if(ws){const old=ws;ws=null;try{old.close(1000,'App gepauzeerd');}catch{}}peers.clear();for(const m of members.values())m.online=false;render();}
  async function checkBackend(){
   let response;
   try{response=await fetch('/api/health?check='+Date.now(),{cache:'no-store',headers:{accept:'application/json'}});}
@@ -139,7 +163,7 @@
   let json;try{json=await response.json();}catch{throw Error('Geen geldig JSON-antwoord van de Worker (HTTP '+response.status+'). Controleer de Cloudflare-logs en Durable Objects.');}
   if(!response.ok||!json?.ok)throw Error(json?.error||'Cloudflare antwoordt niet.');return json;
  }
- function startSession(data,room,memberName){group={room,memberId:data.memberId,token:data.token,memberName,groupName:data.groupName,owner:!!data.owner};saveGroup();render();connect();}
+ function startSession(data,room,memberName){peers.clear();members.clear();removePins();group={room,memberId:data.memberId,token:data.token,memberName,groupName:data.groupName,owner:!!data.owner};saveGroup();render();connect();}
  function openGroup(){window.SKIApi?.goPage('more');$('group-section').open=true;requestAnimationFrame(()=>$('group-section').scrollIntoView({behavior:'smooth',block:'start'}));if(group&&!ws&&online())connect();}
  $('group-quick').addEventListener('click',openGroup);
  $('cf-group-map').addEventListener('click',openGroup);

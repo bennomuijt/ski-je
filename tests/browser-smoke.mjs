@@ -260,7 +260,8 @@ await add('Hopfgarten three full-day routes and optional midstation piste 20a es
  const same=page.locator('#same-end');
  if(!(await same.isChecked()))await same.check();
  await page.locator('#start').selectOption('Hopfgarten dalstation');
- await page.locator('#finish').selectOption('Hopfgarten dalstation');
+ // With 'same-end' checked the finish picker is intentionally disabled and synced.
+ await page.waitForFunction(()=>document.querySelector('#finish')?.value==='Hopfgarten dalstation');
  await page.locator('#departure').fill('09:00');
  await page.locator('#return-time').fill('16:00');
  await page.locator('#lunch-time').fill('12:30');

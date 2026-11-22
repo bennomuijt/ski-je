@@ -121,7 +121,7 @@
   const f=row[2]<0?null:graph.features[row[2]];
   if(!f)return{type:'transfer',code:'',name:row[4]==='village-walk'?'Loopoverstap tussen Going en Hartkaiserbahn':row[4]==='station-walk'?'Loopverbinding bij liftstation':'Pisteovergang op kaart',level:'unknown',confidence:row[4]};
   const level={novice:'blue',easy:'blue',intermediate:'red',advanced:'black',expert:'black'}[f.difficulty]||'unknown';
-  return{type:f.kind,code:f.ref,name:f.name||'Piste '+(f.ref||'zonder nummer'),
+  return{type:f.kind,code:f.ref,name:f.name||(f.ref?'Piste '+f.ref:'nummer niet vastgelegd in kaartbron'),
    level,confidence:row[4],feature:row[2]};
  }
  function group(path,opts){
@@ -397,11 +397,26 @@
   if(steps.some(s=>s.type==='transfer'))notes.push('⚠️ '+steps.filter(s=>s.type==='transfer').length+' kaartovergangen zijn slechts op afstand gekoppeld. Controleer deze overstappen ter plaatse.');
   if(steps.some(s=>s.confidence==='village-walk'))notes.push('⚠️ Going–Ellmau: circa 80 meter aparte loopoverstap. SkiWelt bevestigt de gebiedsroute, niet deze exacte looproute; oversteek ter plaatse controleren.');
   if(steps.some(s=>s.level==='unknown'&&s.type==='piste'))notes.push('⚠️ Een of meer pistekleuren zijn niet bevestigd. Controleer of het niveau geschikt is.');
+  const unnamedPistes=steps.filter(s=>s.type==='piste'&&!s.code);
+  const flatPistes=steps.filter(s=>s.type==='piste'&&s.confidence==='flat-possible');
+  const uncertainTransfers=steps.map((step,index)=>({step,index})).filter(({step})=>
+   step.type==='transfer'&&(step.metres>18||step.confidence==='village-walk'));
+  if(unnamedPistes.length)notes.push('⚠️ '+unnamedPistes.length+' pisteonderdelen zonder bevestigd nummer in de kaartbron. Deze stukken volgen de lijngeometrie, maar zijn geen officieel gecontroleerde piste-identificatie.');
+  if(flatPistes.length)notes.push('⚠️ '+flatPistes.length+' korte vlakke/hoogte-onzekere lijnstukken. Richting en kruisingen zijn hier niet onafhankelijk bevestigd.');
+  if(uncertainTransfers.length)notes.push('⚠️ '+uncertainTransfers.length+' overstappen langer dan 18 meter vragen extra controle op de officiële pistekaart.');
+  if(endMode==='valley')notes.push('Piste 20a is volgens SkiWelt een rode dalafdaling van 3.293 meter. De kaartgeometrie beschrijft slechts een deel van de lijn: tijd en afstand blijven indicatief.');
+
   const allItinerary=made.itinerary;
   const total=allItinerary.filter(x=>x.type==='lift'||x.type==='piste');
   const pisteKm=total.filter(x=>x.type==='piste').reduce((n,s)=>n+Number(s.lengthKm||0),0);
   const liftKm=total.filter(x=>x.type==='lift').reduce((n,s)=>n+Number(s.lengthKm||0),0);
-  const itinerary={steps:allItinerary,pois:[],warnings:notes,missingSteps:[],unverifiedTransitions:[],
+  const itinerary={steps:allItinerary,pois:[],warnings:notes,missingSteps:[],
+   unverifiedTransitions:uncertainTransfers.map(({step,index})=>({
+    corridor:'Kaartovergang '+(index+1),
+    from:steps[index-1]?.code||steps[index-1]?.name||'onbekend',
+    to:steps[index+1]?.code||steps[index+1]?.name||'onbekend',
+    reason:'De kaartlijnen liggen '+step.metres+' m uit elkaar (type '+step.confidence+'). Of deze doorgang geopend en ski-bereikbaar is, is niet officieel bevestigd.'
+   })),
    routeMinutes:total.reduce((n,s)=>n+s.minutes,0),
    liftMinutes:total.filter(s=>s.type==='lift').reduce((n,s)=>n+s.minutes,0),
    pisteMinutes:total.filter(s=>s.type==='piste').reduce((n,s)=>n+s.minutes,0),

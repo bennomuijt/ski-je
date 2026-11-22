@@ -19,17 +19,50 @@
   const velocity={easy:145,normal:250,sporty:350}[speed]||250;
   return metres/velocity;
  };
+ // Only researched, named lift-station complexes may get a short
+ // walking/poling bridge. A generic nearby lift is NEVER connected on distance
+ // alone (crossing lines, cliffs and blocked passages are not ski connections).
+ const AUDITED_LOCAL_TRANSFERS=Object.freeze([
+  {a:'lift:8:top',b:'lift:1:top',source:'SkiWelt Hochbrixen official lift map and local map station coordinates',status:'provisional'},
+  {a:'lift:12:top',b:'lift:1:bottom',source:'SkiWelt official Brixen/Westendorf connection: Sonnenlift 12 to Hochbrixen gondola 1',status:'official-area-connection'},
+  {a:'lift:12:top',b:'lift:11:bottom',source:'SkiWelt Hochbrixen station geometry; alternative SkiWeltbahn boarding',status:'provisional'},
+  {a:'lift:1:bottom',b:'lift:11:bottom',source:'SkiWelt official Hochbrixen and SkiWeltbahn station positions',status:'provisional'}
+ ]);
+ function auditedWalkEdges(data){
+  const out=[],rejected=[];
+  for(const entry of AUDITED_LOCAL_TRANSFERS){
+   const a=data.stations?.[entry.a],b=data.stations?.[entry.b];
+   if(!a||!b){rejected.push({...entry,reason:'station missing'});continue;}
+   const pointA=data.nodes[a.node],pointB=data.nodes[b.node];
+   if(!pointA||!pointB){rejected.push({...entry,reason:'coordinates missing'});continue;}
+   const lat=(pointA[1]+pointB[1])/2*Math.PI/180;
+   const metres=Math.round(Math.hypot((pointA[0]-pointB[0])*111320*Math.cos(lat),(pointA[1]-pointB[1])*111320));
+   const gain=Math.round(pointB[2]-pointA[2]);
+   if(metres>130||metres<8||Math.abs(gain)>12){
+    rejected.push({...entry,metres,gain,reason:'distance or terrain-height check failed'});continue;
+   }
+   const fwd=[a.node,b.node,-1,metres,'walk-pole'];
+   const rev=[b.node,a.node,-1,metres,'walk-pole'];
+   out.push({entry,metres,gain,edges:[fwd,rev]});
+  }
+  return{out,rejected};
+ }
  function initialize(data){
   if(!data||data.version!==1||!Array.isArray(data.nodes)||!Array.isArray(data.edges)||
      data.nodes.length<1000||!data.stations)throw Error('SkiWelt-kaartnetwerk ontbreekt of is onjuist.');
-  graph=data;adj=Array.from({length:graph.nodes.length},()=>[]);
+  const audit=auditedWalkEdges(data);
+  graph={...data,edges:[...data.edges,...audit.out.flatMap(pair=>pair.edges)],
+   localTransferAudit:{accepted:audit.out.map(({entry,metres,gain})=>({
+    from:entry.a,to:entry.b,metres,heightDelta:gain,source:entry.source,status:entry.status
+   })),rejected:audit.rejected}};
+  adj=Array.from({length:graph.nodes.length},()=>[]);
   for(let i=0;i<graph.edges.length;i++){
    const [a,b,f,m]=graph.edges[i];
    if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<0||a>=adj.length||b>=adj.length||
       !Number.isInteger(f)||f>=graph.features.length||m<0||m>16000)throw Error('Kaartnetwerk heeft een ongeldige verbinding '+i);
    adj[a].push(i);
   }
-  return{nodes:data.nodes.length,edges:data.edges.length,stations:Object.keys(data.stations).length};
+  return{nodes:graph.nodes.length,edges:graph.edges.length,stations:Object.keys(graph.stations).length,localTransferAudit:graph.localTransferAudit};
  }
  async function load(){
   if(graph)return graph;
@@ -84,7 +117,7 @@
     let distance=metresToMin(row[3],kind,opts.speed);
     // Boarding overhead is included in the first lift segment, not every vertex.
     if(kind==='lift')distance+=0.15;
-    if(kind==='transfer')distance+=row[3]<=3?0.015:row[4]==='station-walk'||row[4]==='village-walk'?1.7:0.35;
+    if(kind==='transfer')distance+=row[4]==='walk-pole'?Math.max(2,Math.ceil(row[3]/35)):row[3]<=3?0.015:row[4]==='station-walk'||row[4]==='village-walk'?1.7:0.35;
     if(row[4]==='flat-possible')distance+=0.5;
     if(opts.avoid?.has(row[2]))distance+=1.4;
     const next=cost+distance;
@@ -119,7 +152,7 @@
  }
  function labelFeature(row){
   const f=row[2]<0?null:graph.features[row[2]];
-  if(!f)return{type:'transfer',code:'',name:row[4]==='village-walk'?'Loopoverstap tussen Going en Hartkaiserbahn':row[4]==='station-walk'?'Loopverbinding bij liftstation':'Pisteovergang op kaart',level:'unknown',confidence:row[4]};
+  if(!f)return{type:'transfer',code:'',name:row[4]==='walk-pole'?'Korte loop-/prikoverstap (kaartlocaties gecontroleerd)':row[4]==='village-walk'?'Loopoverstap tussen Going en Hartkaiserbahn':row[4]==='station-walk'?'Loopverbinding bij liftstation':'Pisteovergang op kaart',level:'unknown',confidence:row[4]};
   const level={novice:'blue',easy:'blue',intermediate:'red',advanced:'black',expert:'black'}[f.difficulty]||'unknown';
   return{type:f.kind,code:f.ref,name:f.name||(f.ref?'Piste '+f.ref:'nummer niet vastgelegd in kaartbron'),
    level,confidence:row[4],feature:row[2]};
@@ -173,13 +206,16 @@
    s.lengthKm=Math.round(s.metres)/1000;
    s.minutes=s.type==='lift'?Math.max(2,Math.ceil(metresToMin(s.metres,'lift',opts.speed)+4)):
     s.type==='piste'?Math.max(1,Math.ceil(metresToMin(s.metres,'piste',opts.speed)+0.5)):
+    s.confidence==='walk-pole'?Math.max(3,Math.ceil(s.metres/30)+2):
     Math.max(1,Math.ceil(metresToMin(s.metres,'transfer',opts.speed)));
    // SkiWelt's official piste listing gives 20a as 3,293m. The OSM
    // way is shorter; do not underestimate a final red valley descent.
    if(s.type==='piste'&&s.code==='20a'&&s.metres>1500)s.minutes=Math.max(20,s.minutes);
-   s.label=(s.type==='lift'?'🚡 Lift ':s.type==='piste'?'⛷️ Piste ':'⇄ Overstap ')+
+   s.label=(s.type==='lift'?'🚡 Lift ':s.type==='piste'?'⛷️ Piste ':s.confidence==='walk-pole'?'🚶 Loop/prik ':'⇄ Overstap ')+
      (s.code?s.code+' · ':'')+s.name;
-   s.detail=s.type==='transfer'?'Verbinding '+s.metres+' meter op de kaart. Controleer of deze overgang geopend en fysiek bereikbaar is.':
+   s.detail=s.confidence==='walk-pole'?
+    'Kaartgestuurde korte loop-/prikoverstap, '+s.metres+' m. Hoogteverschil maximaal 12 m volgens bron (DEM kan onnauwkeurig zijn). Geen GPS nodig. Let op officiële borden en toegestane looproute.':
+    s.type==='transfer'?'Verbinding '+s.metres+' meter op de kaart. Controleer of deze overgang geopend en fysiek bereikbaar is.':
      'Kaartlijn '+s.metres+' m · '+(s.level!=='unknown'?s.level:'kleur niet bevestigd')+
      ' · Bron: OpenSkiData/OSM; geen live lift-/pistestatus';
   }
@@ -427,6 +463,7 @@
    '⚠️ Terreinhoogtes zijn afgeleid uit een 90 m hoogtemodel; voor kleine paden en kruisingen kan de richting afwijken.'
   ];
   if(steps.some(s=>s.type==='transfer'))notes.push('⚠️ '+steps.filter(s=>s.type==='transfer').length+' kaartovergangen zijn slechts op afstand gekoppeld. Controleer deze overstappen ter plaatse.');
+  if(steps.some(s=>s.confidence==='walk-pole'))notes.push('Loop-/prikoverstappen zijn beperkt tot afzonderlijk gecontroleerde liftstationparen; ze volgen kaartgegevens, maar de exacte toegestane doorgang is niet voor elk paar officieel bevestigd.');
   if(steps.some(s=>s.confidence==='village-walk'))notes.push('⚠️ Going–Ellmau: circa 80 meter aparte loopoverstap. SkiWelt bevestigt de gebiedsroute, niet deze exacte looproute; oversteek ter plaatse controleren.');
   if(steps.some(s=>s.level==='unknown'&&s.type==='piste'))notes.push('⚠️ Een of meer pistekleuren zijn niet bevestigd. Controleer of het niveau geschikt is.');
   const unnamedPistes=steps.filter(s=>s.type==='piste'&&!s.code);

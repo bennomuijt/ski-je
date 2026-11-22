@@ -57,6 +57,10 @@ await add('default 09:00-16:00 full day schedule and lunch',async()=>{
  await page.locator('#return-time').fill('16:00');
  await page.locator('#create').click();
  await page.locator('#download-day-pdf').waitFor({timeout:8000});
+ const itinerary=page.locator('#day-route-collapsible');
+ assert.equal(await itinerary.evaluate(el=>el.open),false,'full itinerary should start collapsed');
+ for(const id of ['#download-day-pdf','#share-day-plan','#share-day-pdf','#show-day-panorama'])assert.ok(await page.locator(id).isVisible(),id+' must be visible without expanding');
+ await itinerary.evaluate(el=>el.open=true);
  const text=await page.locator('#plan-output').innerText();
  assert.match(text,/09:00/);assert.match(text,/16:00/);assert.match(text,/15:30/);
  assert.match(text,/12:30/);assert.match(text,/Lunch/);
@@ -73,6 +77,7 @@ await add('selected lunch restaurant appears in timetable',async()=>{
  const choice=options.find(x=>/Brandstadl|Tanzboden|Salvenalm|Rübezahl/i.test(x.label))||options[0];
  await page.locator('#lunch-restaurant').selectOption(choice.value);
  await page.locator('#create').click();
+ await page.locator('#day-route-collapsible').evaluate(el=>el.open=true);
  const title=await page.locator('.day-timeline-row.lunch .day-event strong').innerText();
  assert.match(title,/Lunch/i);
  if(!title.includes(choice.label))throw Error('Selected lunch restaurant is missing in planned itinerary: '+JSON.stringify({choice,title}));
@@ -82,6 +87,7 @@ await add('lunch can be selected to any minute and the slider stays synchronised
  assert.equal(await page.locator('#lunch-time-slider').inputValue(),'727');
  await page.locator('#lunch-duration').evaluate(el=>{el.value='55';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));});
  await page.locator('#create').click();
+ await page.locator('#day-route-collapsible').evaluate(el=>el.open=true);
  const output=await page.locator('#plan-output').innerText();
  assert.match(output,/12:07/);
  assert.ok(await page.locator('.ski-route-step.lunch').isVisible());
@@ -96,6 +102,7 @@ await add('longer day 08:00-17:00 with pauses and earlier lunch',async()=>{
  await page.locator('#late-break').check();
  await page.locator('#lunch-duration').evaluate(el=>{el.value='60';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));});
  await page.locator('#create').click();
+ await page.locator('#day-route-collapsible').evaluate(el=>el.open=true);
  const text=await page.locator('#plan-output').innerText();
  assert.match(text,/08:00/);assert.match(text,/17:00/);assert.match(text,/16:30/);
  assert.ok((await page.locator('.day-timeline-row.break').count())>=1,'expected break(s)');
@@ -283,6 +290,7 @@ await add('Hopfgarten three full-day routes and optional midstation piste 20a es
   assert.equal(data.plan.endPoint,'Hopfgarten dalstation');
   assert.equal(data.plan.safeArrival,'15:30');
   assert.ok(data.itinerary.steps.some(step=>step.type==='lunch'&&step.minutes===60));
+  await page.locator('#day-route-collapsible').evaluate(el=>el.open=true);
   const lunch=await page.locator('.day-timeline-row.lunch .day-event strong').innerText();
   assert.match(lunch,/Lunch/i);
   const steps=await page.locator('.ski-route-step.piste').count();

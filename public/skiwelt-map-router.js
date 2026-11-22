@@ -197,9 +197,9 @@
   return{plan:result,itinerary};
  }
  const hopfgartenPresets=Object.freeze({
-  salve:{label:'Hohe Salve & Schernthann',before:'Hohe Salve',after:'lift:24:top',lunch:'Hohe Salve'},
-  foisching:{label:'Foisching & Rigi',before:'lift:25:top',after:'lift:23:top',lunch:'lift:20:top'},
-  itter:{label:'Itter & KRAFTalm',before:'lift:30:middle1',after:'Hohe Salve',lunch:'lift:30:middle1'}
+  salve:{label:'Hohe Salve, Itter & Schernthann',morning:['Hohe Salve','lift:30:middle1','lift:24:top','Hohe Salve'],afternoon:['lift:24:top','lift:23:top'],lunch:'Hohe Salve'},
+  foisching:{label:'Foisching, Brixen, Hochsöll & Rigi',morning:['lift:25:top','lift:7:top','lift:40:top'],afternoon:['lift:23:top','lift:25:top'],lunch:'lift:20:top'},
+  itter:{label:'Itter, Brixen & KRAFTalm',morning:['lift:30:middle1','lift:1:top','lift:7:top'],afternoon:['Hohe Salve','lift:22:top'],lunch:'lift:30:middle1'}
  });
  function build(options={},closures=[]){
   if(!graph)return{ok:false,reason:'Kaartnetwerk nog niet geladen. Probeer opnieuw.'};
@@ -303,27 +303,48 @@
    'Brixen dalstation','Söll dalstation'].map(x=>graph.stations[x]?.node).filter(Number.isInteger);
   const breakMinutes=(options.morningBreak?Number(options.morningDuration??30):0)+(options.afternoonBreak?Number(options.afternoonDuration??30):0);
   const direct=isHopfgarten?find(start,routeFinish):find(start,finish);
-  if(preset&&(!graph.stations[preset.before]||!graph.stations[preset.after]))
+  if(preset&&[...preset.morning,...preset.afternoon,preset.lunch].some(station=>!graph.stations[station]))
    return{ok:false,reason:'De gekozen dagroute heeft een niet gevonden liftstation in de kaart. De app mag dit niet overslaan.'};
   if(!direct)return{ok:false,reason:'Geen aaneengesloten kaartverbinding tussen deze stations. De planner verzint geen pistes of liften.'};
   const bestOptions=[];
-  const firstStops=preset?[graph.stations[preset.before].node]:
+  const firstStops=preset?[null]:
    selectedTarget!==null?[selectedTarget]:[null,...scenic];
   for(const lunch of candidates)for(const beforeTarget of firstStops){
-   let before=find(start,beforeTarget??lunch,opts,closures);
-   if(!before)continue;
-   if(beforeTarget!==null){const a=find(beforeTarget,lunch,opts,closures);before=combine(before,a);}
+   let before;
+   if(preset){
+    before={edgeIds:[],minutes:0,metres:0};
+    let at=start;
+    for(const stationName of preset.morning){
+     const next=graph.stations[stationName].node,leg=find(at,next);
+     if(!leg){before=null;break;}
+     before=combine(before,leg);at=next;
+    }
+    if(before)before=combine(before,find(at,lunch));
+   }else{
+    before=find(start,beforeTarget??lunch);
+    if(beforeTarget!==null&&before)before=combine(before,find(beforeTarget,lunch));
+   }
    if(!before)continue;
    const beforeGroups=groupsFor(before,opts),beforeMin=beforeGroups.reduce((n,s)=>n+s.minutes,0);
    if(useLunch&&begin+beforeMin+Math.max(10,options.morningBreak?Number(options.morningDuration??30):0)>lunchClock)continue;
-   const afterStops=preset?[graph.stations[preset.after].node]:[null,...scenic];
+   const afterStops=preset?[null]:[null,...scenic];
    for(const afterTarget of afterStops){
     let post,back;
     if(isHopfgarten){
-     // Last return leg to the midpoint is always ski-only. The valley descent
-     // is a separate verified piste-only suffix, never an unannounced gondola.
-     post=afterTarget===null?{edgeIds:[],minutes:0,metres:0}:find(lunch,afterTarget);
-     back=shortest(afterTarget===null?lunch:afterTarget,routeFinish,descentOpts,closures);
+     // Preset tour legs are actual directed geometric segments, never shortcuts.
+     if(preset){
+      post={edgeIds:[],minutes:0,metres:0};
+      let at=lunch;
+      for(const stationName of preset.afternoon){
+       const next=graph.stations[stationName].node,leg=find(at,next);
+       if(!leg){post=null;break;}
+       post=combine(post,leg);at=next;
+      }
+      back=post?shortest(at,routeFinish,descentOpts,closures):null;
+     }else{
+      post=afterTarget===null?{edgeIds:[],minutes:0,metres:0}:find(lunch,afterTarget);
+      back=shortest(afterTarget===null?lunch:afterTarget,routeFinish,descentOpts,closures);
+     }
      if(!post||!back)continue;
      if(endMode==='valley')back=combine(back,validDescent);
     }else{

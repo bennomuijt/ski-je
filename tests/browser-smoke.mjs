@@ -15,7 +15,7 @@ if(!process.env.SKIJE_URL){
   try{
    let path=decodeURIComponent(new URL(request.url,'http://localhost').pathname);
    if(path==='/api/health'){response.writeHead(200,{'content-type':'application/json','cache-control':'no-store'});
-    response.end(JSON.stringify({ok:true,service:'SKI-je Cloudflare',version:'4.5.12-cf'}));return;}
+    response.end(JSON.stringify({ok:true,service:'SKI-je Cloudflare',version:'4.5.13-cf'}));return;}
    if(path==='/api/skimap.jpg')path='/Kaart 2026-2027.png';
    if(path==='/')path='/index.html';
    const file=resolve(publicRoot,'.'+path);
@@ -255,6 +255,8 @@ await add('update button changes color during version check and ends green',asyn
  assert.ok(count>=1,'no health check requested');
 });
 await add('Hopfgarten three full-day routes and optional midstation piste 20a escape',async()=>{
+ await page.locator('.bottom button[data-page="plan"]').click();
+ await page.locator('#page-plan').waitFor({state:'visible',timeout:10000});
  const same=page.locator('#same-end');
  if(!(await same.isChecked()))await same.check();
  await page.locator('#start').selectOption('Hopfgarten dalstation');

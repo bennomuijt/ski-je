@@ -13,8 +13,17 @@
  const clock=s=>/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(String(s||''))?Number(s.slice(0,2))*60+Number(s.slice(3)):null;
  const hhmm=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
- const metresToMin=(metres,kind,speed)=>{
-  if(kind==='lift')return metres/(240);
+ // Modelled moving speeds, not guaranteed or live lift-specific times.
+ // Faster modern lifts get a smaller ride estimate; slow drag lifts do not.
+ const liftMetresPerMinute=type=>{
+  if(/gondola|cable_car|funicular/i.test(type||''))return 300;
+  if(/chair/i.test(type||''))return 270;
+  if(/drag|platter|t.bar|rope.tow/i.test(type||''))return 170;
+  if(/magic.carpet|conveyor/i.test(type||''))return 55;
+  return 240;
+ };
+ const metresToMin=(metres,kind,speed,liftType='')=>{
+  if(kind==='lift')return metres/liftMetresPerMinute(liftType);
   if(kind==='transfer')return metres/65+0.5;
   const velocity={easy:145,normal:250,sporty:350}[speed]||250;
   return metres/velocity;
@@ -114,7 +123,8 @@
    for(const eId of adj[node]){
     const row=graph.edges[eId],kind=edgeKind(row);
     if(!usable(row,opts,closed))continue;
-    let distance=metresToMin(row[3],kind,opts.speed);
+    const feature=row[2]===-1?null:graph.features[row[2]];
+    let distance=metresToMin(row[3],kind,opts.speed,feature?.liftType);
     // Boarding overhead is included in the first lift segment, not every vertex.
     if(kind==='lift')distance+=0.15;
     if(kind==='transfer')distance+=row[4]==='walk-pole'?Math.max(2,Math.ceil(row[3]/35)):row[3]<=3?0.015:row[4]==='station-walk'||row[4]==='village-walk'?1.7:0.35;
@@ -205,7 +215,7 @@
   for(const s of result){
    s.lengthKm=Math.round(s.metres)/1000;
    s.heightDelta=Math.round((graph.nodes[s.to]?.[2]||0)-(graph.nodes[s.from]?.[2]||0));
-   s.minutes=s.type==='lift'?Math.max(2,Math.ceil(metresToMin(s.metres,'lift',opts.speed)+4)):
+   s.minutes=s.type==='lift'?Math.max(2,Math.ceil(metresToMin(s.metres,'lift',opts.speed,graph.features[s.feature]?.liftType)+2)):
     s.type==='piste'?Math.max(1,Math.ceil(metresToMin(s.metres,'piste',opts.speed)+0.5)):
     s.confidence==='walk-pole'?Math.max(3,Math.ceil(s.metres/30)+2):
     Math.max(1,Math.ceil(metresToMin(s.metres,'transfer',opts.speed)));
@@ -216,7 +226,8 @@
      (s.code?s.code+' · ':'')+s.name;
    s.detail=s.confidence==='walk-pole'?
     'Loop/prik '+s.metres+' m; hoogteverschil '+(s.heightDelta>=0?'+':'')+s.heightDelta+' m (hoogte geschat). Rustig rekenen: '+s.minutes+' min. Op kaart gecontroleerd, fysieke doorgang niet overal officieel bevestigd. Volg de borden.':
-    s.type==='transfer'?'Verbinding '+s.metres+' meter op de kaart. Controleer of deze overgang geopend en fysiek bereikbaar is.':
+    s.type==='lift'?'Lift '+s.metres+' m · circa '+s.minutes+' min inclusief 2 min voor instappen en een korte wachtrij. Bij drukte langer; geen live wachttijd of sluitingscontrole.':
+     s.type==='transfer'?'Verbinding '+s.metres+' meter op de kaart. Controleer of deze overgang geopend en fysiek bereikbaar is.':
      'Kaartlijn '+s.metres+' m · '+(s.level!=='unknown'?s.level:'kleur niet bevestigd')+
      ' · Bron: OpenSkiData/OSM; geen live lift-/pistestatus';
   }
@@ -409,10 +420,11 @@
        if(!leg){post=null;break;}
        post=combine(post,leg);at=next;
       }
-      back=post?shortest(at,routeFinish,descentOpts,closures):null;
+      // The return via Brixen may use lifts. Only the final piste 20a descent is lift-free.
+       back=post?find(at,routeFinish):null;
      }else{
       post=afterTarget===null?{edgeIds:[],minutes:0,metres:0}:find(lunch,afterTarget);
-      back=shortest(afterTarget===null?lunch:afterTarget,routeFinish,descentOpts,closures);
+      back=find(afterTarget===null?lunch:afterTarget,routeFinish);
      }
      if(!post||!back)continue;
      if(endMode==='valley')back=combine(back,validDescent);

@@ -14,9 +14,6 @@ jobs:
           node-version: '22'
       - run: npm install --no-audit --no-fund
       - run: npm run build:release
-      - name: Verify PWA release metadata and offline cache are committed
-        run: git diff --exit-code -- public/index.html public/sw.js src/release.js
-      - run: npm run check
       - name: Save generated PWA release source for consistent GitHub and Cloudflare versions
         uses: actions/upload-artifact@v4
         with:
@@ -26,6 +23,9 @@ jobs:
             public/sw.js
             src/release.js
           retention-days: 5
+      - name: Verify PWA release metadata and offline cache are committed
+        run: git diff --exit-code -- public/index.html public/sw.js src/release.js
+      - run: npm run check
       - name: Inspect official SkiWelt 2026-27 full panorama (informational)
         shell: bash
         run: |

@@ -1,7 +1,7 @@
 {
   "name": "ski-je-cloudflare",
   "private": true,
-  "version": "4.5.15",
+  "version": "4.5.16",
   "description": "SKI-je: Cloudflare Worker with static assets and Durable Objects group GPS",
   "type": "module",
   "scripts": {

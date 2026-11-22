@@ -132,6 +132,14 @@ try{
   await page.locator('#pano-lifts-visible').check();
   // Green roof symbols have their own reviewed positions, separate from lifts.
   assert.equal(await page.locator('.pano-printed-hut').count(),69);
+  // Recenter on Ellmau green 61 so its button is inside the viewport.
+  await page.evaluate(()=>{
+   const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
+   const w=Math.min(rect.width,rect.height*img.naturalWidth/img.naturalHeight);
+   const h=Math.min(rect.height,rect.width*img.naturalHeight/img.naturalWidth);
+   const zoom=8,x=.34338,y=.42669;
+   img.style.transform='translate3d('+(.5-x)*w*zoom+'px,'+(.5-y)*h*zoom+'px,0) scale('+zoom+')';
+  });
   await page.waitForFunction(()=>!document.querySelector('.pano-printed-hut[data-hut-number="61"]')?.hidden,{timeout:15000});
   await page.locator('.pano-printed-hut[data-hut-number="23"]').evaluate(el=>el.click());
   assert.match(await page.locator('#pano-hut-name').innerText(),/Hut 23 · KRAFTalm/);

@@ -88,7 +88,7 @@
  }
  function box(ctx,x,y,w,h,bg){ctx.fillStyle=bg;ctx.fillRect(x,y,w,h);}
  function schedule(ctx,plan){
-  label(ctx,'VOLLEDIGE DAGPLANNING',62,289,35,COL.navy,true);
+  label(ctx,'DAGOVERZICHT · ALLE TRAJECTEN OP VOLGENDE BLADEN',62,289,29,COL.navy,true);
   const localDate=plan.date||new Date().toLocaleDateString('nl-NL');
   label(ctx,'DATUM '+localDate,798,289,22,COL.blue,true);
   lines(ctx,plan.startPoint+'  →  '+plan.endPoint,62,328,1115,25,2,COL.blue);
@@ -99,7 +99,8 @@
   box(ctx,58,494,1120,76,'#fff1dc');
   label(ctx,'⚠  VOORLOPIGE ROUTE – NIET LIVE GECONTROLEERD',82,529,23,'#9e5f1e',true);
   label(ctx,'Pistes op kaart voor planning aangenomen open; controleer actuele sluitingen.',82,557,19,'#835f3b');
-  let y=591;
+  label(ctx,'Alle pistes en liften met nummers, kloktijden en overgangen staan op het volledige detailoverzicht en de genummerde route-index.',65,610,17,COL.gray);
+  let y=637;
   for(const row of plan.sections){
    if(y>H-245)break;
    box(ctx,58,y,1120,95,'#ffffff');
@@ -236,22 +237,85 @@
    'Liftwachttijden, actuele afsluitingen, weer en pistecondities kunnen afwijken.',
    'Terugweg eerst op tijd starten. GPS is op de panoramakaart niet exact.',
    'Kleurcode: liften paars; pistes blauw (tenzij moeilijkheid bekend is).',
-   'Ski-je berekent voorlopig gebiedsverbindingen, geen gegarandeerde GPS-afslagroute.',
+   data.optionalDescent?(data.endMode==='middle'?
+    'Hopfgarten: middenstation als eindpunt; piste 20a is een optionele, niet ingeplande afdaling.':
+    'Hopfgarten: route eindigt na piste 20a bij het dalstation; de piste moet officieel open zijn.'):
+    'Ski-je volgt kaartlijnen, maar alle kruisingen en pistes moeten officieel gecontroleerd blijven.',
     'Afstanden zijn indicaties van beschreven deeltrajecten, niet GPS-gemeten.',
    '© SkiWelt voor officiële verbindingsinformatie; gebruik op eigen risico.'
   ];
   for(const item of tips){lines(ctx,'• '+item,66,y,1080,18,2,COL.ink);y+=70;}
  }
+ function optionalDescentPage(ctx,desc,plan){
+  label(ctx,'OPTIONELE DALAFDALING HOPFGARTEN',62,290,31,COL.navy,true);
+  label(ctx,'Salvenbahn I middenstation → Hopfgarten dalstation',62,337,24,COL.blue,true);
+  box(ctx,58,370,1120,132,'#fff0db');
+  lines(ctx,'Deze afdaling staat NIET in de geplande skitijd. Alleen gebruiken als piste 20a officieel open is en de condities het toelaten.',78,413,1070,21,3,'#805223');
+  label(ctx,'Geschatte afdaling: '+desc.minutes+' minuten, exclusief onverwachte vertraging.',76,544,21,COL.navy,true);
+  label(ctx,'Ingeplande aankomst middenstation: '+plan.safeArrival,76,582,21,COL.blue,true);
+  let y=638;
+  for(const [i,step] of (desc.steps||[]).entries()){
+   box(ctx,61,y,1115,113,i%2?'#f1f8fc':'#e7f3fa');
+   label(ctx,(i+1)+'. '+step.label,85,y+39,22,COL.navy,true);
+   lines(ctx,step.metres+' meter · circa '+step.minutes+' minuten · '+(step.level||'kleur onbekend'),85,y+75,1030,18,2,COL.gray);
+   y+=122;
+  }
+  if(!desc.available)lines(ctx,'Geen veilige liftvrije verbinding aangetoond. Reken niet automatisch op de gondel, zeker niet na sluitingstijd.',77,y+44,1040,21,3,COL.red);
+  lines(ctx,'Bron: OpenSkiData/OSM + officiële SkiWelt-kaart. Controleer piste-openstelling en borden.',68,H-154,1100,17,2,COL.gray);
+ }
+ // A printable, complete index: one row per piste/lift/transition in
+ // precisely the same order as the app itinerary. Nothing omitted, even when
+ // many tiny OSM ways combine into a single officially numbered piste.
+ function routeIndexRows(steps){
+  return (steps||[]).filter(s=>['piste','lift','transfer'].includes(s.type)).map((s,i)=>({
+   position:i+1,type:s.type,code:String(s.displayCode||s.code||''),
+   numberStatus:s.numberStatus||'source',
+   time:s.start||'',until:s.end||'',label:String(s.label||''),
+   confidence:s.confidence||''
+  }));
+ }
+ function routeIndexPages(steps){
+  const rows=routeIndexRows(steps),pages=[];
+  for(let i=0;i<rows.length;i+=20)pages.push({kind:'route-index',rows:rows.slice(i,i+20)});
+  return pages;
+ }
+ function routeIndexPage(ctx,items){
+  label(ctx,'ALLE PISTE- EN LIFTNUMMERS',62,289,34,COL.navy,true);
+  label(ctx,'Compleet overzicht op volgorde · geen delen weggelaten',62,328,20,COL.gray);
+  let y=375;
+  for(const row of items){
+   const type=row.type==='lift'?'LIFT':row.type==='piste'?'PISTE':'OVERSTAP';
+   const colour=row.type==='lift'?'#6754a6':row.type==='piste'?'#147cc0':'#697d85';
+   box(ctx,62,y,1116,53,y%2?'#f2f7fb':'#e7f2f9');
+   box(ctx,62,y,7,53,colour);
+   label(ctx,String(row.position).padStart(2,'0'),84,y+33,18,COL.gray,true);
+   label(ctx,row.time+'-'+row.until,142,y+33,19,COL.navy,true);
+   label(ctx,type,340,y+33,18,colour,true);
+   const code=row.code||'TE CONTROLEREN';
+   label(ctx,code.length>18?code.slice(0,18):code,492,y+33,18,row.numberStatus==='source'?COL.navy:'#965e2b',true);
+   const description=row.numberStatus==='inferred-neighbors'?'Aansluitend deel, nummer afgeleid':
+    row.numberStatus==='unverified'?'Korte kaartverbinding, bronnummer ontbreekt':
+    row.label.replace(/^.(?:⛷️|🚡|⇄)?\s*/u,'');
+   const text=description.slice(0,55);
+   label(ctx,text,785,y+33,15,COL.gray);
+   y+=61;
+  }
+  label(ctx,'Bij ONBEVESTIGD: geen nummer verzonnen. Controleer op officiële SkiWelt-kaart.',64,H-135,18,COL.gray);
+ }
  function reportPages(data){
   const events=data.itinerary?.steps||[],wc=data.itinerary?.pois||[];
   const pages=[{kind:'schedule'}];
   for(let i=0;i<events.length;i+=9)pages.push({kind:'detail',rows:events.slice(i,i+9)});
+  // Separate index makes EVERY piste number readable; the title page is
+  // just a summary and can never fit an 80-step whole-day route.
+  pages.push(...routeIndexPages(events));
   // Keep area source and closure notes. Existing pagination handles longer notices.
   const missing=(data.itinerary?.missingSteps||[]).map(s=>'ONTBREKEND '+s.phase+': '+(s.code?s.code+' ':'')+s.name+' - '+s.reason);
    const gaps=(data.itinerary?.unverifiedTransitions||[]).map(s=>'ONBEVESTIGD '+s.corridor+': lift '+s.from+' naar lift '+s.to+' - '+s.reason);
    const regions=layoutPages(data.route?.steps||[],[...(data.route?.notes||[]),...(data.plan?.notes||[]),...(data.itinerary?.warnings||[]),...missing,...gaps]);
   pages.push(...regions.slice(1));
   for(let i=0;i<wc.length;i+=5)pages.push({kind:'wc',rows:wc.slice(i,i+5)});
+  if(data.endMode==='middle'&&data.optionalDescent)pages.push({kind:'descent',desc:data.optionalDescent});
   pages.push({kind:'summary'});
   return pages;
  }
@@ -274,6 +338,8 @@
    else if(section.kind==='notes')regionPage(ctx,[],section.notes,true);
    else if(section.kind==='wc')wcPage(ctx,section.rows,route,data);
    else if(section.kind==='summary')summaryPage(ctx,data);
+   else if(section.kind==='descent')optionalDescentPage(ctx,section.desc,plan);
+   else if(section.kind==='route-index')routeIndexPage(ctx,section.rows);
    jpegs.push(jpegBytes(canvas.toDataURL('image/jpeg',0.88)));
    canvas.width=1;canvas.height=1;
   }
@@ -284,5 +350,5 @@
   a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),45000);
  }
- return {generate,save,encodePdf,layoutPages,reportPages};
+ return {generate,save,encodePdf,layoutPages,reportPages,routeIndexRows,routeIndexPages};
 });

@@ -88,7 +88,7 @@
  }
  function box(ctx,x,y,w,h,bg){ctx.fillStyle=bg;ctx.fillRect(x,y,w,h);}
  function schedule(ctx,plan){
-  label(ctx,'VOLLEDIGE DAGPLANNING',62,289,35,COL.navy,true);
+  label(ctx,'DAGOVERZICHT · ALLE TRAJECTEN OP VOLGENDE BLADEN',62,289,29,COL.navy,true);
   const localDate=plan.date||new Date().toLocaleDateString('nl-NL');
   label(ctx,'DATUM '+localDate,798,289,22,COL.blue,true);
   lines(ctx,plan.startPoint+'  →  '+plan.endPoint,62,328,1115,25,2,COL.blue);
@@ -99,7 +99,8 @@
   box(ctx,58,494,1120,76,'#fff1dc');
   label(ctx,'⚠  VOORLOPIGE ROUTE – NIET LIVE GECONTROLEERD',82,529,23,'#9e5f1e',true);
   label(ctx,'Pistes op kaart voor planning aangenomen open; controleer actuele sluitingen.',82,557,19,'#835f3b');
-  let y=591;
+  label(ctx,'Alle pistes en liften met nummers, kloktijden en overgangen staan op het volledige detailoverzicht en de genummerde route-index.',65,610,17,COL.gray);
+  let y=637;
   for(const row of plan.sections){
    if(y>H-245)break;
    box(ctx,58,y,1120,95,'#ffffff');

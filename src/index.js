@@ -1,6 +1,6 @@
 /* SKI-je Cloudflare pilot, 2026-11-20.
  * One Cloudflare Worker: first-party static assets + authenticated group WebSockets.
- * Group GPS is never written to storage; the short-lived fix is attached to active sockets only.
+ * Membership is persisted; GPS fixes only exist on active WebSockets.
  * No third-party database, no paid plan required within Cloudflare Free quotas.
  */
 import { release } from './release.js';
@@ -11,6 +11,11 @@ const MEMBER_RE=/^[a-f0-9-]{36}$/;
 const GROUP_LIMIT=50;
 const GPS_TTL_MS=120000;
 const GROUP_LIFETIME_MS=90*86400000;
+const SOCIAL_KEEP_MS=30*86400000;
+const CHAT_LIMIT=100;
+const CHAT_TEXT_LIMIT=500;
+const PHOTO_MAX_BASE64=90000;
+const PHOTO_MAX_REQUEST=102400;
 export {SkiPhotoBoard} from './photos.js';
 
 function result(data,status=200,extra={}) {return new Response(JSON.stringify(data),{status,headers:{...JSON_HEADERS,...extra}});}
@@ -20,7 +25,7 @@ async function digest(s){const d=await crypto.subtle.digest('SHA-256',new TextEn
 function equalHex(ah,bh){if(typeof ah!=='string'||typeof bh!=='string'||ah.length!==64||bh.length!==64)return false;let diff=0;for(let i=0;i<64;i++)diff|=ah.charCodeAt(i)^bh.charCodeAt(i);return diff===0;}
 async function equalSecret(a,b){if(typeof a!=='string'||typeof b!=='string'||!a||!b)return false;const [ah,bh]=await Promise.all([digest(a),digest(b)]);return equalHex(ah,bh);}
 function nameText(v,max=35){return String(v??'').normalize('NFC').replace(/[\u0000-\u001f\u007f<>]/g,'').trim().slice(0,max);}
-async function bodyData(req){if(Number(req.headers.get('content-length')||'0')>4096)throw Error('Te groot verzoek');const text=await req.text();if(text.length>4096)throw Error('Te groot verzoek');const data=JSON.parse(text);if(!data||typeof data!=='object'||Array.isArray(data))throw Error('Ongeldige gegevens');return data;}
+async function bodyData(req,maxBytes=4096){if(Number(req.headers.get('content-length')||'0')>maxBytes)throw Error('Te groot verzoek');const text=await req.text();if(text.length>maxBytes)throw Error('Te groot verzoek');const data=JSON.parse(text);if(!data||typeof data!=='object'||Array.isArray(data))throw Error('Ongeldige gegevens');return data;}
 function groupStub(env,room){return env.GROUPS.get(env.GROUPS.idFromName('skije-group:'+room));}
 function sameOrigin(req){const origin=req.headers.get('origin');return !origin||origin===new URL(req.url).origin;}
 function adminReady(env){return typeof env.GROUP_CREATE_SECRET==='string'&&env.GROUP_CREATE_SECRET.length>=16;}
@@ -97,7 +102,7 @@ export default {
     return groupStub(env,room).fetch(new Request('https://group.internal/socket?member='+encodeURIComponent(memberId)+'&token='+encodeURIComponent(token),{headers:request.headers}));
    }
    if(request.method!=='POST')return fail('Alleen POST toegestaan.',405);
-   let data;try{data=await bodyData(request);}catch{return fail('Ongeldig of te groot verzoek.',400);}
+   let data;try{data=await bodyData(request,p==='/api/group/photo'?PHOTO_MAX_REQUEST:4096);}catch{return fail('Ongeldig of te groot verzoek.',400);}
    if(p==='/api/group/create'){
     if(!env.GROUPS)return fail('De GROUPS-opslag ontbreekt in Cloudflare.',503);
     if(!adminReady(env))return fail('Stel op Cloudflare GROUP_CREATE_SECRET van minimaal 16 tekens in.',503);
@@ -112,7 +117,7 @@ export default {
      return result({...payload,room},response.status);
     }catch{return fail('De groepsopslag kon de groep niet bewaren. Controleer de Cloudflare Durable Objects-logs.',503);}
    }
-   if(['/api/group/join','/api/group/leave','/api/group/close'].includes(p)){
+   if(['/api/group/join','/api/group/leave','/api/group/close','/api/group/state','/api/group/message','/api/group/meeting','/api/group/photo'].includes(p)){
     const room=data.room||'';
     if(!ROOM_RE.test(room))return fail('Groepscode niet geldig.',400);
     const op=p.slice('/api/group/'.length);
@@ -151,7 +156,7 @@ export class SkiGroup {
    const pair=new WebSocketPair();const [client,server]=Object.values(pair);
    const attachment={id:member.id,name:member.name,last:null,at:0};
    this.ctx.acceptWebSocket(server);server.serializeAttachment(attachment);
-   this.safeSend(server,{type:'welcome',groupName:meta.name,you:member.id,owner:!!member.owner,maxMembers:GROUP_LIMIT,peers:this.peers(server)});
+   this.safeSend(server,{type:'welcome',groupName:meta.name,you:member.id,owner:!!member.owner,maxMembers:GROUP_LIMIT,members:await this.members(),peers:this.peers(server),...await this.socialState()});
    this.broadcast({type:'joined',id:member.id,name:member.name,at:Date.now()},server);
    return new Response(null,{status:101,webSocket:client});
   }
@@ -179,17 +184,79 @@ export class SkiGroup {
    });
    if(!accepted)return fail('De skigroep heeft het maximum van 50 leden bereikt.',409);
    await this.ctx.storage.setAlarm(t+GROUP_LIFETIME_MS);
+   this.broadcast({type:'member-added',id,name:memberName,at:t});
    return result({ok:true,groupName:meta.name,memberId:id,token,owner:false,maxMembers:GROUP_LIMIT});
+  }
+  if(op==='/photo'){
+   const member=await this.memberAuth(data.memberId,data.token);
+   if(!member)return fail('Alleen leden van deze groep kunnen de groepsfoto zien.',401);
+   if(data.action==='get'){
+    const photo=await this.ctx.storage.get('group:photo');
+    return result({ok:true,photo:photo||null});
+   }
+   if(!member.owner)return fail('Alleen de groepsbeheerder mag de groepsfoto wijzigen.',403);
+   if(data.action==='remove'){
+    await this.ctx.storage.delete('group:photo');
+    this.broadcast({type:'group-photo-updated',at:Date.now()});
+    return result({ok:true,photo:null});
+   }
+   if(data.action!=='save')return fail('Ongeldige fotobewerking.',400);
+   const encoded=data.image;
+   if(typeof encoded!=='string'||encoded.length<100||encoded.length>PHOTO_MAX_BASE64||!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded))return fail('Upload een kleinere JPEG-foto.',400);
+   let binary;
+   try{binary=atob(encoded);}catch{return fail('Ongeldige JPEG-gegevens.',400);}
+   if(binary.length<100||binary.length>68000||binary.charCodeAt(0)!==255||binary.charCodeAt(1)!==216||binary.charCodeAt(2)!==255||binary.charCodeAt(binary.length-2)!==255||binary.charCodeAt(binary.length-1)!==217)return fail('Dit is geen geldige JPEG-foto.',400);
+   const photo={image:encoded,at:Date.now(),by:member.id,name:member.name};
+   await this.ctx.storage.put('group:photo',photo);
+   this.broadcast({type:'group-photo-updated',at:photo.at});
+   return result({ok:true,photo:{at:photo.at,by:photo.by,name:photo.name}});
+  }
+  if(op==='/state'||op==='/message'||op==='/meeting'){
+   const member=await this.memberAuth(data.memberId,data.token);
+   if(!member)return fail('Je bent niet aangemeld bij deze skigroep.',401);
+   if(op==='/state')return result({ok:true,...await this.socialState()});
+   if(op==='/message'){
+    const messageText=String(data.text??'').normalize('NFC').replace(/[\u0000-\u001f\u007f]/g,' ').trim();
+    if(!messageText||messageText.length>CHAT_TEXT_LIMIT)return fail('Bericht moet 1 tot 500 tekens bevatten.');
+    const now=Date.now(),last=Number(await this.ctx.storage.get('chat:rate:'+member.id)||0);
+    if(now-last<2000)return fail('Even wachten voordat je nog een bericht stuurt.',429);
+    const messages=(await this.chatHistory()).slice(-(CHAT_LIMIT-1));
+    const message={id:crypto.randomUUID(),memberId:member.id,name:member.name,text:messageText,at:now};
+    messages.push(message);
+    await this.ctx.storage.put('chat:messages',messages);
+    await this.ctx.storage.put('chat:rate:'+member.id,now);
+    this.broadcast({type:'chat-message',message});
+    return result({ok:true,message});
+   }
+   const previous=await this.ctx.storage.get('group:meeting');
+   if(data.action==='clear'){
+    if(previous&&previous.by!==member.id&&!member.owner)return fail('Alleen de organisator of groepsbeheerder kan de afspraak verwijderen.',403);
+    await this.ctx.storage.delete('group:meeting');
+    this.broadcast({type:'meeting-updated',meeting:null});
+    return result({ok:true,meeting:null});
+   }
+   const place=nameText(data.place,90),note=nameText(data.note,180);
+   const when=typeof data.when==='string'?data.when:'';
+   const timestamp=Date.parse(when);
+   const now=Date.now();
+   if(!place)return fail('Vul een ontmoetingsplek in.');
+   if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(when)||!Number.isFinite(timestamp)||timestamp<now-300000||timestamp>now+180*86400000)return fail('Kies een geldige afspraak binnen 180 dagen.');
+   const meeting={place,note,when:new Date(timestamp).toISOString(),by:member.id,name:member.name,at:now};
+   await this.ctx.storage.put('group:meeting',meeting);
+   this.broadcast({type:'meeting-updated',meeting});
+   return result({ok:true,meeting});
   }
   if(op==='/leave'||op==='/close'){
    const member=await this.memberAuth(data.memberId,data.token);
    if(!member)return fail('Je bent niet meer aangemeld.',401);
    if(op==='/close'&&!member.owner)return fail('Alleen de groepsbeheerder mag de groep sluiten.',403);
    if(op==='/close'){
+    this.broadcast({type:'group-closed'});
     for(const ws of this.ctx.getWebSockets())try{ws.close(1000,'Groep gesloten');}catch{}
     await this.ctx.storage.deleteAll();return result({ok:true,closed:true});
    }
    await this.ctx.storage.delete('m:'+member.id);
+   this.broadcast({type:'member-removed',id:member.id,at:Date.now()});
    for(const ws of this.ctx.getWebSockets())if(ws.deserializeAttachment()?.id===member.id){try{ws.close(1000,'Groep verlaten');}catch{}}
    return result({ok:true,left:true});
   }
@@ -205,11 +272,27 @@ export class SkiGroup {
  }
  safeSend(ws,data){try{ws.send(JSON.stringify(data));}catch{}}
  peers(exclude=null){const t=Date.now();const unique=new Map();for(const s of this.ctx.getWebSockets()){
-  if(s===exclude)continue;
+  if(s===exclude||s.readyState!==WebSocket.OPEN)continue;
   const a=s.deserializeAttachment();if(!a||!a.id)continue;
   const previous=unique.get(a.id);if(previous&&previous.at>=a.at)continue;
   unique.set(a.id,{id:a.id,name:a.name,at:a.at||0,last:a.last&&t-a.last.at<GPS_TTL_MS?a.last:null});
  }return [...unique.values()].slice(0,GROUP_LIMIT);}
+ async chatHistory(){
+  const all=await this.ctx.storage.get('chat:messages');
+  return Array.isArray(all)?all.filter(item=>item&&Number.isFinite(item.at)&&Date.now()-item.at<SOCIAL_KEEP_MS).slice(-CHAT_LIMIT):[];
+ }
+ async socialState(){
+  const [meeting,messages]=await Promise.all([this.ctx.storage.get('group:meeting'),this.chatHistory()]);
+  return {meeting:meeting||null,messages};
+ }
+ async members(){
+  const stored=await this.ctx.storage.list({prefix:'m:'});
+  const active=new Map(this.peers().map(peer=>[peer.id,peer]));
+  return [...stored.values()].map(member=>{
+   const connection=active.get(member.id);
+   return {id:member.id,name:member.name,online:!!connection,last:connection?.last||null,at:connection?.at||0};
+  }).slice(0,GROUP_LIMIT);
+ }
  broadcast(data,except=null){for(const s of this.ctx.getWebSockets()){if(s!==except)this.safeSend(s,data);}}
  async webSocketMessage(ws,message){
   if(typeof message!=='string'||message.length>1200)return;
@@ -228,9 +311,10 @@ export class SkiGroup {
   a.last=fix;a.at=t;ws.serializeAttachment(a);
   this.broadcast({type:'position',id:a.id,name:a.name,...fix},null);
  }
+ hasOtherSocket(id,exclude){return this.ctx.getWebSockets().some(s=>s!==exclude&&s.readyState===WebSocket.OPEN&&s.deserializeAttachment()?.id===id);}
  async webSocketClose(ws,code,reason){
-  const a=ws.deserializeAttachment();if(a?.id)this.broadcast({type:'left',id:a.id,at:Date.now()},ws);
+  const a=ws.deserializeAttachment();if(a?.id&&!this.hasOtherSocket(a.id,ws))this.broadcast({type:'left',id:a.id,at:Date.now()},ws);
   try{if(code>=1000&&code<5000&&![1004,1005,1006,1015].includes(code))ws.close(code,reason);else ws.close();}catch{}
  }
- async webSocketError(ws){const a=ws.deserializeAttachment();if(a?.id)this.broadcast({type:'left',id:a.id,at:Date.now()},ws);try{ws.close();}catch{}}
+ async webSocketError(ws){const a=ws.deserializeAttachment();if(a?.id&&!this.hasOtherSocket(a.id,ws))this.broadcast({type:'left',id:a.id,at:Date.now()},ws);try{ws.close();}catch{}}
 }

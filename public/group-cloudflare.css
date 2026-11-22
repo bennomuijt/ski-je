@@ -28,3 +28,42 @@
 .cf-troubleshoot{border-top:1px solid #d4e7f0;padding-top:7px}
 .cf-troubleshoot>summary{min-height:47px;display:flex;align-items:center;font-size:13px;cursor:pointer;color:#235a7a}
 @media(max-width:430px){.cf-mode-body{padding:10px}.cf-mode>summary{font-size:14px}}
+
+/* Persistent roster: offline members stay visible; only live GPS gets a map action. */
+.cf-member{opacity:1}
+.cf-show-member{align-self:flex-start;margin-top:5px;min-height:38px}
+.cf-map-name{background:#fff;color:#163f60;font-size:12px;font-weight:800;border:1px solid #b9d8e9;border-radius:8px;padding:2px 7px;box-shadow:0 2px 6px #113b542a}
+
+/* Shared meeting and group messaging, compact on narrow Android screens. */
+.cf-social{border-top:1px solid #d7e8f2;margin-top:17px;padding-top:12px;display:grid;gap:9px}
+.cf-social h3{margin:8px 0 3px}
+.cf-meeting-view{padding:13px;border:1px solid #b8ddeb;background:#eef9fe;border-radius:13px;font-size:14px;line-height:1.45}
+.cf-meeting-view strong{font-size:15px;color:#074e80}
+.cf-meeting-view p{margin:6px 0 0;overflow-wrap:anywhere}
+.cf-meeting-edit{margin:0;background:#f8fcff;border:1px solid #d5eaf3}
+.cf-meeting-edit summary{min-height:44px;display:flex;align-items:center}
+.cf-meeting-edit .field{margin:10px 0}
+.cf-meeting-edit .field label{display:block;font-size:12px;font-weight:750;margin-bottom:5px}
+.cf-meeting-edit input{width:100%;min-height:48px;border:1px solid #b7d8e7;border-radius:10px;padding:9px 11px;font-size:16px}
+.cf-chat-list{display:flex;flex-direction:column;gap:9px;min-height:125px;max-height:330px;overflow:auto;overscroll-behavior:contain;padding:11px;background:#f5faff;border:1px solid #d7e8f2;border-radius:14px}
+.cf-chat-item{align-self:flex-start;background:#fff;border:1px solid #deebf3;border-radius:12px;padding:9px 11px;max-width:95%;min-width:80px;overflow-wrap:anywhere}
+.cf-chat-item.cf-chat-own{align-self:flex-end;background:#dff4ff;border-color:#addaf0}
+.cf-chat-item small{display:block;color:#5b7287;margin-bottom:4px;font-size:11px}
+.cf-chat-text{white-space:pre-wrap;font-size:14px;line-height:1.4}
+.cf-chat-form{display:grid;gap:6px}
+.cf-chat-compose{display:flex;gap:7px;align-items:stretch}
+.cf-chat-compose input{flex:1;min-width:0;border:1px solid #bed5e5;border-radius:11px;min-height:49px;padding:10px;font-size:16px}
+.cf-chat-compose button{min-width:85px;min-height:49px}
+@media(max-width:430px){.cf-chat-compose button{min-width:74px;padding:7px;font-size:13px}}
+
+/* Team photo: visible to all members, photo change restricted to group owner. */
+.cf-group-photo-section{margin:12px 0 17px}
+.cf-group-photo-frame{border:1px solid #c5e0ee;border-radius:15px;background:linear-gradient(120deg,#daeffc,#f3fbff);height:clamp(160px,30vw,245px);width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.cf-group-photo-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.cf-group-photo-frame img[hidden],.cf-group-photo-placeholder[hidden],.cf-group-photo-controls[hidden]{display:none!important}
+.cf-group-photo-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#326482;font-size:35px}
+.cf-group-photo-placeholder span{font-size:13px;font-weight:800}
+.cf-group-photo-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 4px}
+.cf-group-photo-controls .btn{flex:1 1 180px;min-height:48px}
+#cf-group-photo-status{margin:8px 0 3px;overflow-wrap:anywhere}
+@media(max-width:480px){.cf-group-photo-frame{height:190px}.cf-group-photo-controls .btn{flex-basis:100%}}

@@ -321,3 +321,12 @@ body.utility-open{overflow:hidden}
 
 /* SkiWelt 2026/27 reference routes, missing connections and route audit */
 .official-tour-controls{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.official-tour-controls select,.official-tour-controls input{flex:1 1 180px;min-width:0;min-height:45px;border:1px solid #bad6e4;border-radius:9px;background:#fff;color:#124764;padding:8px}.official-tour-rows{max-height:min(55vh,540px);overflow:auto;overscroll-behavior:contain;display:grid;gap:7px}.official-tour-stage{border:1px solid #c9e0ed;border-left:5px solid #2c875d;background:#f7fbfd;padding:10px;border-radius:9px;overflow-wrap:anywhere}.official-tour-piste{margin:4px 0;font-size:13px;color:#1c6287}.official-tour-missing{font-size:12px;color:#8e561e;margin:5px 0}.official-tour-blocked{background:#fff1ee;border-left-color:#be3939}.route-gap-audit{border:1px solid #ebbc8d;background:#fff9f1}.route-gap-line{font-size:13px;border-bottom:1px solid #efddc9;margin:0;padding:9px 0;overflow-wrap:anywhere}
+
+/* 2026-11-22: route stays tucked away while export/share controls remain immediately reachable. */
+#plan-output .day-plan-actions{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0 5px}
+#plan-output .day-plan-actions .btn{flex:1 1 205px;min-height:50px;white-space:normal;text-align:center}
+#plan-output .day-route-collapsible{margin:12px 0;border:1px solid #bcdceb;border-radius:14px;background:#f7fbff;padding:7px 11px}
+#plan-output .day-route-collapsible>summary{display:list-item;min-height:50px;align-content:center;font-size:15px;font-weight:800;cursor:pointer;padding:10px 5px;color:#0b5e8e;touch-action:manipulation}
+#plan-output .day-route-collapsible>summary:focus-visible{outline:3px solid #f5a128;outline-offset:2px;border-radius:7px}
+#plan-output .day-route-collapsible[open]>summary{border-bottom:1px solid #d5e7ef;margin-bottom:12px}
+@media(max-width:480px){#plan-output .day-plan-actions .btn{flex-basis:100%;min-height:50px}}

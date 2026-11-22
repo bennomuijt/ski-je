@@ -583,7 +583,7 @@
   if($('issue-gps').checked&&latestPos?.coords){i.location={lat:latestPos.coords.latitude,lng:latestPos.coords.longitude,accuracy:latestPos.coords.accuracy,at:latestPos.timestamp};}
   store.issues.unshift(i);store.issues=store.issues.slice(0,400);persist();$('issue-text').value='';renderIssues();showToast('Correctie offline opgeslagen.');
  });
- $('issues-export').addEventListener('click',()=>downloadJSON('SKI-je-veldcontroles-'+dateISO()+'.json',{issues:store.issues}));
+ $('issues-export').addEventListener('click',()=>downloadJSON('SKI-je-groeptest-opmerkingen-'+dateISO()+'.json',{appVersion:document.querySelector('.app-version')?.textContent?.trim()||'onbekend',exportedAt:new Date().toISOString(),issues:store.issues}));
  renderIssues();
  // Private exports and explicit reset. Nothing sent anywhere by default.
  $('export-all').addEventListener('click',()=>downloadJSON('SKI-je-volledige-backup-'+dateISO()+'.json',{version:1,exportedAt:new Date().toISOString(),extra:store,routePreferences:JSON.parse(localStorage.getItem('skije-preview-v1')||'null')}));

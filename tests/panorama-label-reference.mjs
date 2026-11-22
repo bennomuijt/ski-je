@@ -26,5 +26,6 @@ const labels=Buffer.from('<svg width="'+cw+'" height="'+ch+'" xmlns="http://www.
 await sharp(image).extract({left,top,width:cw,height:ch}).composite([{input:labels}]).png().toFile('test-artifacts/lifts-22-23-pdf-coordinates-on-official-jpg.png');
 await sharp(image).extract({left,top,width:cw,height:ch}).png().toFile('test-artifacts/lifts-22-23-reference-only.png');
 const sum=createHash('sha256').update(readFileSync(image)).digest('hex');
+if(sum!=='f94ac4a7c2f7e78db17b49788cf543eab98508c3a87497dd97774584fa6e7c2c')throw Error('SkiWelt heeft de officiële kaart gewijzigd: herijk liftnummers voordat je markers publiceert.');
 writeFileSync('test-artifacts/panorama-dimensions.json',JSON.stringify({source:origin,sha256:sum,width:w,height:h,ratio:aspect,markers,notes:'Numbers are printed lift-label positions from official PDF research; compare visually with 2026/27 JPG.'},null,2));
 console.log(JSON.stringify({width:w,height:h,ratio:aspect,source:origin,sha256:sum,markers}));

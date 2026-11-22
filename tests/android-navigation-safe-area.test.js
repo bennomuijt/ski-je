@@ -13,7 +13,7 @@ test('Android PWA footer reserves system navigation clearance and body scroll sp
  assert.match(html,/\.bottom button\{[^}]*min-height:59px/);
 });
 
-const script=html.match(/<script>\s*\/\/ Cloudflare-only PWA:([\s\S]*?)<\/script>/)?.[1];
+const script=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 test('Android footer clearance activates only in installed app display mode',()=>{
  assert.ok(script,'early Android detection script missing');
  function detect(userAgent,displayMode,referrer=''){

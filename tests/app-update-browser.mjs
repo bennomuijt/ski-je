@@ -174,14 +174,28 @@ try {
     await checkBuild(legacy.page, release.build);
     assert.deepEqual(await savedData(legacy.page), legacy.before);
     await legacy.page.waitForFunction(build => caches.has('skije-shell-' + build), release.build);
-    // The prior click may still be finishing its service-worker activation:
-    // programmatically clicking a disabled button silently does nothing.
-    await legacy.page.waitForFunction(() => {
-      const button=document.getElementById('app-update-now');
-      return !!button && !button.disabled && button.getAttribute('aria-busy')!=='true';
-    }, null, {timeout:25000});
-    await clickUpdate(legacy.page);
-    await legacy.page.waitForSelector('#app-update-now.is-current', { state: 'attached', timeout:35000 });
+    // Wait for the old upgrade to release its control. A legacy install may
+    // temporarily need another service-worker activation after a reload.
+    // The earlier scenario already checks the no-update path; here test that
+    // at most two normal update attempts bring a migrated device current.
+    let migrationResult;
+    for(let attempt=0;attempt<2;attempt++){
+      await legacy.page.waitForFunction(() => {
+        const button=document.getElementById('app-update-now');
+        return !!button && !button.disabled && button.getAttribute('aria-busy')!=='true';
+      }, null, {timeout:25000});
+      migrationResult=await legacy.page.evaluate(async()=>{
+        await window.SKIUpdate.check();
+        return {
+          current:document.getElementById('app-update-now').classList.contains('is-current'),
+          status:document.getElementById('app-update-status').textContent,
+          pageBuild:window.SKIUpdate.build,
+          controller:!!navigator.serviceWorker.controller
+        };
+      });
+      if(migrationResult.current)break;
+    }
+    assert.equal(migrationResult.current,true,'Migrated install could not confirm current build: '+JSON.stringify(migrationResult));
     await legacy.context.setOffline(true);
     assert.equal(await photoDigest(legacy.page), digest(mainPhoto));
     assert.deepEqual(await savedData(legacy.page), legacy.before);

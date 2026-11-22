@@ -60,7 +60,7 @@
   const feature=row[2]===-1?null:graph.features[row[2]];
   if(!feature)return true;
   if(closed.has(feature.kind+':'+String(feature.ref||'').toLowerCase()))return false;
-  if(feature.kind==='lift')return true;
+  if(feature.kind==='lift')return opts.noLifts!==true;
   const difficulty=feature.difficulty;
   if(difficulty==='freeride'||difficulty==='extreme')return false; // Ski touring is not a groomed piste.
   if(['advanced','expert'].includes(difficulty))return opts.allowBlack===true&&opts.skill!=='blue';
@@ -196,6 +196,11 @@
   result.notes.push('Route volgt aaneengesloten OpenSkiData/OSM-lijnen; de getekende knooppunten zijn geen door SkiWelt bevestigde overstappen.');
   return{plan:result,itinerary};
  }
+ const hopfgartenPresets=Object.freeze({
+  salve:{label:'Hohe Salve & Schernthann',before:'Hohe Salve',after:'lift:24:top',lunch:'Hohe Salve'},
+  foisching:{label:'Foisching & Rigi',before:'lift:25:top',after:'lift:23:top',lunch:'lift:20:top'},
+  itter:{label:'Itter & KRAFTalm',before:'lift:30:middle1',after:'Hohe Salve',lunch:'lift:30:middle1'}
+ });
  function build(options={},closures=[]){
   if(!graph)return{ok:false,reason:'Kaartnetwerk nog niet geladen. Probeer opnieuw.'};
   const begin=clock(options.departure||'09:00'),end=clock(options.returnTime||'16:00');
@@ -220,6 +225,31 @@
    return groupCache.get(key);
   };
   const start=graph.stations[options.start]?.node,finish=graph.stations[options.finish]?.node;
+  const hopMid=graph.stations['lift:20:top']?.node,hopValley=graph.stations['Hopfgarten dalstation']?.node;
+  const isHopfgarten=options.start==='Hopfgarten dalstation'&&
+   (options.finish==='Hopfgarten dalstation'||options.finish==='Hopfgarten tussenstation'||options.finish==='lift:20:top');
+  const midRequested=options.finish!=='Hopfgarten dalstation'||options.hopfgartenEndMode==='middle';
+  const endMode=isHopfgarten?(midRequested?'middle':'valley'):'normal';
+  const preset=isHopfgarten?hopfgartenPresets[options.routePreset]||null:null;
+  const descentOpts={...opts,noLifts:true};
+  const valleyDescent=isHopfgarten&&Number.isInteger(hopMid)&&Number.isInteger(hopValley)?
+   shortest(hopMid,hopValley,descentOpts,closures):null;
+  const descentLegs=valleyDescent?group(valleyDescent,opts):[];
+  const descentIsValid=descentLegs.some(s=>s.type==='piste'&&s.code==='20a')&&
+   descentLegs.every(s=>s.type!=='lift')&&
+   descentLegs.at(-1)?.code==='20a';
+  const validDescent=descentIsValid?valleyDescent:null;
+  if(endMode==='valley'&&!validDescent)return {ok:false,
+   reason:'De laatste afdaling via piste 20a is niet aantoonbaar bereikbaar of is als gesloten gemeld. Kies het middenstation als eindpunt en controleer het vervoer naar het dal.'};
+  const routeFinish=isHopfgarten?hopMid:finish;
+  const optionalDescent={available:!!validDescent,required:endMode==='valley',
+   departureStation:'Salvenbahn I middenstation',arrivalStation:'Hopfgarten dalstation',
+   piste:'20a',minutes:validDescent?descentLegs.reduce((n,s)=>n+s.minutes,0):0,
+   steps:validDescent?descentLegs:[],reason:validDescent?
+   'Piste 20a is kaarttechnisch bereikbaar zonder een lift. Alleen mogelijk als de piste daadwerkelijk open en veilig is.':
+   'Piste 20a is niet beschikbaar in de huidige kaart- en sluitingsgegevens; voor het dal is mogelijk nog een lift nodig.'};
+  const endReserve=endMode==='middle'&&validDescent?Math.max(30,optionalDescent.minutes+10):0;
+  const routeLimit=limit-endReserve;
   if(!Number.isInteger(start)||!Number.isInteger(finish))return{ok:false,reason:'Start- of eindstation ontbreekt in het geografische liftnetwerk.'};
   const wanted=Array.isArray(options.wishes)?options.wishes.filter(Boolean):[];
   const peaks={'top:salve':'Hohe Salve','top:hartkaiser':'Hartkaiser bergstation','top:brandstadl':'Brandstadl bergstation'};
@@ -266,14 +296,19 @@
   const autoStations=['Brandstadl bergstation','Hartkaiser bergstation','Hohe Salve',
    'lift:30:middle1','lift:40:top','lift:112:top','lift:114:top'];
   const autoLunch=autoStations.map(id=>graph.stations[id]?.node).filter(id=>Number.isInteger(id)&&lunchLabels.has(id));
-  const candidates=useLunch?(requestedLunch!==null?[requestedLunch]:autoLunch):[start];
+  const presetLunch=preset?graph.stations[preset.lunch]?.node:null;
+  const candidates=useLunch?(requestedLunch!==null?[requestedLunch]:
+   Number.isInteger(presetLunch)?[presetLunch]:autoLunch):[start];
   const scenic=['Brandstadl bergstation','Hartkaiser bergstation','Hohe Salve','Hopfgarten tussenstation',
    'Brixen dalstation','Söll dalstation'].map(x=>graph.stations[x]?.node).filter(Number.isInteger);
   const breakMinutes=(options.morningBreak?Number(options.morningDuration??30):0)+(options.afternoonBreak?Number(options.afternoonDuration??30):0);
-  const direct=find(start,finish,opts,closures);
+  const direct=isHopfgarten?find(start,routeFinish):find(start,finish);
+  if(preset&&(!graph.stations[preset.before]||!graph.stations[preset.after]))
+   return{ok:false,reason:'De gekozen dagroute heeft een niet gevonden liftstation in de kaart. De app mag dit niet overslaan.'};
   if(!direct)return{ok:false,reason:'Geen aaneengesloten kaartverbinding tussen deze stations. De planner verzint geen pistes of liften.'};
   const bestOptions=[];
-  const firstStops=selectedTarget!==null?[selectedTarget]:[null,...scenic];
+  const firstStops=preset?[graph.stations[preset.before].node]:
+   selectedTarget!==null?[selectedTarget]:[null,...scenic];
   for(const lunch of candidates)for(const beforeTarget of firstStops){
    let before=find(start,beforeTarget??lunch,opts,closures);
    if(!before)continue;
@@ -281,19 +316,30 @@
    if(!before)continue;
    const beforeGroups=groupsFor(before,opts),beforeMin=beforeGroups.reduce((n,s)=>n+s.minutes,0);
    if(useLunch&&begin+beforeMin+Math.max(10,options.morningBreak?Number(options.morningDuration??30):0)>lunchClock)continue;
-   for(const afterTarget of [null,...scenic]){
-    let post=find(lunch,afterTarget??finish,opts,closures);
-    if(!post)continue;
-    let back={edgeIds:[],minutes:0,metres:0};
-    if(afterTarget!==null){back=find(afterTarget,finish,opts,closures);if(!back)continue;}
+   const afterStops=preset?[graph.stations[preset.after].node]:[null,...scenic];
+   for(const afterTarget of afterStops){
+    let post,back;
+    if(isHopfgarten){
+     // Last return leg to the midpoint is always ski-only. The valley descent
+     // is a separate verified piste-only suffix, never an unannounced gondola.
+     post=afterTarget===null?{edgeIds:[],minutes:0,metres:0}:find(lunch,afterTarget);
+     back=shortest(afterTarget===null?lunch:afterTarget,routeFinish,descentOpts,closures);
+     if(!post||!back)continue;
+     if(endMode==='valley')back=combine(back,validDescent);
+    }else{
+     post=find(lunch,afterTarget??finish);
+     if(!post)continue;
+     back={edgeIds:[],minutes:0,metres:0};
+     if(afterTarget!==null){back=find(afterTarget,finish);if(!back)continue;}
+    }
     const postMin=groupsFor(post,opts).reduce((n,s)=>n+s.minutes,0);
     const backMin=groupsFor(back,opts).reduce((n,s)=>n+s.minutes,0);
     const afterTime=(useLunch?lunchClock+Number(options.lunchDuration??60):begin+beforeMin)+postMin+backMin;
-    if(afterTime+breakMinutes>limit)continue;
+    if(afterTime+breakMinutes>routeLimit)continue;
     const all=[...before.edgeIds,...post.edgeIds,...back.edgeIds];
     if(!all.length)continue;
     const chain={edgeIds:all};
-    if(!validateRoute(chain,start,finish))continue;
+    if(!validateRoute(chain,start,endMode==='valley'?hopValley:routeFinish))continue;
     const grouped=groupsFor(chain,opts);
     const distinctRuns=new Set(grouped.filter(x=>x.type==='piste').map(x=>x.code).filter(Boolean));
     const distinctLifts=new Set(grouped.filter(x=>x.type==='lift').map(x=>x.code).filter(Boolean));
@@ -314,11 +360,15 @@
   if(!chosen)return{ok:false,reason:'Geen volledige route met alle gewenste pistes, lunch en terugweg binnen de beschikbare tijd. Er zijn geen aansluitingen overgeslagen.'};
   const lunchName=useLunch?(rest?'Lunch bij '+rest+' (exacte huttoegang controleren)':
    'Lunch bij '+(lunchLabels.get(chosen.lunch)||'restaurantomgeving')+' (exacte toegang controleren)'):'';
-  const made=makePlan(options,{pre:chosen.before,post:chosen.post,back:chosen.back},lunchName,begin,limit,margin);
+  const planOptions=endMode==='middle'?{...options,finish:'Salvenbahn I middenstation (Hopfgarten)'}:options;
+  const made=makePlan(planOptions,{pre:chosen.before,post:chosen.post,back:chosen.back},
+   lunchName,begin,routeLimit,margin+endReserve);
   if(!made.plan.ok)return{ok:false,reason:made.plan.reason};
   const path={edgeIds:[...chosen.before.edgeIds,...chosen.post.edgeIds,...chosen.back.edgeIds]};
   const steps=chosen.grouped;
   const notes=[
+   ...(isHopfgarten?['Hopfgarten: de volledige terugweg eindigt '+(endMode==='valley'?'na piste 20a in het dal.':'bij het middenstation van Salvenbahn I.'),
+    'Piste 20a kan zonder lift worden geskied, mits de piste daadwerkelijk open is.']:[]),
    '⚠️ Geo-kaartverbindingen komen uit OpenSkiData/OpenStreetMap, niet uit GPS-ijkpunten of een door SkiWelt goedgekeurde kruisingentabel.',
    '⚠️ Lift- en pistestatus en sluitingstijden zijn nog niet live gecontroleerd. Volg altijd de officiële pisteborden.',
    '⚠️ Terreinhoogtes zijn afgeleid uit een 90 m hoogtemodel; voor kleine paden en kruisingen kan de richting afwijken.'
@@ -335,14 +385,19 @@
    liftMinutes:total.filter(s=>s.type==='lift').reduce((n,s)=>n+s.minutes,0),
    pisteMinutes:total.filter(s=>s.type==='piste').reduce((n,s)=>n+s.minutes,0),
    pisteKm,liftKm,distanceFromGeometry:true};
-  const route={ok:true,steps:[{from:options.start,to:options.finish,via:'Volledige geografische route: '+steps.filter(x=>x.type==='lift').length+
+  const route={ok:true,steps:[{from:options.start,to:planOptions.finish,via:'Volledige geografische route: '+steps.filter(x=>x.type==='lift').length+
     ' liften, '+steps.filter(x=>x.type==='piste').length+' pisteonderdelen en '+steps.filter(x=>x.type==='transfer').length+' overstappen',
    minutes:itinerary.routeMinutes}],notes,estimated:true,graphBased:true,
    phases:{preLunch:chosen.before,postLunch:chosen.post,return:chosen.back},
    coordinates:[graph.nodes[start].slice(0,2),...path.edgeIds.map(i=>graph.nodes[graph.edges[i][1]].slice(0,2))],
    returnEstimate:groupsFor(chosen.back,opts).reduce((n,s)=>n+s.minutes,0)};
+  if(isHopfgarten&&endMode==='middle'){
+   made.plan.notes.push('Optionele dalafdaling 20a: '+optionalDescent.reason+
+    (validDescent?' Reken ongeveer '+optionalDescent.minutes+' minuten plus extra veiligheidsreserve.':''));
+  }
   return{ok:true,plan:made.plan,itinerary,route,path,features:steps,
-   graphBased:true,notes,options};
+   graphBased:true,notes,options,endMode,routePreset:preset?.label||null,
+   optionalDescent:isHopfgarten?optionalDescent:null};
  }
- return{initialize,load,build,shortest,validateRoute,group,clock,hhmm,closureSet};
+ return{initialize,load,build,shortest,validateRoute,group,clock,hhmm,closureSet,hopfgartenPresets};
 });

@@ -229,7 +229,7 @@
  for(const name of ['pointercancel','lostpointercapture'])view.addEventListener(name,event=>starts.delete(event.pointerId));
  function update(){
   layer.hidden=!toggle.checked;
-  count.textContent=toggle.checked?lifts.length+' liften in '+areas.length+' gebiedsgroepen':'Liftmarkeringen verborgen';
+  count.textContent=toggle.checked?printedPositions.length+' kaartlabels · '+lifts.length+' liften in lijst':'Markeringen uit · tik op een wit liftnummer';
   if(!toggle.checked)info.hidden=true;
   if(toggle.checked)requestAnimationFrame(position);
  }

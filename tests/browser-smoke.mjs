@@ -134,7 +134,7 @@ await add('different starting and finishing villages: Ellmau to Söll',async()=>
  const graph=await page.evaluate(()=>fetch('./skiwelt-network-graph.json').then(r=>r.json()));
  const ids=actual.path.edgeIds,stations=graph.stations;
  let at=stations[a.value].node;
- for(const id of ids){const e=graph.edges[id];assert.equal(e[0],at,'disconnected map edge');at=e[1];}
+ for(const id of ids){const e=actual.path.edgeSegments[ids.indexOf(id)];assert.equal(e[0],at,'disconnected map edge');at=e[1];}
  assert.equal(at,stations[b.value].node,'route misses selected end station');
  const lines=actual.itinerary.steps.filter(x=>['lift','piste','transfer'].includes(x.type));
  for(let i=1;i<lines.length;i++){
@@ -158,8 +158,8 @@ await add('closure excludes selected piste from a connected geographic route',as
    assert.ok(!result.itinerary.steps.some(step=>step.type==='piste'&&step.code==='99a'),'reported closure included in route');
    const graph=await page.evaluate(()=>fetch('./skiwelt-network-graph.json').then(r=>r.json()));
    const ids=result.path.edgeIds;
-   for(let i=1;i<ids.length;i++)assert.equal(graph.edges[ids[i-1]][1],graph.edges[ids[i]][0],'closure creates unjoined map steps');
-   assert.ok(!ids.some(i=>{const f=graph.features[graph.edges[i][2]];return f?.kind==='piste'&&f.ref==='99a';}));
+   for(let i=1;i<ids.length;i++)assert.equal(result.path.edgeSegments[i-1][1],result.path.edgeSegments[i][0],'closure creates unjoined map steps');
+   assert.ok(!ids.some(i=>{const f=graph.features[result.path.edgeSegments[ids.indexOf(i)][2]];return f?.kind==='piste'&&f.ref==='99a';}));
   }else assert.match(await page.locator('#plan-output').innerText(),/geen|onmogelijk|controleer|niet/i);
  }finally{
   await page.locator('.closure-row button').first().click();

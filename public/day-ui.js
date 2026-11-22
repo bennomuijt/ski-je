@@ -132,6 +132,13 @@
    kms.append(el('span','day-pill',title+': '+(count?(estimated?'ca. ':'')+km.toFixed(2)+' km'+(estimated?' (schatting)':''):'niet bekend')));
   }
   output.append(kms,el('p','hint',lengths.note||'Alleen getoonde onderdelen, geen volledige officiële dagafstand.'));
+  // Keep downloads and sharing above the lengthy day route; users may open it on demand.
+  const routeDetails=el('details','day-route-collapsible');
+  routeDetails.id='day-route-collapsible';
+  const routeSummary=el('summary','day-route-summary','🧭 Bekijk volledige route · '+itinerary.steps.length+' onderdelen');
+  routeSummary.setAttribute('aria-label','Volledige route met '+itinerary.steps.length+' onderdelen tonen of verbergen');
+  routeDetails.append(routeSummary);
+  output.append(routeDetails);
   const timeline=el('div','day-timeline');
   for(const s of plan.sections){
    const row=el('div','day-timeline-row '+s.type);
@@ -139,7 +146,7 @@
    const box=el('div','day-event');box.append(el('strong','',s.label));box.append(el('p','',s.detail));
    row.append(box);timeline.append(row);
   }
-  output.append(timeline);
+  routeDetails.append(timeline);
   const routeWrap=el('section','plan-regions');
   routeWrap.append(el('h3','',t('Lift-piste-route met richttijden')+' · ⚠'));
   const guidance=el('p','hint',t('De tijden zijn schattingen vanaf vertrek. Controleer bij elke lift of je voor of achter op schema ligt. Onbekende verbindingen zijn geen exacte GPS-navigatie.'));
@@ -205,16 +212,16 @@
   regional.append(regionalList);
   const src=el('a','legal-inline-link',t('Officiële SkiWelt-verbindingen'));src.href=network.SOURCE;src.target='_blank';src.rel='noopener noreferrer';regional.append(src);
   routeWrap.append(regional);
-  output.append(routeWrap);
-  addNotes(output,[...plan.notes,...route.notes,...itinerary.warnings]);
+  routeDetails.append(routeWrap);
+  addNotes(routeDetails,[...plan.notes,...route.notes,...itinerary.warnings]);
   const actions=el('div','day-plan-actions');
   const pdf=el('button','btn',t('Download mijn skidag als PDF'));pdf.id='download-day-pdf';pdf.type='button';
   const share=el('button','btn secondary',t('Deel skidag via telefoon'));share.id='share-day-plan';share.type='button';
   const sharePdf=el('button','btn secondary',t('Deel PDF'));sharePdf.id='share-day-pdf';sharePdf.type='button';
   const mapRoute=el('button','btn secondary',t('🗺️ Bekijk routegebieden op kaart'));mapRoute.id='show-day-panorama';mapRoute.type='button';
-  mapRoute.addEventListener('click',()=>{if(routeResult.graphBased&&document.querySelector('.graph-track-map'))document.querySelector('.graph-track-map').scrollIntoView({behavior:'smooth',block:'center'});else if(window.SKIMapRoute?.show)window.SKIMapRoute.show(current);else $('pano-open')?.click();});
+  mapRoute.addEventListener('click',()=>{routeDetails.open=true;requestAnimationFrame(()=>{if(routeResult.graphBased&&routeDetails.querySelector('.graph-track-map'))routeDetails.querySelector('.graph-track-map').scrollIntoView({behavior:'smooth',block:'center'});else if(window.SKIMapRoute?.show)window.SKIMapRoute.show(current);else $('pano-open')?.click();});});
   const status=el('p','hint');status.id='day-export-status';status.setAttribute('role','status');
-  actions.append(pdf,share,sharePdf,mapRoute);output.append(actions,status);
+  actions.append(pdf,share,sharePdf,mapRoute);output.insertBefore(actions,routeDetails);output.insertBefore(status,routeDetails);
   async function getPdf(){
    if(readyPdf)return readyPdf;
    if(!window.SKIPdf){throw Error('PDF-module nog niet beschikbaar');}

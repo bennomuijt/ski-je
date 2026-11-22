@@ -24,6 +24,7 @@
  const printedConflicts=printedData.conflicts||{};
  const officialImageSize=printedData.image;
  const printedZoomThreshold=3.3;
+ let verifiedImage=false,imageProofSerial=0;
 
  const norm=s=>String(s||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
  const srcMap={
@@ -173,7 +174,7 @@
   const fallback=/Kaart(?:%20| )2026-2027\.png(?:\?|$)/i.test(img.currentSrc||img.src);
   const source=img.currentSrc||img.src;
   const official=/\/api\/skimap\.jpg(?:\?|$)|SkiWelt-Panorama-26-27-NL\.jpg(?:\?|$)/i.test(source);
-  const exactRevision=official&&!fallback&&iw===officialImageSize.width&&ih===officialImageSize.height;
+  const exactRevision=official&&!fallback&&verifiedImage&&iw===officialImageSize.width&&ih===officialImageSize.height;
   const shape=img.style.transform.match(/translate3d\(\s*([-\d.]+)px\s*,\s*([-\d.]+)px\s*,\s*0(?:px)?\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
   const panX=shape?Number(shape[1]):0,panY=shape?Number(shape[2]):0,zoom=shape?Number(shape[3]):1;
   const renderedWidth=iw&&ih?Math.min(box.width,box.height*iw/ih):0;
@@ -233,8 +234,31 @@
   if(!toggle.checked)info.hidden=true;
   if(toggle.checked)requestAnimationFrame(position);
  }
+ // Never place labels on a replaced or re-rendered panorama just because the
+ // dimensions match. Check the original official image bytes once per load.
+ async function verifyMapImage(){
+  const ticket=++imageProofSerial,source=img.currentSrc||img.src;
+  verifiedImage=false;
+  position();
+  if(!/\/api\/skimap\.jpg(?:\?|$)|SkiWelt-Panorama-26-27-NL\.jpg(?:\?|$)/i.test(source))return;
+  if(img.naturalWidth!==officialImageSize.width||img.naturalHeight!==officialImageSize.height)return;
+  try{
+   if(!crypto?.subtle)throw Error('Geen SHA-256 browsercontrole');
+   const response=await fetch(source,{cache:'force-cache'});
+   if(!response.ok)throw Error('Kaart niet opnieuw bereikbaar');
+   const buffer=await response.arrayBuffer();
+   const digest=await crypto.subtle.digest('SHA-256',buffer);
+   const hash=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
+   if(ticket===imageProofSerial)verifiedImage=hash===officialImageSize.sha256;
+  }catch{
+   if(ticket===imageProofSerial)verifiedImage=false;
+  }
+  if(ticket!==imageProofSerial)return;
+  if(!verifiedImage)count.textContent='Witte liftnummers via zoeklijst (kaartafbeelding wijkt af)';
+  position();
+ }
  toggle.addEventListener('change',update);
- img.addEventListener('load',position);
+ img.addEventListener('load',verifyMapImage);
  new MutationObserver(position).observe(img,{attributes:true,attributeFilter:['style','src']});
  if(typeof ResizeObserver!=='undefined')new ResizeObserver(position).observe(view);
  $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));

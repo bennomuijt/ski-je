@@ -262,10 +262,52 @@
   if(!desc.available)lines(ctx,'Geen veilige liftvrije verbinding aangetoond. Reken niet automatisch op de gondel, zeker niet na sluitingstijd.',77,y+44,1040,21,3,COL.red);
   lines(ctx,'Bron: OpenSkiData/OSM + officiële SkiWelt-kaart. Controleer piste-openstelling en borden.',68,H-154,1100,17,2,COL.gray);
  }
+ // A printable, complete index: one row per piste/lift/transition in
+ // precisely the same order as the app itinerary. Nothing omitted, even when
+ // many tiny OSM ways combine into a single officially numbered piste.
+ function routeIndexRows(steps){
+  return (steps||[]).filter(s=>['piste','lift','transfer'].includes(s.type)).map((s,i)=>({
+   position:i+1,type:s.type,code:String(s.displayCode||s.code||''),
+   numberStatus:s.numberStatus||'source',
+   time:s.start||'',until:s.end||'',label:String(s.label||''),
+   confidence:s.confidence||''
+  }));
+ }
+ function routeIndexPages(steps){
+  const rows=routeIndexRows(steps),pages=[];
+  for(let i=0;i<rows.length;i+=20)pages.push({kind:'route-index',rows:rows.slice(i,i+20)});
+  return pages;
+ }
+ function routeIndexPage(ctx,items){
+  label(ctx,'ALLE PISTE- EN LIFTNUMMERS',62,289,34,COL.navy,true);
+  label(ctx,'Compleet overzicht op volgorde · geen delen weggelaten',62,328,20,COL.gray);
+  let y=375;
+  for(const row of items){
+   const type=row.type==='lift'?'LIFT':row.type==='piste'?'PISTE':'OVERSTAP';
+   const colour=row.type==='lift'?'#6754a6':row.type==='piste'?'#147cc0':'#697d85';
+   box(ctx,62,y,1116,53,y%2?'#f2f7fb':'#e7f2f9');
+   box(ctx,62,y,7,53,colour);
+   label(ctx,String(row.position).padStart(2,'0'),84,y+33,18,COL.gray,true);
+   label(ctx,row.time+'-'+row.until,142,y+33,19,COL.navy,true);
+   label(ctx,type,340,y+33,18,colour,true);
+   const code=row.code||'TE CONTROLEREN';
+   label(ctx,code.length>18?code.slice(0,18):code,492,y+33,18,row.numberStatus==='source'?COL.navy:'#965e2b',true);
+   const description=row.numberStatus==='inferred-neighbors'?'Aansluitend deel, nummer afgeleid':
+    row.numberStatus==='unverified'?'Korte kaartverbinding, bronnummer ontbreekt':
+    row.label.replace(/^.(?:⛷️|🚡|⇄)?\s*/u,'');
+   const text=description.slice(0,55);
+   label(ctx,text,785,y+33,15,COL.gray);
+   y+=61;
+  }
+  label(ctx,'Bij ONBEVESTIGD: geen nummer verzonnen. Controleer op officiële SkiWelt-kaart.',64,H-135,18,COL.gray);
+ }
  function reportPages(data){
   const events=data.itinerary?.steps||[],wc=data.itinerary?.pois||[];
   const pages=[{kind:'schedule'}];
   for(let i=0;i<events.length;i+=9)pages.push({kind:'detail',rows:events.slice(i,i+9)});
+  // Separate index makes EVERY piste number readable; the title page is
+  // just a summary and can never fit an 80-step whole-day route.
+  pages.push(...routeIndexPages(events));
   // Keep area source and closure notes. Existing pagination handles longer notices.
   const missing=(data.itinerary?.missingSteps||[]).map(s=>'ONTBREKEND '+s.phase+': '+(s.code?s.code+' ':'')+s.name+' - '+s.reason);
    const gaps=(data.itinerary?.unverifiedTransitions||[]).map(s=>'ONBEVESTIGD '+s.corridor+': lift '+s.from+' naar lift '+s.to+' - '+s.reason);
@@ -296,6 +338,7 @@
    else if(section.kind==='wc')wcPage(ctx,section.rows,route,data);
    else if(section.kind==='summary')summaryPage(ctx,data);
    else if(section.kind==='descent')optionalDescentPage(ctx,section.desc,plan);
+   else if(section.kind==='route-index')routeIndexPage(ctx,section.rows);
    jpegs.push(jpegBytes(canvas.toDataURL('image/jpeg',0.88)));
    canvas.width=1;canvas.height=1;
   }
@@ -306,5 +349,5 @@
   a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),45000);
  }
- return {generate,save,encodePdf,layoutPages,reportPages};
+ return {generate,save,encodePdf,layoutPages,reportPages,routeIndexRows,routeIndexPages};
 });

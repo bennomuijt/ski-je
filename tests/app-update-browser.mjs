@@ -174,8 +174,14 @@ try {
     await checkBuild(legacy.page, release.build);
     assert.deepEqual(await savedData(legacy.page), legacy.before);
     await legacy.page.waitForFunction(build => caches.has('skije-shell-' + build), release.build);
+    // The prior click may still be finishing its service-worker activation:
+    // programmatically clicking a disabled button silently does nothing.
+    await legacy.page.waitForFunction(() => {
+      const button=document.getElementById('app-update-now');
+      return !!button && !button.disabled && button.getAttribute('aria-busy')!=='true';
+    }, null, {timeout:25000});
     await clickUpdate(legacy.page);
-    await legacy.page.waitForSelector('#app-update-now.is-current', { state: 'attached' });
+    await legacy.page.waitForSelector('#app-update-now.is-current', { state: 'attached', timeout:35000 });
     await legacy.context.setOffline(true);
     assert.equal(await photoDigest(legacy.page), digest(mainPhoto));
     assert.deepEqual(await savedData(legacy.page), legacy.before);

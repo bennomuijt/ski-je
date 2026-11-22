@@ -1,4 +1,6 @@
-/* SKI-je 4.5.9 - genummerde SkiWelt-liften, bron: regionale SkiWelt-liftstatus.
+/* SKI-je 4.5.19 - genummerde SkiWelt-liften, bron: officiële SkiWelt-liftstatus en panorama 2026/27.
+   De officiële liftstatus noemt Hexenwasser 26, maar SkiWelt Tour / gedrukte kaart tonen 40.
+   Mühlbichl is officieel ongenummerd; 59 is Hexenteppich 2 (58a niet als lift nummer gebruiken).
    Geen exacte coördinaten: de panorama-tekening is niet gegeorefereerd.
    Officiële bron kan afwijken van de marketingtelling van 81 actieve liften. */
 (function(root,factory){
@@ -135,6 +137,12 @@
   "areaKey": "hopfgarten"
  },
  {
+  "number": "26",
+  "name": "10er Gondelbahn Hexenwasser",
+  "area": "Söll",
+  "areaKey": "soll"
+ },
+ {
   "number": "27a",
   "name": "Zauberteppich Högerfeld",
   "area": "Hopfgarten",
@@ -178,7 +186,7 @@
  },
  {
   "number": "40",
-  "name": "10er Gondelbahn Hexenwasser",
+  "name": "Hexenwasser (kaartlabel 40; liftstatus nr. 26)",
   "area": "Söll",
   "areaKey": "soll"
  },
@@ -237,14 +245,8 @@
   "areaKey": "soll"
  },
  {
-  "number": "58a",
-  "name": "Hexenteppich 2",
-  "area": "Söll",
-  "areaKey": "soll"
- },
- {
   "number": "59",
-  "name": "Mühlbichl (Übungsbereich im Dorf)",
+  "name": "Hexenteppich 2",
   "area": "Söll",
   "areaKey": "soll"
  },

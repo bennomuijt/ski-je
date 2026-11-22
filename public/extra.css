@@ -330,3 +330,20 @@ body.utility-open{overflow:hidden}
 #plan-output .day-route-collapsible>summary:focus-visible{outline:3px solid #f5a128;outline-offset:2px;border-radius:7px}
 #plan-output .day-route-collapsible[open]>summary{border-bottom:1px solid #d5e7ef;margin-bottom:12px}
 @media(max-width:480px){#plan-output .day-plan-actions .btn{flex-basis:100%;min-height:50px}}
+
+/* 2026/27: visibly tappable PRINTED lift numbers 22 & 23 (verified JPG text boxes).
+   This outline never indicates a GPS-station location, and hides on old map images. */
+.pano-printed-lift{
+  position:absolute;z-index:5;pointer-events:auto;transform:translate(-50%,-50%);
+  min-width:48px;min-height:48px;border:3px solid #0080b8;
+  border-radius:10px;background:rgba(255,255,255,.07);
+  box-shadow:0 0 0 2px rgba(255,255,255,.83),0 1px 7px rgba(0,43,69,.45);
+  cursor:pointer;touch-action:manipulation;
+}
+.pano-printed-lift::after{
+  content:"i";display:grid;place-items:center;position:absolute;top:-14px;right:-13px;
+  width:23px;height:23px;border-radius:50%;background:#00659f;color:#fff;
+  border:2px solid #fff;font:800 13px/1 system-ui,sans-serif;
+}
+.pano-printed-lift:focus-visible{outline:4px solid #ff9e00;outline-offset:3px}
+.pano-printed-lift[hidden]{display:none!important}

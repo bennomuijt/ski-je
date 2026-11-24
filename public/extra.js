@@ -130,6 +130,13 @@
  $('pano-fill').addEventListener('click',()=>{
   $('pano-focus').value='overview';fillPano();showPanoOptions(false);
  });
+ $('pano-reload').addEventListener('click',()=>{
+  const image=$('pano-img');
+  $('pano-map-status').textContent='Officiële SkiWelt-panoramakaart opnieuw laden…';
+  $('pano-map-credit').textContent='Officiële kaart laden…';
+  image.src='/api/skimap.jpg?retry='+Date.now();
+  showPanoOptions(false);
+ });
  for(const panel of [$('pano-hut-info'),$('pano-lift-info')]){
   new MutationObserver(()=>{if(!panel.hidden)showPanoOptions(false);})
    .observe(panel,{attributes:true,attributeFilter:['hidden']});
@@ -180,8 +187,11 @@
  panoImg.addEventListener('load',()=>{
   const fallback=/Kaart(?:%20| )2026-2027\.png$/i.test(panoImg.currentSrc||panoImg.src);
   $('pano-map-status').textContent=fallback
-   ? '⚠️ Kleine lokale afbeelding. Piste- en liftnummers kunnen onscherp zijn. Open met internet voor de volledige kaart.'
+   ? '⚠️ Kleine lokale afbeelding. Piste- en liftnummers kunnen onscherp zijn. Tik op Opties en Laad kaart opnieuw zodra je internet hebt.'
    : 'SkiWelt panoramakaart 2026/27 • referentie, niet geografisch gekalibreerd. GPS staat op de kaart erboven.';
+  $('pano-map-credit').textContent=fallback
+   ? '⚠ Lage-resolutie kaart · herladen via Opties'
+   : 'SkiWelt 2026/27 · illustratie, geen GPS';
   if(!$('pano-modal').hidden){
    if($('pano-focus').value!=='overview')$('pano-focus').dispatchEvent(new Event('change'));
    else if(panoFitting==='cover')fillPano();
@@ -192,6 +202,7 @@
   if(!panoImg.src.endsWith('Kaart%202026-2027.png')){
    panoImg.src='Kaart%202026-2027.png';
    $('pano-map-status').textContent='⚠️ Volledige kaart tijdelijk niet bereikbaar. Dit is alleen de oude uitsnede; probeer later opnieuw.';
+   $('pano-map-credit').textContent='⚠ Lage-resolutie kaart · herladen via Opties';
   }
  });
  const preview=$('page-map').querySelector('.preview img');

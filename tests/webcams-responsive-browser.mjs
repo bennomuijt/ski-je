@@ -26,6 +26,7 @@ const base='http://127.0.0.1:'+server.address().port+'/';
 const chrome=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const variants=[
  {name:'Android-S21-3buttons',width:384,height:832,safe:48,ua:'Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-G991B) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36'},
+ {name:'S21-screenshot-edge-to-edge-no-inset',width:393,height:852,safe:56,topSafe:32,noInjectedSafe:true,ua:'Mozilla/5.0 (Linux; Android 13; SAMSUNG SM-G991B) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36'},
  {name:'Android-compact',width:320,height:568,safe:48,ua:'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36'},
  {name:'Android-360',width:360,height:740,safe:48,ua:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36'},
  {name:'iPhone-SE',width:375,height:667,safe:20,ua:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 Version/17.6 Mobile/15E148 Safari/604.1'},
@@ -45,13 +46,16 @@ try{
   await page.route('https://webcams.skiwelt.at/**',route=>route.fulfill({status:200,contentType:'image/png',body:png}));
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.addStyleTag({content:'#ski-intro,#legal-gate{display:none!important}'});
-  await page.evaluate(safe=>{
+  await page.evaluate(({safe,noInjectedSafe})=>{
    document.getElementById('ski-intro')?.setAttribute('hidden','');
    document.getElementById('legal-gate')?.setAttribute('hidden','');
    document.body.classList.remove('brand-arriving','legal-open');
-   document.documentElement.style.setProperty('--skije-bottom-safe',safe+'px');
-   if(navigator.userAgent.includes('Android'))document.documentElement.classList.add('skije-android-standalone');
-  },v.safe);
+   if(!noInjectedSafe)document.documentElement.style.setProperty('--skije-bottom-safe',safe+'px');
+   if(navigator.userAgent.includes('Android')){
+    if(noInjectedSafe)document.documentElement.classList.remove('skije-android-standalone');
+    else document.documentElement.classList.add('skije-android-standalone');
+   }
+  },{safe:v.safe,noInjectedSafe:!!v.noInjectedSafe});
   // Injected safe-area emulator changes footer height after the app booted.
   // Allow the ResizeObserver to remeasure it, as on a real screen rotation.
   await page.waitForFunction(()=>{
@@ -92,17 +96,31 @@ try{
   await page.locator('#camera-picks [data-cam="holzalm"]').click();
   assert.match(await page.locator('#camera-source').getAttribute('href'),/skiwelt.at\/de\/webcam-holzalm-brixen/);
   const panel=await page.evaluate(()=>{
+   const sheet=document.querySelector('#camera-modal').getBoundingClientRect();
    const modal=document.querySelector('.webcam-panel').getBoundingClientRect();
    const footer=document.querySelector('.cam-footer').getBoundingClientRect();
    const close=document.querySelector('#camera-close').getBoundingClientRect();
-   return {modalTop:modal.top,modalBottom:modal.bottom,footerBottom:footer.bottom,closeTop:close.top,closeBottom:close.bottom};
+   const back=document.querySelector('#camera-back-bottom').getBoundingClientRect();
+   const link=document.querySelector('#camera-source').getBoundingClientRect();
+   const clickable=(box)=>{
+     const el=document.elementFromPoint(box.left+box.width/2,box.top+box.height/2);
+     return !!(el&&(el.closest('#camera-back-bottom,#camera-source')));
+   };
+   return {sheetTop:sheet.top,sheetBottom:sheet.bottom,modalTop:modal.top,modalBottom:modal.bottom,footerBottom:footer.bottom,closeTop:close.top,closeBottom:close.bottom,
+    backBottom:back.bottom,linkBottom:link.bottom,backHittable:clickable(back),linkHittable:clickable(link),
+    hasAndroidFallback:document.documentElement.classList.contains('skije-android-device')};
   });
+  const topSafe=v.topSafe??(v.ua.includes('Android')?32:0);
+  assert.ok(panel.sheetTop>=topSafe-2,v.name+' webcam header behind Android status bar '+JSON.stringify(panel));
   assert.ok(panel.footerBottom<=v.height-v.safe+4,v.name+' webcam bottom controls hidden by device navigation '+JSON.stringify(panel));
-  assert.ok(panel.closeTop>=-1&&panel.closeBottom<=v.height-v.safe+3,v.name+' close button off-screen '+JSON.stringify(panel));
+  assert.ok(panel.closeTop>=topSafe-2&&panel.closeBottom<=v.height-v.safe+3,v.name+' close button off-screen '+JSON.stringify(panel));
+  assert.ok(panel.backBottom<=v.height-v.safe+4&&panel.linkBottom<=v.height-v.safe+4,v.name+' both bottom action buttons need to clear system nav '+JSON.stringify(panel));
+  assert.ok(panel.backHittable&&panel.linkHittable,v.name+' Android webcam controls not clickable '+JSON.stringify(panel));
+  if(v.noInjectedSafe)assert.equal(panel.hasAndroidFallback,true,'Android fallback needs to work without standalone mode or CSS insets');
   await page.locator('#camera-close').click();
   assert.ok(await page.locator('#camera-modal').isHidden());
   assert.equal(errors.length,0,v.name+' page errors: '+errors.join(' | '));
-  if(v.name==='Android-S21-3buttons'||v.name==='iPhone-15'||v.name==='Phone-landscape'){
+  if(v.name==='Android-S21-3buttons'||v.name==='S21-screenshot-edge-to-edge-no-inset'||v.name==='iPhone-15'||v.name==='Phone-landscape'){
     await page.screenshot({path:'test-artifacts/webcam-'+v.name+'.png'});
     await page.locator('#camera-area').selectOption('all');
     await page.locator('#camera-tiles [data-cam="hartkaiser"]').click();

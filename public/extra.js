@@ -83,12 +83,19 @@
  $('sos-copy').addEventListener('click',()=>{if(!latestPos){showToast('Vraag eerst je GPS-positie op.');return;}copyText(latestPos.coords.latitude.toFixed(6)+', '+latestPos.coords.longitude.toFixed(6));});
  // Full-screen offline-compatible panorama; location is never placed on it.
  let zoom=1,panX=0,panY=0;
- const MAX_ZOOM=20,MIN_ZOOM=1;
+ const MAX_ZOOM=48,MIN_ZOOM=1;
+ let panoFitting='cover';
  const panoView=$('pano-viewport'),activePointers=new Map();
  let drag=null,pinch=null;
  function updatePano(){
-  const rect=panoView.getBoundingClientRect();
-  const maxX=rect.width*(zoom-1)/2,maxY=rect.height*(zoom-1)/2;
+  const rect=panoView.getBoundingClientRect(),image=$('pano-img');
+  const iw=image.naturalWidth||3537,ih=image.naturalHeight||2445;
+  const actualW=Math.min(rect.width,rect.height*iw/ih);
+  const actualH=Math.min(rect.height,rect.width*ih/iw);
+  // Clamp to the actual contained 2026/27 map, not the empty viewport.
+  // Previously this allowed panning the image completely out of view.
+  const maxX=Math.max(0,(actualW*zoom-rect.width)/2);
+  const maxY=Math.max(0,(actualH*zoom-rect.height)/2);
   panX=limit(panX,-maxX,maxX);panY=limit(panY,-maxY,maxY);
   if(zoom<=1){panX=0;panY=0;}
   $('pano-img').style.transform='translate3d('+panX+'px,'+panY+'px,0) scale('+zoom+')';
@@ -96,28 +103,67 @@
   $('pano-plus').disabled=zoom>=MAX_ZOOM;$('pano-minus').disabled=zoom<=MIN_ZOOM;
  }
  function zoomAt(next,x,y){
+  if(!Number.isFinite(next))return;
   next=limit(next,MIN_ZOOM,MAX_ZOOM);
   const rect=panoView.getBoundingClientRect();
   const dx=x-(rect.left+rect.width/2),dy=y-(rect.top+rect.height/2),ratio=next/zoom;
   panX=dx-(dx-panX)*ratio;panY=dy-(dy-panY)*ratio;
-  zoom=next;updatePano();
+  zoom=next;panoFitting='manual';updatePano();
  }
+ function fillPano(){
+  const box=panoView.getBoundingClientRect(),image=$('pano-img');
+  const naturalW=image.naturalWidth||3537,naturalH=image.naturalHeight||2445;
+  if(!box.width||!box.height)return;
+  const fittedW=Math.min(box.width,box.height*naturalW/naturalH);
+  const fittedH=Math.min(box.height,box.width*naturalH/naturalW);
+  // On a portrait phone the whole wide map looks like a tiny strip.
+  // Fill the usable screen by default; the separate whole-map key still fits all.
+  zoom=limit(Math.max(box.width/fittedW,box.height/fittedH),MIN_ZOOM,MAX_ZOOM);
+  panX=panY=0;panoFitting='cover';updatePano();
+ }
+ function fitWholePano(){zoom=1;panX=panY=0;panoFitting='whole';updatePano();}
+ const options=$('pano-options'),optionToggle=$('pano-options-toggle');
+ function showPanoOptions(show){
+  options.hidden=!show;optionToggle.setAttribute('aria-expanded',String(show));
+ }
+ optionToggle.addEventListener('click',()=>showPanoOptions(options.hidden));
+ $('pano-fill').addEventListener('click',()=>{
+  $('pano-focus').value='overview';fillPano();showPanoOptions(false);
+ });
+ for(const panel of [$('pano-hut-info'),$('pano-lift-info')]){
+  new MutationObserver(()=>{if(!panel.hidden)showPanoOptions(false);})
+   .observe(panel,{attributes:true,attributeFilter:['hidden']});
+ }
+ function syncPanoSystemBars(){
+  const vv=window.visualViewport;
+  const top=vv?Math.max(0,Math.ceil(vv.offsetTop)):0;
+  const bottom=vv?Math.max(0,Math.ceil(window.innerHeight-vv.offsetTop-vv.height)):0;
+  document.documentElement.style.setProperty('--skije-panorama-visual-top',top+'px');
+  document.documentElement.style.setProperty('--skije-panorama-visual-bottom',bottom+'px');
+ }
+ window.visualViewport?.addEventListener('resize',syncPanoSystemBars,{passive:true});
+ window.visualViewport?.addEventListener('scroll',syncPanoSystemBars,{passive:true});
  function zoomButton(factor){
   const rect=panoView.getBoundingClientRect();
   zoomAt(zoom*factor,rect.left+rect.width/2,rect.top+rect.height/2);
  }
  $('pano-open').addEventListener('click',()=>{
   if(!$('pano-img').hasAttribute('src'))$('pano-img').src=$('pano-img').dataset.src;
-  ownModal('pano-modal');zoom=1;panX=panY=0;updatePano();
+  syncPanoSystemBars();ownModal('pano-modal');
+  showPanoOptions(false);
+  $('pano-hut-info').hidden=true;$('pano-lift-info').hidden=true;
+  $('pano-focus').value='overview';fillPano();
  });
- $('pano-plus').addEventListener('click',()=>zoomButton(1.5));
- $('pano-minus').addEventListener('click',()=>zoomButton(1/1.5));
- $('pano-reset').addEventListener('click',()=>{zoom=1;panX=panY=0;updatePano();$('pano-focus').value='overview';});
+ $('pano-plus').addEventListener('click',()=>zoomButton(1.8));
+ $('pano-minus').addEventListener('click',()=>zoomButton(1/1.8));
+ $('pano-reset').addEventListener('click',()=>{
+  fitWholePano();$('pano-focus').value='overview';
+ });
  const panoCenters={going:[.27,.38],ellmau:[.27,.45],scheffau:[.22,.55],soll:[.35,.72],itter:[.46,.86],hopfgarten:[.68,.84],brixen:[.73,.46],westendorf:[.79,.67]};
  $('pano-focus').addEventListener('change',()=>{
   const center=panoCenters[$('pano-focus').value];
-  if(!center){zoom=1;panX=panY=0;updatePano();return;}
-  zoom=3.8;
+  if(!center){fitWholePano();return;}
+  zoom=5.2;panoFitting='manual';
   const box=panoView.getBoundingClientRect(),image=$('pano-img');
   // Account for object-fit:contain: phone screens letterbox the panorama.
   const naturalW=image.naturalWidth||box.width,naturalH=image.naturalHeight||box.height;
@@ -136,8 +182,11 @@
   $('pano-map-status').textContent=fallback
    ? '⚠️ Kleine lokale afbeelding. Piste- en liftnummers kunnen onscherp zijn. Open met internet voor de volledige kaart.'
    : 'SkiWelt panoramakaart 2026/27 • referentie, niet geografisch gekalibreerd. GPS staat op de kaart erboven.';
-  if(!$('pano-modal').hidden && $('pano-focus').value!=='overview')
-   $('pano-focus').dispatchEvent(new Event('change'));
+  if(!$('pano-modal').hidden){
+   if($('pano-focus').value!=='overview')$('pano-focus').dispatchEvent(new Event('change'));
+   else if(panoFitting==='cover')fillPano();
+   else updatePano();
+  }
  });
  panoImg.addEventListener('error',()=>{
   if(!panoImg.src.endsWith('Kaart%202026-2027.png')){
@@ -174,13 +223,14 @@
   const pts=[...activePointers.values()];
   if(pts.length===2&&pinch){
    const point=mid(pts[0],pts[1]),ratio=dist(pts[0],pts[1])/pinch.distance;
-   zoom=limit(pinch.zoom*ratio,MIN_ZOOM,MAX_ZOOM);
+   zoom=limit(pinch.zoom*ratio,MIN_ZOOM,MAX_ZOOM);panoFitting='manual';
    const rect=panoView.getBoundingClientRect(),ox=pinch.mid.x-(rect.left+rect.width/2),oy=pinch.mid.y-(rect.top+rect.height/2);
    panX=pinch.panX+(point.x-pinch.mid.x)+(ox-pinch.panX)*(1-zoom/pinch.zoom);
    panY=pinch.panY+(point.y-pinch.mid.y)+(oy-pinch.panY)*(1-zoom/pinch.zoom);
    updatePano();
   }else if(pts.length===1&&drag){
-   panX=drag.panX+pts[0].x-drag.x;panY=drag.panY+pts[0].y-drag.y;updatePano();
+   panX=drag.panX+pts[0].x-drag.x;panY=drag.panY+pts[0].y-drag.y;
+   panoFitting='manual';updatePano();
   }
  });
  const endPointer=e=>{activePointers.delete(e.pointerId);prepareGesture();};
@@ -190,8 +240,14 @@
   if($('pano-modal').hidden)return;
   e.preventDefault();zoomAt(zoom*(e.deltaY<0?1.18:.84),e.clientX,e.clientY);
  },{passive:false});
- window.addEventListener('resize',()=>{if(!$('pano-modal').hidden)updatePano();});
- window.SKIPanorama={getZoom:()=>zoom,getPan:()=>({x:panX,y:panY}),zoomAt,reset:()=>$('pano-reset').click()};
+ window.addEventListener('resize',()=>{
+  if(!$('pano-modal').hidden){
+   syncPanoSystemBars();
+   if(panoFitting==='cover')fillPano();
+   else updatePano();
+  }
+ });
+ window.SKIPanorama={getZoom:()=>zoom,getPan:()=>({x:panX,y:panY}),zoomAt,reset:()=>$('pano-reset').click(),fill:fillPano,showOptions:showPanoOptions};
  // Do not claim precise location on the drawn panorama: accurate pins live on OSM.
  let checkMap=null,checkMarkers=[],markerDirty=true;
  window.addEventListener('skije:mapready',e=>{checkMap=e.detail.map;markerDirty=true;renderCheckMarkers();});

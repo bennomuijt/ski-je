@@ -248,6 +248,7 @@ await add('webcam back is visible and exits to webcam list',async()=>{
  await page.locator('.bottom button[data-page="webcams"]').click();
  const tiles=page.locator('#camera-tiles [data-cam]');
  await tiles.first().waitFor({timeout:12000});
+ assert.equal(await tiles.count(),20,'Alle 17 bergcams en 3 dalcams op camerapagina');
  await tiles.first().click();
  assert.ok(await page.locator('#camera-modal').isVisible());
  assert.ok(await page.locator('#camera-back-bottom').isVisible());

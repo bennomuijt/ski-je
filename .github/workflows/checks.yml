@@ -51,6 +51,8 @@ jobs:
           npm install --no-save --no-package-lock playwright-core
       - name: Test proposed clickable lift and restaurant panels in mobile browser
         run: node tests/panorama-layers-browser.mjs
+      - name: Verify 20 webcams and bottom menu on Android and iPhone screen sizes
+        run: node tests/webcams-responsive-browser.mjs
       - name: Test service worker upgrades in mobile Chrome
         run: |
           # Exercise migration from the actual 4.5.14 release before the new photos.

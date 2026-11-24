@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="skije-build" content="fc7e2ba69674531da828fb81">
+<meta name="skije-build" content="42a28a7a8489c32918219221">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07538c">
 <link rel="manifest" href="manifest.webmanifest?v=4514">
@@ -190,7 +190,7 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.20</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.21</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -348,9 +348,10 @@ body.legal-open{overflow:hidden}
   </section>
   <section class="mode" id="page-webcams" aria-label="Webcams SkiWelt">
     <h1 class="banner">📷 Live webcams SkiWelt</h1>
-    <p class="subhead">Tik één keer op een camera. Het beeld opent meteen groot in dit scherm, zonder te scrollen.</p>
+    <p class="subhead">17 bergwebcams en 3 dalwebcams van SkiWelt op één plek. Kies een gebied en bekijk de beelden groot.</p>
     <div class="card">
-      <div class="row"><h2>Kies je uitzicht</h2><span class="pill">Direct bekijken</span></div>
+      <div class="row"><h2>Kies je uitzicht</h2><span class="pill" id="camera-count">20 webcams</span></div>
+      <div class="camera-filters"><label for="camera-area">Skigebied</label><select id="camera-area" aria-label="Filter webcams op deelgebied"><option value="all">Alle SkiWelt-webcams</option></select></div>
       <div id="camera-tiles" class="camera-tiles" aria-label="Selecteer een webcam"></div>
       <p class="hint">Livebeelden worden rechtstreeks bij de webcam-aanbieder geladen. Soms staat die geen weergave binnen een andere app toe; gebruik dan de knop naar de officiële livecam.</p>
     </div>
@@ -624,7 +625,7 @@ body.legal-open{overflow:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.5.20-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
+      <p class="tiny">SKI-je v4.5.21-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
@@ -715,12 +716,13 @@ body.legal-open{overflow:hidden}
   <div class="webcam-panel">
     <div class="cam-head"><div class="cam-head-text"><strong id="camera-name">Live webcam</strong><small>SKI-je · SkiWelt</small></div><button type="button" class="cam-close" id="camera-close" aria-label="Terug naar webcams">← Terug</button></div>
     <div class="cam-picks" id="camera-picks" aria-label="Andere camera selecteren"></div>
-    <div class="cam-frame-wrap"><iframe id="camera-frame" title="Geselecteerde SkiWelt live webcam" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="cam-frame-wrap"><iframe id="camera-frame" title="Geselecteerde SkiWelt live webcam" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><img id="camera-still" hidden alt="SkiWelt webcam-momentopname"><span id="camera-loading" class="camera-loading" aria-live="polite" hidden>Beeld laden…</span></div>
     <div class="cam-error" id="camera-info">Een externe livecam kan het insluiten blokkeren. Blijft het beeld leeg? Gebruik de officiële cameraknop hieronder.</div>
-    <div class="cam-footer"><button type="button" class="btn" id="camera-back-bottom">← Terug naar webcams</button><a class="btn secondary" id="camera-source" href="https://www.skiwelt.at/en/webcams-in-winter.html" target="_blank" rel="noopener noreferrer">↗ Officiële livecam</a><span id="camera-location">SkiWelt · Tirol</span></div>
+    <div class="cam-footer"><button type="button" class="btn" id="camera-back-bottom">← Terug naar webcams</button><button type="button" class="btn secondary" id="camera-refresh" hidden>↻ Ververs foto</button><a class="btn secondary" id="camera-source" href="https://www.skiwelt.at/de/webcams-im-winter.html" target="_blank" rel="noopener noreferrer">↗ Open bij aanbieder</a><span id="camera-location">SkiWelt · Tirol</span></div>
   </div>
 </div>
 </div>
+<script src="skiwelt-webcams.js"></script>
 <script>
 'use strict';
 (() => {
@@ -968,6 +970,37 @@ function goPage(page){
  window.scrollTo({top:0,left:0,behavior:'instant'});
 }
 document.querySelectorAll('.bottom button').forEach(b=>b.addEventListener('click',()=>goPage(b.dataset.page)));
+
+/* Keep every page's last button above the REAL fixed menu, including Samsung
+   3-button navigation and the iPhone safe area; don't assume a fixed height. */
+const fixedNav=document.querySelector('footer.bottom');
+if(fixedNav){
+ const updateNavSpace=()=>{
+  const size=Math.ceil(fixedNav.getBoundingClientRect().height);
+  if(size>30)document.documentElement.style.setProperty('--skije-nav-height',size+'px');
+ };
+ updateNavSpace();
+ if(typeof ResizeObserver!=='undefined'){
+  // A change to system safe-area changes PADDING, not the content-box.
+  // Observe border-box so three-button navigation height changes are detected.
+  const navObserver=new ResizeObserver(updateNavSpace);
+  try{navObserver.observe(fixedNav,{box:'border-box'});}
+  catch{navObserver.observe(fixedNav);}
+ }
+ window.visualViewport?.addEventListener('resize',updateNavSpace,{passive:true});
+ window.addEventListener('orientationchange',updateNavSpace,{passive:true});
+ window.addEventListener('resize',updateNavSpace,{passive:true});
+ const detectKeyboard=()=>{
+  const active=document.activeElement;
+  const typing=active&&((active.matches?.('input:not([type="checkbox"]):not([type="range"]):not([type="radio"]):not([type="file"]),textarea'))||active.isContentEditable);
+  const vv=window.visualViewport;
+  document.documentElement.classList.toggle('skije-keyboard-open',Boolean(typing&&vv&&window.innerHeight-vv.height>150));
+ };
+ window.visualViewport?.addEventListener('resize',detectKeyboard,{passive:true});
+ document.addEventListener('focusin',detectKeyboard);
+ document.addEventListener('focusout',detectKeyboard);
+}
+
 function renderPosition(pos){
  const c=pos.coords;const lat=c.latitude,lng=c.longitude,acc=Math.max(0,c.accuracy||0);
  const inside=inSkiWelt(lat,lng);$('inside-state').textContent=inside?'In SkiWelt':'Buiten SkiWelt';
@@ -1068,49 +1101,74 @@ $('radar-play').addEventListener('click',()=>{
 });
 $('radar-refresh').addEventListener('click',()=>{if(!radarMap)showRadar();else fetchRadar();});
 
-/* Camera's gekozen uit de officiële SkiWelt-webcamverwijzingen.
-   Live stream/video wordt pas op expliciete klik op afstand geladen.
-   Productie-integratie van Feratel vereist toestemming/partner-embedcode. */
-const webcamSources=[
-  {id:'hartkaiser',name:'Hartkaiser · Ellmau',place:'Ellmau / Going',meters:'1.555 m',url:'https://webtv.feratel.com/webtv/?cam=5525&design=v5'},
-  {id:'brandstadl',name:'Brandstadl · Scheffau',place:'Scheffau',meters:'1.650 m',url:'https://webtv.feratel.com/webtv/?cam=5665&design=v5'},
-  {id:'salve',name:'Hohe Salve',place:'Söll / Hopfgarten',meters:'1.853 m',url:'https://webtv.feratel.com/webtv/?cam=5687&design=v5'},
-  {id:'hochbrixen',name:'Hochbrixen',place:'Brixen im Thale',meters:'1.300 m',url:'https://webtv.feratel.com/webtv/?cam=5520&design=v5'},
-  {id:'talkaser',name:'Talkaser · Westendorf',place:'Westendorf',meters:'1.800 m',url:'https://webtv.feratel.com/webtv/?cam=5725&design=v5'},
-  {id:'choralpe',name:'Choralpe · Westendorf',place:'Westendorf',meters:'1.810 m',url:'https://webtv.feratel.com/webtv/?cam=5726&design=v5'}
-];
-const cameraTiles=$('camera-tiles');
-cameraTiles.innerHTML=webcamSources.map(c=>`<button class="camera-tile" type="button" data-cam="${c.id}" aria-label="Bekijk live webcam ${escapeHtml(c.name)}"><span class="camera-icon">📹</span><strong>${escapeHtml(c.name)}</strong><small>🏔️ ${escapeHtml(c.meters)} · Tik om te bekijken</small></button>`).join('');
-$('camera-picks').innerHTML=webcamSources.map(c=>`<button class="cam-switch" type="button" data-cam="${c.id}" aria-pressed="false">${escapeHtml(c.name)}</button>`).join('');
-let focusBeforeCam=null;
-function selectCamera(id){
-  const c=webcamSources.find(w=>w.id===id);if(!c)return;
-  $('camera-name').textContent=c.name;
-  $('camera-location').textContent=c.place+' · '+c.meters;
-  $('camera-source').href=c.url;
-  $('camera-frame').title='Live webcam '+c.name+' (Feratel, externe aanbieder)';
-  $('camera-info').textContent='Externe webcam van Feratel. Blijft het scherm leeg? De aanbieder kan insluiten blokkeren. Tik dan op “Officiële livecam”.';
-  document.querySelectorAll('.cam-switch').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cam===c.id)));
-  // Bied de player zonder extra klik/scroll direct binnen het volledige scherm aan.
-  $('camera-frame').src=c.url;
+/* Officiële SkiWelt-catalogus: berg- en dalwebcams, pas laden na tikken. */
+const webcamSources=window.SKIWebcamCatalogue?.webcams||[];
+const cameraTiles=$('camera-tiles'),cameraArea=$('camera-area'),cameraFrame=$('camera-frame'),cameraStill=$('camera-still'),cameraLoading=$('camera-loading');
+for(const area of window.SKIWebcamCatalogue?.areas||[]){
+ const opt=document.createElement('option');opt.value=area;opt.textContent=area;cameraArea.add(opt);
 }
-function openCamera(id){focusBeforeCam=document.activeElement;
-  $('camera-modal').hidden=false;document.body.classList.add('cam-open');
-  selectCamera(id);$('camera-close').focus({preventScroll:true});
+function renderCameras(){
+ const list=webcamSources.filter(c=>cameraArea.value==='all'||c.area===cameraArea.value);
+ $('camera-count').textContent=list.length+' van '+webcamSources.length+' webcams';
+ cameraTiles.innerHTML=list.map(c=>'<button class="camera-tile" type="button" data-cam="'+escapeHtml(c.id)+'" aria-label="Bekijk webcam '+escapeHtml(c.name)+' in '+escapeHtml(c.village)+'"><span class="camera-icon" aria-hidden="true">'+(c.kind==='snapshot'?'📷':'📹')+'</span><strong>'+escapeHtml(c.name)+'</strong><small>'+escapeHtml(c.village)+' · '+escapeHtml(c.provider)+(c.altitude?' · '+escapeHtml(c.altitude):'')+'</small></button>').join('');
+}
+cameraArea.addEventListener('change',renderCameras);renderCameras();
+$('camera-picks').innerHTML=webcamSources.map(c=>'<button class="cam-switch" type="button" data-cam="'+escapeHtml(c.id)+'" aria-pressed="false">'+escapeHtml(c.name)+'</button>').join('');
+let focusBeforeCam=null,activeCamera=null;
+function selectCamera(id){
+ const c=webcamSources.find(w=>w.id===id);if(!c)return;
+ activeCamera=c;
+ $('camera-name').textContent=c.name;
+ $('camera-location').textContent=c.village+(c.altitude?' · '+c.altitude:'');
+ $('camera-source').href=c.url;
+ $('camera-source').textContent=c.kind==='website'?'↗ Officiële webcam-pagina':'↗ Open bij aanbieder';
+ $('camera-refresh').hidden=c.kind!=='snapshot';
+ $('camera-info').textContent=c.kind==='website'?'Voor deze webcam is geen losse beeld-URL bevestigd. Gebruik de officiële pagina wanneer de weergave wordt geblokkeerd.':
+   c.kind==='snapshot'?'Dit is een momentopname, geen livevideo. Controleer de datum in beeld. Ververs om opnieuw te kijken.':
+   'Livebeeld via '+c.provider+'. Blijft het beeld leeg? De aanbieder kan insluiten blokkeren. Gebruik dan de knop Open bij aanbieder.';
+ document.querySelectorAll('.cam-switch').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cam===id)));
+ cameraFrame.src='about:blank';cameraFrame.hidden=true;
+ cameraStill.removeAttribute('src');cameraStill.hidden=true;
+ cameraLoading.hidden=false;cameraLoading.textContent='Beeld wordt geladen…';
+ if(c.kind==='snapshot'){
+   cameraStill.onload=()=>{cameraLoading.hidden=true;};
+   cameraStill.onerror=()=>{cameraLoading.hidden=false;cameraLoading.textContent='Foto niet bereikbaar; gebruik de bronlink.';};
+   cameraStill.alt='Webcam-momentopname '+c.name;
+   cameraStill.hidden=false;cameraStill.src=c.url+'?skije_refresh='+Date.now();
+ }else{
+   cameraFrame.title='Live webcam '+c.name+' ('+c.provider+')';
+   cameraFrame.hidden=false;cameraFrame.src=c.url;
+   // iframe errors are opaque across origins; never claim playback succeeded.
+   cameraLoading.hidden=true;
+ }
+ $('camera-picks').querySelector('.cam-switch[aria-pressed="true"]')?.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+function openCamera(id){
+ focusBeforeCam=document.activeElement;
+ $('camera-modal').hidden=false;document.body.classList.add('cam-open');
+ selectCamera(id);$('camera-close').focus({preventScroll:true});
 }
 function closeCamera(){
-  if($('camera-modal').hidden)return;
-  $('camera-modal').hidden=true;document.body.classList.remove('cam-open');
-  $('camera-frame').src='about:blank'; // Video niet in de achtergrond laten doorlopen.
-  if(focusBeforeCam && focusBeforeCam.isConnected)focusBeforeCam.focus({preventScroll:true});
+ if($('camera-modal').hidden)return;
+ $('camera-modal').hidden=true;document.body.classList.remove('cam-open');
+ cameraFrame.src='about:blank';cameraFrame.hidden=false;
+ cameraStill.removeAttribute('src');cameraStill.hidden=true;cameraLoading.hidden=true;activeCamera=null;
+ if(focusBeforeCam&&focusBeforeCam.isConnected)focusBeforeCam.focus({preventScroll:true});
 }
 cameraTiles.addEventListener('click',e=>{const b=e.target.closest('[data-cam]');if(b)openCamera(b.dataset.cam);});
 $('camera-picks').addEventListener('click',e=>{const b=e.target.closest('[data-cam]');if(b)selectCamera(b.dataset.cam);});
+$('camera-refresh').addEventListener('click',()=>{if(activeCamera?.kind==='snapshot')selectCamera(activeCamera.id);});
 $('camera-close').addEventListener('click',closeCamera);
 $('camera-back-bottom').addEventListener('click',closeCamera);
 $('camera-modal').addEventListener('click',e=>{if(e.target===$('camera-modal'))closeCamera();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCamera();
-  if(e.key==='Tab'&&!$('camera-modal').hidden){const focusables=[...$('camera-modal').querySelectorAll('button,a')];const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+ if(e.key==='Tab'&&!$('camera-modal').hidden){
+   const els=[...$('camera-modal').querySelectorAll('button:not([hidden]),a:not([hidden])')];
+   const first=els[0],last=els[els.length-1];
+   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+ }
+});
 $('weather-webcams').addEventListener('click',()=>goPage('webcams'));
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){stopGps();stopRadar();closeCamera();}

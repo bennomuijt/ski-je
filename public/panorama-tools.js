@@ -54,6 +54,10 @@
    routeList.append(b);
   });
   $('pano-open').click();
+  // The itinerary chips now live in a compact optional drawer. Open it for
+  // an active itinerary; closing the drawer restores the full map.
+  const toggle=$('pano-options-toggle');
+  if(toggle?.getAttribute('aria-expanded')==='false')toggle.click();
   select(stages[0].name);
  }
  focus.addEventListener('change',()=>{

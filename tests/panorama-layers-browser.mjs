@@ -6,6 +6,14 @@ import {createServer} from 'node:http';
 import {readFile,stat,mkdir} from 'node:fs/promises';
 import {resolve,sep,extname} from 'node:path';
 import {chromium} from 'playwright-core';
+// In the immersive map, filter options are collapsed over the full-height map.
+async function setPanoLayer(page,id,checked){
+ const toggle=page.locator('#pano-options-toggle');
+ if((await toggle.getAttribute('aria-expanded'))!=='true')await toggle.click();
+ const input=page.locator(id);
+ if(checked)await input.check();else await input.uncheck();
+ if((await toggle.getAttribute('aria-expanded'))==='true')await toggle.click();
+}
 const root=resolve('public');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg'};
 const server=createServer(async(req,res)=>{
@@ -64,7 +72,7 @@ try{
  console.log('PASS local mobile day planner official tour 31+33 stages, Hochbrixen and search');
  await page.locator('#pano-open').evaluate(el=>el.click());
  await page.waitForFunction(()=>document.getElementById('pano-img')?.naturalWidth>0,{timeout:20000});
- await page.locator('#pano-lifts .pano-lift-group').first().waitFor();
+ await page.locator('#pano-lifts .pano-lift-group:visible').first().waitFor();
  // In CI the official 3537x2445 JPG is provided by panorama-label-reference.mjs.
  // Project exact PDF text centres onto the panorama and verify each lift panel.
  if(await page.locator('#pano-img').evaluate(img=>img.naturalWidth===3537&&img.naturalHeight===2445)){
@@ -78,7 +86,7 @@ try{
    img.style.transform='translate3d('+px+'px,'+py+'px,0) scale('+zoom+')';
   });
   await page.waitForFunction(()=>!document.querySelector('.pano-printed-lift[data-lift-number="22"]')?.hidden,{timeout:5000});
-  await page.locator('.pano-printed-lift[data-lift-number="22"]').click({force:true});
+  await page.locator('.pano-printed-lift[data-lift-number="22"]').evaluate(el=>el.click());
   assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 22 · 8er Gondelbahn Salvenbahn II/);
   assert.match(await page.locator('#pano-lift-area').innerText(),/1775 m/);
   assert.ok(await page.locator('.pano-printed-lift[data-lift-number="23"]').count());
@@ -104,7 +112,7 @@ try{
     if(!marker)throw Error('Missing lift '+anchor.number);
    }
   });
-  await page.locator('#pano-lifts-visible').uncheck();
+  await setPanoLayer(page,'#pano-lifts-visible',false);
   assert.equal(await page.locator('#pano-lifts').isHidden(),true);
   const point=await page.evaluate(()=>{
    const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
@@ -114,6 +122,7 @@ try{
    return {x:rect.left+rect.width/2+(.5806-.5)*w*Number(m[3])+Number(m[1]),
            y:rect.top+rect.height/2+(.61025-.5)*h*Number(m[3])+Number(m[2])};
   });
+  if(await page.locator('#pano-lift-close').isVisible())await page.locator('#pano-lift-close').click();
   await page.mouse.click(point.x,point.y);
   assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 23 · Rigibahn/);
   assert.match(await page.locator('#pano-lift-area').innerText(),/916 m/);
@@ -127,9 +136,10 @@ try{
    img.style.transform='translate3d('+(.5-.46865)*w*zoom+'px,'+(.5-.37299)*h*zoom+'px,0) scale('+zoom+')';
    return {x:rect.left+rect.width/2,y:rect.top+rect.height/2};
   });
+  if(await page.locator('#pano-lift-close').isVisible())await page.locator('#pano-lift-close').click();
   await page.mouse.click(printed89.x,printed89.y);
   assert.match(await page.locator('#pano-lift-name').innerText(),/Kaartnummer 89/);
-  await page.locator('#pano-lifts-visible').check();
+  await setPanoLayer(page,'#pano-lifts-visible',true);
   // Green roof symbols have their own reviewed positions, separate from lifts.
   assert.equal(await page.locator('.pano-printed-hut').count(),69);
   // Recenter on Ellmau green 61 so its button is inside the viewport.
@@ -155,7 +165,7 @@ try{
   await page.locator('#pano-hut-select').selectOption('h-15');
   assert.match(await page.locator('#pano-hut-name').innerText(),/Bergkaiser/);
   // Actual screen tap on GREEN 61 while decorative markers are disabled.
-  await page.locator('#pano-restaurants-visible').uncheck();
+  await setPanoLayer(page,'#pano-restaurants-visible',false);
   assert.ok(await page.locator('#pano-huts').isHidden());
   const green61=await page.evaluate(()=>{
    const view=document.getElementById('pano-viewport'),img=document.getElementById('pano-img'),rect=view.getBoundingClientRect();
@@ -165,15 +175,22 @@ try{
    img.style.transform='translate3d('+(.5-x)*w*zoom+'px,'+(.5-y)*h*zoom+'px,0) scale('+zoom+')';
    return {x:rect.left+rect.width/2,y:rect.top+rect.height/2};
   });
+  if(await page.locator('#pano-hut-close').isVisible())await page.locator('#pano-hut-close').click();
   await page.mouse.click(green61.x,green61.y);
   assert.match(await page.locator('#pano-hut-name').innerText(),/Tirol Lodge Lieblingsplatzl/);
   assert.match(await page.locator('#pano-hut-location').innerText(),/Groen hutnummer 61/);
-  await page.locator('#pano-restaurants-visible').check();
+  await setPanoLayer(page,'#pano-restaurants-visible',true);
   console.log('PASS 69 printed GREEN hut numbers, venue choice 56 and overlay-disabled tap on 61');
   await page.screenshot({path:'test-artifacts/printed-green-huts-mobile.png'});
   console.log('PASS 80 printed labels including 22/23, 40/59/89 choices and overlay-off selection');
   await page.screenshot({path:'test-artifacts/printed-lifts-22-23-mobile.png'});
  }
+ // Area cluster buttons intentionally disappear when individual printed numbers
+ // are visible; reset first to return to the uncluttered overview.
+ await page.locator('#pano-hut-close').evaluate(el=>el.click());
+ await page.locator('#pano-lift-close').evaluate(el=>el.click());
+ await page.locator('#pano-reset').click();
+ await page.waitForFunction(()=>[...document.querySelectorAll('#pano-lifts .pano-lift-group')].some(b=>!b.hidden));
  assert.equal(await page.locator('#pano-lifts-visible').isChecked(),true);
  assert.equal(await page.locator('#pano-restaurants-visible').isChecked(),true);
  assert.equal(await page.locator('#pano-lifts .pano-lift-group').count(),8);
@@ -194,13 +211,13 @@ try{
  await page.locator('#pano-hut-search').fill('KRAFTalm');
  assert.match(await page.locator('#pano-hut-name').innerText(),/KRAFTalm/i);
  await page.locator('#pano-hut-search').fill('');
- await page.locator('#pano-lifts-visible').uncheck();
+ await setPanoLayer(page,'#pano-lifts-visible',false);
  assert.equal(await page.locator('#pano-lifts').isHidden(),true);
- await page.locator('#pano-lifts-visible').check();
+ await setPanoLayer(page,'#pano-lifts-visible',true);
  assert.equal(await page.locator('#pano-lifts').isVisible(),true);
- await page.locator('#pano-restaurants-visible').uncheck();
+ await setPanoLayer(page,'#pano-restaurants-visible',false);
  assert.equal(await page.locator('#pano-huts').isHidden(),true);
- await page.locator('#pano-restaurants-visible').check();
+ await setPanoLayer(page,'#pano-restaurants-visible',true);
  assert.equal(await page.locator('#pano-huts').isVisible(),true);
  await mkdir('test-artifacts',{recursive:true});
  await page.screenshot({path:'test-artifacts/pano-huts-lifts-390.png'});

@@ -46,16 +46,20 @@ try{
   await page.route('https://webcams.skiwelt.at/**',route=>route.fulfill({status:200,contentType:'image/png',body:png}));
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.addStyleTag({content:'#ski-intro,#legal-gate{display:none!important}'});
-  await page.evaluate(({safe,noInjectedSafe})=>{
+  await page.evaluate(({safe,noInjectedSafe,topSafe})=>{
    document.getElementById('ski-intro')?.setAttribute('hidden','');
    document.getElementById('legal-gate')?.setAttribute('hidden','');
    document.body.classList.remove('brand-arriving','legal-open');
-   if(!noInjectedSafe)document.documentElement.style.setProperty('--skije-bottom-safe',safe+'px');
+   if(!noInjectedSafe){
+    document.documentElement.style.setProperty('--skije-bottom-safe',safe+'px');
+    document.documentElement.style.setProperty('--skije-panorama-bottom-safe',safe+'px');
+    document.documentElement.style.setProperty('--skije-panorama-top-safe',topSafe+'px');
+   }
    if(navigator.userAgent.includes('Android')){
     if(noInjectedSafe)document.documentElement.classList.remove('skije-android-standalone');
     else document.documentElement.classList.add('skije-android-standalone');
    }
-  },{safe:v.safe,noInjectedSafe:!!v.noInjectedSafe});
+  },{safe:v.safe,noInjectedSafe:!!v.noInjectedSafe,topSafe:v.topSafe??(v.ua.includes('Android')?32:v.name==='iPhone-15'?47:20)});
   // Injected safe-area emulator changes footer height after the app booted.
   // Allow the ResizeObserver to remeasure it, as on a real screen rotation.
   await page.waitForFunction(()=>{
@@ -126,6 +130,76 @@ try{
     await page.locator('#camera-tiles [data-cam="hartkaiser"]').click();
     await page.screenshot({path:'test-artifacts/webcam-player-'+v.name+'.png'});
   }
+
+  // Open the actual panoramic map with the device navigation bar present.
+  // It must never shrink when hut/lift details or options are displayed.
+  if(!(await page.locator('#camera-modal').isHidden()))await page.locator('#camera-close').click();
+  await page.locator('#pano-open').evaluate(el=>el.click());
+  await page.waitForFunction(()=>document.querySelector('#pano-img')?.naturalWidth>0,{timeout:15000});
+  const pano=await page.evaluate(()=>{
+   const stage=document.getElementById('pano-viewport').getBoundingClientRect();
+   const frame=document.getElementById('pano-modal').getBoundingClientRect();
+   const img=document.getElementById('pano-img'),iw=img.naturalWidth,ih=img.naturalHeight;
+   const drawnW=Math.min(stage.width,stage.height*iw/ih),drawnH=Math.min(stage.height,stage.width*ih/iw);
+   return {stageTop:stage.top,stageBottom:stage.bottom,stageHeight:stage.height,
+    frameTop:frame.top,frameBottom:frame.bottom,frameHeight:frame.height,
+    initialZoom:window.SKIPanorama.getZoom(),cover:Math.max(stage.width/drawnW,stage.height/drawnH)};
+  });
+  const panoTop=v.topSafe??(v.ua.includes('Android')?32:v.name==='iPhone-15'?47:20);
+  assert.ok(pano.frameTop>=panoTop-2,v.name+' panorama behind status bar '+JSON.stringify(pano));
+  assert.ok(pano.frameBottom<=v.height-v.safe+4,v.name+' panorama behind navigation bar '+JSON.stringify(pano));
+  assert.ok(pano.stageHeight>=pano.frameHeight-64,v.name+' fixed bars steal panorama height '+JSON.stringify(pano));
+  assert.ok(pano.initialZoom>=pano.cover-.05,v.name+' map did not fill visible canvas '+JSON.stringify(pano));
+  assert.ok(await page.locator('#pano-options').isHidden(),'options should be collapsed by default');
+  assert.ok(await page.locator('.pano-tools').isVisible());
+  await page.locator('#pano-options-toggle').click();
+  assert.ok(await page.locator('#pano-options').isVisible());
+  assert.equal(await page.locator('#pano-options-toggle').getAttribute('aria-expanded'),'true');
+  await page.locator('#pano-lifts-visible').uncheck();
+  await page.locator('#pano-restaurants-visible').uncheck();
+  assert.ok(await page.locator('#pano-lifts').isHidden());
+  assert.ok(await page.locator('#pano-huts').isHidden());
+  await page.locator('#pano-lifts-visible').check();
+  await page.locator('#pano-restaurants-visible').check();
+  assert.ok(await page.locator('#pano-lifts').isVisible());
+  assert.ok(await page.locator('#pano-huts').isVisible());
+  const duringOptions=await page.locator('#pano-viewport').boundingBox();
+  assert.ok(Math.abs(duringOptions.height-pano.stageHeight)<2,'Options should float over map, not resize it');
+  await page.locator('#pano-fill').click();
+  assert.ok(await page.locator('#pano-options').isHidden());
+  for(let n=0;n<12;n++){
+   if(!(await page.locator('#pano-plus').isEnabled()))break;
+   await page.locator('#pano-plus').click();
+  }
+  const deep=await page.evaluate(()=>window.SKIPanorama.getZoom());
+  assert.ok(deep>=45&&deep<=48,v.name+' max deep zoom not restored '+deep);
+  await page.locator('#pano-reset').click();
+  assert.equal(await page.evaluate(()=>window.SKIPanorama.getZoom()),1);
+  await page.locator('#pano-viewport').dispatchEvent('pointerdown',{pointerId:1,pointerType:'touch',clientX:120,clientY:250});
+  await page.locator('#pano-viewport').dispatchEvent('pointerdown',{pointerId:2,pointerType:'touch',clientX:180,clientY:250});
+  await page.locator('#pano-viewport').dispatchEvent('pointermove',{pointerId:2,pointerType:'touch',clientX:300,clientY:250});
+  assert.ok(await page.evaluate(()=>window.SKIPanorama.getZoom())>2,'Touch pinch must work on panorama');
+  await page.locator('#pano-viewport').dispatchEvent('pointerup',{pointerId:1,pointerType:'touch',clientX:120,clientY:250});
+  await page.locator('#pano-viewport').dispatchEvent('pointerup',{pointerId:2,pointerType:'touch',clientX:300,clientY:250});
+  // Pop-up data is a bottom sheet OVER the image, not a stacked map-squeezer.
+  await page.locator('.pano-lift-group').first().evaluate(el=>el.click());
+  assert.ok(await page.locator('#pano-lift-info').isVisible());
+  const afterLift=await page.locator('#pano-viewport').boundingBox();
+  assert.ok(Math.abs(afterLift.height-pano.stageHeight)<2,'Lift detail may not reduce map height');
+  await page.locator('#pano-lift-close').click();
+  await page.locator('.pano-hut').first().evaluate(el=>el.click());
+  assert.ok(await page.locator('#pano-hut-info').isVisible());
+  const afterHut=await page.locator('#pano-viewport').boundingBox();
+  assert.ok(Math.abs(afterHut.height-pano.stageHeight)<2,'Hut detail may not reduce map height');
+  await page.locator('#pano-hut-close').click();
+  if(v.name==='S21-screenshot-edge-to-edge-no-inset'||v.name==='iPhone-15'||v.name==='Phone-landscape'){
+   await page.screenshot({path:'test-artifacts/panorama-immersive-'+v.name+'.png'});
+  }
+  await page.locator('[data-close="pano-modal"]').click();
+  assert.ok(await page.locator('#pano-modal').isHidden());
+  assert.equal(errors.length,0,v.name+' map errors: '+errors.join(' | '));
+  console.log('PASS immersive panorama '+v.name+': full-height, 4800% zoom, pinch, options and overlay info');
+
   console.log('PASS '+v.name+' 20 cams, area filter, safe app nav, safe player controls, still image and fallback');
   await ctx.close();
  }

@@ -28,7 +28,7 @@ test('op panorama zelfstandige liftlaag, zoekveld, select en aparte schakelaar',
  assert.match(html,/pano-lifts\.js\?v=4514/);
  assert.match(css,/\.pano-lift-group/);
  assert.match(script,/sourceSearch\(lift\)/);
- assert.match(script,/new MutationObserver\(position\)/);
+ assert.match(script,/new MutationObserver\(schedulePosition\)/);
  assert.match(script,/toggle\.checked/);
  assert.doesNotMatch(script,/getCurrentPosition|watchPosition/);
 });

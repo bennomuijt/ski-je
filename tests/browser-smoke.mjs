@@ -182,7 +182,13 @@ await add('official panorama controls support zoom and local fallback without GP
  const props=await page.locator('#pano-img').evaluate(el=>({src:el.currentSrc,width:el.naturalWidth,height:el.naturalHeight,transform:el.style.transform}));
  assert.ok(props.width>400,'fallback panorama is missing');
  assert.match(props.src,/skimap\.jpg/);
- assert.match(props.transform,/scale\(3\.8\)/);
+ assert.match(props.transform,/scale\(5\.2\)/);
+ const dims=await page.evaluate(()=>{
+   const map=document.querySelector('#pano-viewport').getBoundingClientRect();
+   const modal=document.querySelector('#pano-modal').getBoundingClientRect();
+   return {map:map.height,modal:modal.height};
+  });
+  assert.ok(dims.map>dims.modal*.76,'panorama should occupy most of phone screen');
  const v1=await page.evaluate(()=>window.SKIPanorama.getZoom());
  await page.locator('#pano-plus').click();
  const v2=await page.evaluate(()=>window.SKIPanorama.getZoom());
@@ -197,19 +203,31 @@ await add('official panorama controls support zoom and local fallback without GP
    assert.ok(await page.locator('.pano-hut').count()>=4,'restaurant area pins must exist');
    if(await page.locator('#pano-restaurants-visible').count()){
      // SKI-je 4.5.9 shows restaurant area markers by default; older releases did not.
-     if(!(await page.locator('#pano-restaurants-visible').isChecked()))await page.locator('#pano-restaurants-visible').check();
+      if(!(await page.locator('#pano-restaurants-visible').isChecked())){
+       await page.locator('#pano-options-toggle').click();
+       await page.locator('#pano-restaurants-visible').check();
+       await page.locator('#pano-options-toggle').click();
+      }
    }
    // On the published panorama the approximate lift/hut area markers overlap.
    // Verify the restaurant layer with lift markers off (a supported user control).
    const liftToggle=page.locator('#pano-lifts-visible');
    const restoreLifts=await liftToggle.count()&&await liftToggle.isChecked();
-   if(restoreLifts)await liftToggle.uncheck();
+    if(restoreLifts){
+     await page.locator('#pano-options-toggle').click();
+     await liftToggle.uncheck();
+     await page.locator('#pano-options-toggle').click();
+    }
    try{
     await page.locator('.pano-hut:visible').first().click();
     assert.ok(await page.locator('#pano-hut-info').isVisible(),'restaurant detail must open in the app');
     await page.locator('#pano-hut-close').click();
    }finally{
-    if(restoreLifts)await liftToggle.check();
+     if(restoreLifts){
+      await page.locator('#pano-options-toggle').click();
+      await liftToggle.check();
+      await page.locator('#pano-options-toggle').click();
+     }
    }
  }else console.log('INFO: live 4.5.3 has not yet published the restaurant map.');
  assert.equal(await page.evaluate(()=>window.SKIPanorama.getZoom()),1);

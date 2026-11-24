@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="skije-build" content="660144966b18d59786d4fb85">
+<meta name="skije-build" content="b35715dff28db62dba922c87">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07538c">
 <link rel="manifest" href="manifest.webmanifest?v=4514">
@@ -193,7 +193,7 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.22</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.23</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -628,7 +628,7 @@ body.legal-open{overflow:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.5.22-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
+      <p class="tiny">SKI-je v4.5.23-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
@@ -701,20 +701,46 @@ body.legal-open{overflow:hidden}
   </div>
  </div>
 </div>
-<div class="utility-modal" id="pano-modal" hidden role="dialog" aria-modal="true" aria-labelledby="pano-title"><div class="utility-panel pano-panel">
- <div class="utility-head"><strong id="pano-title">&#127956; SkiWelt panoramakaart 2026/27</strong><button type="button" class="modal-close" data-close="pano-modal" aria-label="Sluiten">&times;</button></div>
- <div class="pano-tools"><label class="small" for="pano-focus">Zoom naar plaats</label><select id="pano-focus" aria-label="Kies plaats om in te zoomen">
+<div class="utility-modal" id="pano-modal" hidden role="dialog" aria-modal="true" aria-labelledby="pano-title">
+ <div class="utility-panel pano-panel">
+  <div class="utility-head pano-head">
+   <strong id="pano-title">🏔️ SkiWelt 2026/27</strong>
+   <div class="pano-head-actions">
+    <button type="button" id="pano-options-toggle" class="pano-option-button" aria-expanded="false" aria-controls="pano-options" title="Kaartlagen, uitleg en route">⚙ Opties</button>
+    <button type="button" class="modal-close" data-close="pano-modal" aria-label="Panoramakaart sluiten">&times;</button>
+   </div>
+  </div>
+  <div class="pano-stage" id="pano-stage">
+ <div class="pano-viewport" id="pano-viewport"><img id="pano-img" alt="Aangeleverde SkiWelt panoramakaart met pistes en liften" data-src="/api/skimap.jpg" draggable="false"><div id="pano-huts" class="pano-hut-layer" aria-label="Interactieve groene hutnummers en restaurants per deelgebied"></div><div id="pano-lifts" class="pano-lift-layer" aria-label="Liften per deelgebied en gecontroleerde gedrukte witte liftnummers"></div></div>
+
+   <div class="pano-tools" role="toolbar" aria-label="Panoramakaart bedienen">
+    <label class="pano-sr-only" for="pano-focus">Zoom naar plaats</label>
+    <select id="pano-focus" aria-label="Zoom naar plaats">
 <option value="overview">Hele SkiWelt</option><option value="going">Going</option><option value="ellmau">Ellmau</option><option value="scheffau">Scheffau</option><option value="soll">Söll</option><option value="itter">Itter</option><option value="hopfgarten">Hopfgarten</option><option value="brixen">Brixen im Thale</option><option value="westendorf">Westendorf</option></select>
-<button class="btn secondary" id="pano-minus" type="button">−</button><span id="pano-zoom">100%</span><button class="btn secondary" id="pano-plus" type="button">+</button><button class="btn clear" id="pano-reset" type="button">Hele kaart</button></div>
+    <button class="btn secondary" id="pano-minus" type="button" aria-label="Uitzoomen" title="Uitzoomen">−</button>
+    <span id="pano-zoom" aria-label="Zoomniveau">100%</span>
+    <button class="btn secondary" id="pano-plus" type="button" aria-label="Inzoomen" title="Inzoomen">+</button>
+    <button class="btn clear" id="pano-reset" type="button" aria-label="Hele kaart tonen" title="Hele kaart tonen">⌂</button>
+   </div>
+   <div class="pano-options" id="pano-options" hidden aria-label="Kaartopties, lagen en route">
+    <strong>Kaartlagen en uitleg</strong>
+    <div class="pano-option-actions"><button type="button" id="pano-fill" class="btn secondary" aria-label="Vul het scherm met de kaart">⤢ Scherm vullen</button><button type="button" id="pano-reload" class="btn secondary" aria-label="Laad de officiële panoramakaart opnieuw">↻ Kaart opnieuw laden</button></div>
  <div class="pano-filter"><label for="pano-lifts-visible"><input type="checkbox" id="pano-lifts-visible" checked> 🚡 Liften weergeven</label><span id="pano-lift-count" class="tiny">Liftmarkeringen verborgen</span></div>
  <div class="pano-filter"><label for="pano-restaurants-visible"><input type="checkbox" id="pano-restaurants-visible" checked> 🍽️ Restaurants weergeven</label><span id="pano-restaurant-count" class="tiny">Markeringen verborgen</span></div>
  <p class="pano-hint">🤏 Zoom met twee vingers · schuif met één vinger. Tik bij ver inzoomen op een <strong>wit liftnummer</strong> of een <strong>groen hutnummer</strong> voor informatie en beschikbare foto’s. Dit werkt ook als de extra markeringen uitstaan. Rode en blauwe rondjes zijn <strong>pistes</strong>. Bij dubbele nummers (zoals lift 89 en hut 56) kun je kiezen. Deze tekening is géén GPS-kaart.</p>
+
  <div class="pano-route-box" id="pano-route-box" hidden><div class="pano-route-label">🧭 Route door deelgebieden (indicatief, géén exacte piste/GPS-navigatie)</div><div class="pano-route-list" id="pano-route-list" aria-label="Deelgebieden langs de berekende route"></div></div>
- <div class="pano-viewport" id="pano-viewport"><img id="pano-img" alt="Aangeleverde SkiWelt panoramakaart met pistes en liften" data-src="/api/skimap.jpg" draggable="false"><div id="pano-huts" class="pano-hut-layer" aria-label="Interactieve groene hutnummers en restaurants per deelgebied"></div><div id="pano-lifts" class="pano-lift-layer" aria-label="Liften per deelgebied en gecontroleerde gedrukte witte liftnummers"></div></div>
+
+    <div class="pano-bottom" id="pano-map-status">Officiële SkiWelt kaart · 2026/27. De panorama is niet geografisch gekalibreerd; GPS hoort bij de kaart erboven.</div>
+   </div>
   <div class="pano-hut-info" id="pano-hut-info" hidden role="status" aria-live="polite"><div class="pano-hut-details"><strong id="pano-hut-name"></strong><p class="tiny" id="pano-hut-area"></p><input id="pano-hut-search" type="search" placeholder="Zoek hutnummer of naam" aria-label="Zoek restaurant of hut op nummer of naam"><div id="pano-hut-buttons" class="pano-target-grid" aria-label="Klikbare restaurants en hutten in dit gebied"></div><select id="pano-hut-select" aria-label="Kies een restaurant uit dit gebied"></select><p id="pano-hut-location" class="tiny"></p><img id="pano-hut-photo" loading="lazy" alt="" hidden><span id="pano-hut-photo-status">Binnenfoto niet geverifieerd.</span> <a id="pano-hut-link" href="https://www.skiwelt.at/nl/" target="_blank" rel="noopener noreferrer">Restaurantinformatie</a> <button type="button" id="pano-hut-more-sources">🖼️ Meer foto's &amp; bronnen</button></div><button type="button" id="pano-hut-close" aria-label="Restaurantinformatie sluiten">×</button></div>
  <div class="pano-lift-info" id="pano-lift-info" hidden role="status"><div class="pano-lift-details"><strong id="pano-lift-name">Kies een lift</strong><p class="tiny">De markering duidt een deelgebied aan, niet de exacte plek van de lift. Zoek hieronder op nummer of naam.</p><input id="pano-lift-search" type="search" placeholder="Zoek liftnummer of naam" aria-label="Zoek liftnummer, naam of gebied"><div id="pano-lift-buttons" class="pano-target-grid" aria-label="Klikbare liften met liftnummer en naam"></div><select id="pano-lift-select" aria-label="Kies lift"></select><p class="tiny" id="pano-lift-area"></p><p id="pano-lift-connections" class="pano-linked-areas"></p><p id="pano-lift-pistes" class="pano-linked-pistes"></p><img id="pano-lift-photo" loading="lazy" hidden alt=""><span id="pano-lift-photo-status">Foto volgt</span><div class="pano-lift-actions"><a id="pano-lift-link" href="https://www.skiwelt.at/nl/liftstatus-winter.html" target="_blank" rel="noopener noreferrer">Officiële liftstatus</a><button type="button" id="pano-lift-more-sources">🖼️ Liftfoto's &amp; bronnen</button></div></div><button type="button" id="pano-lift-close" aria-label="Liftinformatie sluiten">×</button></div>
  <div class="pano-bottom" id="pano-map-status">Officiële SkiWelt kaart · 2026/27. Bron: SkiWelt Wilder Kaiser-Brixental. De illustratie is niet geografisch gekalibreerd.</div>
  </div></div>
+   <div class="pano-map-credit" id="pano-map-credit" aria-hidden="true">SkiWelt 2026/27 · illustratie, geen GPS</div>
+  </div>
+ </div>
+</div>
 <div class="webcam-modal" id="camera-modal" role="dialog" aria-modal="true" aria-labelledby="camera-name" aria-describedby="camera-info" hidden>
   <div class="webcam-panel">
     <div class="cam-head"><div class="cam-head-text"><strong id="camera-name">Live webcam</strong><small>SKI-je · SkiWelt</small></div><button type="button" class="cam-close" id="camera-close" aria-label="Terug naar webcams">← Terug</button></div>

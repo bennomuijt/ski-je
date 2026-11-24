@@ -151,7 +151,7 @@ try{
   assert.ok(pano.stageHeight>=pano.frameHeight-64,v.name+' fixed bars steal panorama height '+JSON.stringify(pano));
   assert.ok(pano.initialZoom>=pano.cover-.05,v.name+' map did not fill visible canvas '+JSON.stringify(pano));
   assert.ok(await page.locator('#pano-options').isHidden(),'options should be collapsed by default');
-  assert.ok(await page.locator('#pano-tools').isVisible());
+  assert.ok(await page.locator('.pano-tools').isVisible());
   await page.locator('#pano-options-toggle').click();
   assert.ok(await page.locator('#pano-options').isVisible());
   assert.equal(await page.locator('#pano-options-toggle').getAttribute('aria-expanded'),'true');
@@ -193,7 +193,6 @@ try{
   assert.ok(Math.abs(afterHut.height-pano.stageHeight)<2,'Hut detail may not reduce map height');
   await page.locator('#pano-hut-close').click();
   if(v.name==='S21-screenshot-edge-to-edge-no-inset'||v.name==='iPhone-15'||v.name==='Phone-landscape'){
-   await page.locator('#pano-fill').count(); // verify presence without opening drawer
    await page.screenshot({path:'test-artifacts/panorama-immersive-'+v.name+'.png'});
   }
   await page.locator('[data-close="pano-modal"]').click();

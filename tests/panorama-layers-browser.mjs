@@ -72,7 +72,7 @@ try{
  console.log('PASS local mobile day planner official tour 31+33 stages, Hochbrixen and search');
  await page.locator('#pano-open').evaluate(el=>el.click());
  await page.waitForFunction(()=>document.getElementById('pano-img')?.naturalWidth>0,{timeout:20000});
- await page.locator('#pano-lifts .pano-lift-group').first().waitFor();
+ await page.locator('#pano-lifts .pano-lift-group:visible').first().waitFor();
  // In CI the official 3537x2445 JPG is provided by panorama-label-reference.mjs.
  // Project exact PDF text centres onto the panorama and verify each lift panel.
  if(await page.locator('#pano-img').evaluate(img=>img.naturalWidth===3537&&img.naturalHeight===2445)){

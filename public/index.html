@@ -1070,49 +1070,74 @@ $('radar-play').addEventListener('click',()=>{
 });
 $('radar-refresh').addEventListener('click',()=>{if(!radarMap)showRadar();else fetchRadar();});
 
-/* Camera's gekozen uit de officiële SkiWelt-webcamverwijzingen.
-   Live stream/video wordt pas op expliciete klik op afstand geladen.
-   Productie-integratie van Feratel vereist toestemming/partner-embedcode. */
-const webcamSources=[
-  {id:'hartkaiser',name:'Hartkaiser · Ellmau',place:'Ellmau / Going',meters:'1.555 m',url:'https://webtv.feratel.com/webtv/?cam=5525&design=v5'},
-  {id:'brandstadl',name:'Brandstadl · Scheffau',place:'Scheffau',meters:'1.650 m',url:'https://webtv.feratel.com/webtv/?cam=5665&design=v5'},
-  {id:'salve',name:'Hohe Salve',place:'Söll / Hopfgarten',meters:'1.853 m',url:'https://webtv.feratel.com/webtv/?cam=5687&design=v5'},
-  {id:'hochbrixen',name:'Hochbrixen',place:'Brixen im Thale',meters:'1.300 m',url:'https://webtv.feratel.com/webtv/?cam=5520&design=v5'},
-  {id:'talkaser',name:'Talkaser · Westendorf',place:'Westendorf',meters:'1.800 m',url:'https://webtv.feratel.com/webtv/?cam=5725&design=v5'},
-  {id:'choralpe',name:'Choralpe · Westendorf',place:'Westendorf',meters:'1.810 m',url:'https://webtv.feratel.com/webtv/?cam=5726&design=v5'}
-];
-const cameraTiles=$('camera-tiles');
-cameraTiles.innerHTML=webcamSources.map(c=>`<button class="camera-tile" type="button" data-cam="${c.id}" aria-label="Bekijk live webcam ${escapeHtml(c.name)}"><span class="camera-icon">📹</span><strong>${escapeHtml(c.name)}</strong><small>🏔️ ${escapeHtml(c.meters)} · Tik om te bekijken</small></button>`).join('');
-$('camera-picks').innerHTML=webcamSources.map(c=>`<button class="cam-switch" type="button" data-cam="${c.id}" aria-pressed="false">${escapeHtml(c.name)}</button>`).join('');
-let focusBeforeCam=null;
-function selectCamera(id){
-  const c=webcamSources.find(w=>w.id===id);if(!c)return;
-  $('camera-name').textContent=c.name;
-  $('camera-location').textContent=c.place+' · '+c.meters;
-  $('camera-source').href=c.url;
-  $('camera-frame').title='Live webcam '+c.name+' (Feratel, externe aanbieder)';
-  $('camera-info').textContent='Externe webcam van Feratel. Blijft het scherm leeg? De aanbieder kan insluiten blokkeren. Tik dan op “Officiële livecam”.';
-  document.querySelectorAll('.cam-switch').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cam===c.id)));
-  // Bied de player zonder extra klik/scroll direct binnen het volledige scherm aan.
-  $('camera-frame').src=c.url;
+/* Officiële SkiWelt-catalogus: berg- en dalwebcams, pas laden na tikken. */
+const webcamSources=window.SKIWebcamCatalogue?.webcams||[];
+const cameraTiles=$('camera-tiles'),cameraArea=$('camera-area'),cameraFrame=$('camera-frame'),cameraStill=$('camera-still'),cameraLoading=$('camera-loading');
+for(const area of window.SKIWebcamCatalogue?.areas||[]){
+ const opt=document.createElement('option');opt.value=area;opt.textContent=area;cameraArea.add(opt);
 }
-function openCamera(id){focusBeforeCam=document.activeElement;
-  $('camera-modal').hidden=false;document.body.classList.add('cam-open');
-  selectCamera(id);$('camera-close').focus({preventScroll:true});
+function renderCameras(){
+ const list=webcamSources.filter(c=>cameraArea.value==='all'||c.area===cameraArea.value);
+ $('camera-count').textContent=list.length+' van '+webcamSources.length+' webcams';
+ cameraTiles.innerHTML=list.map(c=>'<button class="camera-tile" type="button" data-cam="'+escapeHtml(c.id)+'" aria-label="Bekijk webcam '+escapeHtml(c.name)+' in '+escapeHtml(c.village)+'"><span class="camera-icon" aria-hidden="true">'+(c.kind==='snapshot'?'📷':'📹')+'</span><strong>'+escapeHtml(c.name)+'</strong><small>'+escapeHtml(c.village)+' · '+escapeHtml(c.provider)+(c.altitude?' · '+escapeHtml(c.altitude):'')+'</small></button>').join('');
+}
+cameraArea.addEventListener('change',renderCameras);renderCameras();
+$('camera-picks').innerHTML=webcamSources.map(c=>'<button class="cam-switch" type="button" data-cam="'+escapeHtml(c.id)+'" aria-pressed="false">'+escapeHtml(c.name)+'</button>').join('');
+let focusBeforeCam=null,activeCamera=null;
+function selectCamera(id){
+ const c=webcamSources.find(w=>w.id===id);if(!c)return;
+ activeCamera=c;
+ $('camera-name').textContent=c.name;
+ $('camera-location').textContent=c.village+(c.altitude?' · '+c.altitude:'');
+ $('camera-source').href=c.url;
+ $('camera-source').textContent=c.kind==='website'?'↗ Officiële webcam-pagina':'↗ Open bij aanbieder';
+ $('camera-refresh').hidden=c.kind!=='snapshot';
+ $('camera-info').textContent=c.kind==='website'?'Voor deze webcam is geen losse beeld-URL bevestigd. Gebruik de officiële pagina wanneer de weergave wordt geblokkeerd.':
+   c.kind==='snapshot'?'Dit is een momentopname, geen livevideo. Controleer de datum in beeld. Ververs om opnieuw te kijken.':
+   'Livebeeld via '+c.provider+'. Blijft het beeld leeg? De aanbieder kan insluiten blokkeren. Gebruik dan de knop Open bij aanbieder.';
+ document.querySelectorAll('.cam-switch').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cam===id)));
+ cameraFrame.src='about:blank';cameraFrame.hidden=true;
+ cameraStill.removeAttribute('src');cameraStill.hidden=true;
+ cameraLoading.hidden=false;cameraLoading.textContent='Beeld wordt geladen…';
+ if(c.kind==='snapshot'){
+   cameraStill.onload=()=>{cameraLoading.hidden=true;};
+   cameraStill.onerror=()=>{cameraLoading.hidden=false;cameraLoading.textContent='Foto niet bereikbaar; gebruik de bronlink.';};
+   cameraStill.alt='Webcam-momentopname '+c.name;
+   cameraStill.hidden=false;cameraStill.src=c.url+'?skije_refresh='+Date.now();
+ }else{
+   cameraFrame.title='Live webcam '+c.name+' ('+c.provider+')';
+   cameraFrame.hidden=false;cameraFrame.src=c.url;
+   // iframe errors are opaque across origins; never claim playback succeeded.
+   cameraLoading.hidden=true;
+ }
+ $('camera-picks').querySelector('.cam-switch[aria-pressed="true"]')?.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+function openCamera(id){
+ focusBeforeCam=document.activeElement;
+ $('camera-modal').hidden=false;document.body.classList.add('cam-open');
+ selectCamera(id);$('camera-close').focus({preventScroll:true});
 }
 function closeCamera(){
-  if($('camera-modal').hidden)return;
-  $('camera-modal').hidden=true;document.body.classList.remove('cam-open');
-  $('camera-frame').src='about:blank'; // Video niet in de achtergrond laten doorlopen.
-  if(focusBeforeCam && focusBeforeCam.isConnected)focusBeforeCam.focus({preventScroll:true});
+ if($('camera-modal').hidden)return;
+ $('camera-modal').hidden=true;document.body.classList.remove('cam-open');
+ cameraFrame.src='about:blank';cameraFrame.hidden=false;
+ cameraStill.removeAttribute('src');cameraStill.hidden=true;cameraLoading.hidden=true;activeCamera=null;
+ if(focusBeforeCam&&focusBeforeCam.isConnected)focusBeforeCam.focus({preventScroll:true});
 }
 cameraTiles.addEventListener('click',e=>{const b=e.target.closest('[data-cam]');if(b)openCamera(b.dataset.cam);});
 $('camera-picks').addEventListener('click',e=>{const b=e.target.closest('[data-cam]');if(b)selectCamera(b.dataset.cam);});
+$('camera-refresh').addEventListener('click',()=>{if(activeCamera?.kind==='snapshot')selectCamera(activeCamera.id);});
 $('camera-close').addEventListener('click',closeCamera);
 $('camera-back-bottom').addEventListener('click',closeCamera);
 $('camera-modal').addEventListener('click',e=>{if(e.target===$('camera-modal'))closeCamera();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCamera();
-  if(e.key==='Tab'&&!$('camera-modal').hidden){const focusables=[...$('camera-modal').querySelectorAll('button,a')];const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+ if(e.key==='Tab'&&!$('camera-modal').hidden){
+   const els=[...$('camera-modal').querySelectorAll('button:not([hidden]),a:not([hidden])')];
+   const first=els[0],last=els[els.length-1];
+   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+ }
+});
 $('weather-webcams').addEventListener('click',()=>goPage('webcams'));
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){stopGps();stopRadar();closeCamera();}

@@ -122,7 +122,7 @@ try{
    return {x:rect.left+rect.width/2+(.5806-.5)*w*Number(m[3])+Number(m[1]),
            y:rect.top+rect.height/2+(.61025-.5)*h*Number(m[3])+Number(m[2])};
   });
-  await page.locator('#pano-lift-close').click();
+  if(await page.locator('#pano-lift-close').isVisible())await page.locator('#pano-lift-close').click();
   await page.mouse.click(point.x,point.y);
   assert.match(await page.locator('#pano-lift-name').innerText(),/Lift 23 · Rigibahn/);
   assert.match(await page.locator('#pano-lift-area').innerText(),/916 m/);
@@ -136,7 +136,7 @@ try{
    img.style.transform='translate3d('+(.5-.46865)*w*zoom+'px,'+(.5-.37299)*h*zoom+'px,0) scale('+zoom+')';
    return {x:rect.left+rect.width/2,y:rect.top+rect.height/2};
   });
-  await page.locator('#pano-lift-close').click();
+  if(await page.locator('#pano-lift-close').isVisible())await page.locator('#pano-lift-close').click();
   await page.mouse.click(printed89.x,printed89.y);
   assert.match(await page.locator('#pano-lift-name').innerText(),/Kaartnummer 89/);
   await setPanoLayer(page,'#pano-lifts-visible',true);
@@ -175,7 +175,7 @@ try{
    img.style.transform='translate3d('+(.5-x)*w*zoom+'px,'+(.5-y)*h*zoom+'px,0) scale('+zoom+')';
    return {x:rect.left+rect.width/2,y:rect.top+rect.height/2};
   });
-  await page.locator('#pano-hut-close').click();
+  if(await page.locator('#pano-hut-close').isVisible())await page.locator('#pano-hut-close').click();
   await page.mouse.click(green61.x,green61.y);
   assert.match(await page.locator('#pano-hut-name').innerText(),/Tirol Lodge Lieblingsplatzl/);
   assert.match(await page.locator('#pano-hut-location').innerText(),/Groen hutnummer 61/);

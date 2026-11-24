@@ -970,6 +970,30 @@ function goPage(page){
  window.scrollTo({top:0,left:0,behavior:'instant'});
 }
 document.querySelectorAll('.bottom button').forEach(b=>b.addEventListener('click',()=>goPage(b.dataset.page)));
+
+/* Keep every page's last button above the REAL fixed menu, including Samsung
+   3-button navigation and the iPhone safe area; don't assume a fixed height. */
+const fixedNav=document.querySelector('footer.bottom');
+if(fixedNav){
+ const updateNavSpace=()=>{
+  const size=Math.ceil(fixedNav.getBoundingClientRect().height);
+  if(size>30)document.documentElement.style.setProperty('--skije-nav-height',size+'px');
+ };
+ updateNavSpace();
+ if(typeof ResizeObserver!=='undefined')new ResizeObserver(updateNavSpace).observe(fixedNav);
+ window.addEventListener('orientationchange',updateNavSpace,{passive:true});
+ window.addEventListener('resize',updateNavSpace,{passive:true});
+ const detectKeyboard=()=>{
+  const active=document.activeElement;
+  const typing=active&&((active.matches?.('input:not([type="checkbox"]):not([type="range"]):not([type="radio"]):not([type="file"]),textarea'))||active.isContentEditable);
+  const vv=window.visualViewport;
+  document.documentElement.classList.toggle('skije-keyboard-open',Boolean(typing&&vv&&window.innerHeight-vv.height>150));
+ };
+ window.visualViewport?.addEventListener('resize',detectKeyboard,{passive:true});
+ document.addEventListener('focusin',detectKeyboard);
+ document.addEventListener('focusout',detectKeyboard);
+}
+
 function renderPosition(pos){
  const c=pos.coords;const lat=c.latitude,lng=c.longitude,acc=Math.max(0,c.accuracy||0);
  const inside=inSkiWelt(lat,lng);$('inside-state').textContent=inside?'In SkiWelt':'Buiten SkiWelt';

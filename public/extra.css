@@ -365,3 +365,53 @@ body.utility-open{overflow:hidden}
 }
 .pano-printed-hut:focus-visible{outline:4px solid #ffab00;outline-offset:3px}
 .pano-printed-hut[hidden]{display:none!important}
+
+/* 4.5.21: Android three-button bar + iPhone home-indicator safe-area. Reserve
+   the *measured* fixed nav height under all scrollable pages, including long
+   webcam lists. Footer buttons stay outside the system gesture area. */
+:root{--skije-nav-height:calc(78px + var(--skije-bottom-safe))}
+html{scroll-padding-bottom:calc(var(--skije-nav-height) + 20px);-webkit-text-size-adjust:100%}
+.wrap{padding-bottom:calc(var(--skije-nav-height) + 24px)!important}
+html.skije-keyboard-open .bottom{display:none!important}
+#pano-modal .pano-panel{max-height:calc(100dvh - var(--skije-bottom-safe) - 6px)}
+#pano-modal .pano-bottom{padding-bottom:calc(9px + var(--skije-bottom-safe))}
+.utility-modal{padding-bottom:max(12px,var(--skije-bottom-safe))}
+.webcam-modal{padding-bottom:var(--skije-bottom-safe)}
+.webcam-panel{max-height:calc(100dvh - var(--skije-bottom-safe) - 20px)}
+.cam-footer{padding-bottom:calc(9px + var(--skije-bottom-safe))}
+.camera-filters{display:flex;align-items:center;gap:9px;margin:12px 0 14px;flex-wrap:wrap}
+.camera-filters label{font-size:13px;font-weight:800;white-space:nowrap}
+.camera-filters select{min-width:0;flex:1 1 180px;max-width:100%;min-height:48px;border:1px solid #b4d7e9;background:#fff;color:#104b75;border-radius:11px;padding:9px 11px}
+.camera-tiles{grid-template-columns:repeat(auto-fill,minmax(min(100%,165px),1fr))}
+.camera-tile{min-height:104px;gap:5px;overflow-wrap:anywhere}
+.camera-tile small{font-size:11px;line-height:1.3}
+.camera-tile strong{font-size:14px}
+.camera-tile[aria-selected="true"]{border-color:#1378b4}
+.cam-frame-wrap{min-height:0!important;overflow:hidden}
+.cam-frame-wrap img{display:block;width:100%;height:100%;object-fit:contain;background:#d7e7f2}
+.cam-frame-wrap [hidden]{display:none!important}
+.camera-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#103d5e;color:#fff;border-radius:11px;padding:10px 14px;font-size:13px;z-index:2;max-width:85%;text-align:center}
+.cam-footer{flex-wrap:wrap}
+.cam-footer .btn{min-height:48px}
+.cam-footer #camera-refresh[hidden]{display:none!important}
+@media(max-width:760px){
+ .webcam-modal{padding:0 0 var(--skije-bottom-safe)}
+ .webcam-panel{height:100%;max-height:100%;width:100%;border-radius:0}
+ .cam-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:8px 10px 10px}
+ #camera-back-bottom{grid-column:1 / -1}
+ #camera-refresh,#camera-source{min-width:0;white-space:normal;text-align:center;font-size:12px}
+ #camera-source:only-of-type{grid-column:1 / -1}
+ .cam-footer span{display:none}
+}
+@media(max-width:480px){
+ .camera-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .camera-tile{padding:10px;min-height:102px}
+ .cam-head{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+ .cam-head strong{font-size:14px}
+}
+@media(max-height:560px){
+ .cam-picks{padding:4px 8px;gap:5px}
+ .cam-switch{min-height:40px;padding:6px 10px}
+ .cam-error{font-size:10px;padding:4px 9px}
+ .cam-head{padding-top:6px;padding-bottom:6px}
+}

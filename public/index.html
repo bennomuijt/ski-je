@@ -980,7 +980,14 @@ if(fixedNav){
   if(size>30)document.documentElement.style.setProperty('--skije-nav-height',size+'px');
  };
  updateNavSpace();
- if(typeof ResizeObserver!=='undefined')new ResizeObserver(updateNavSpace).observe(fixedNav);
+ if(typeof ResizeObserver!=='undefined'){
+  // A change to system safe-area changes PADDING, not the content-box.
+  // Observe border-box so three-button navigation height changes are detected.
+  const navObserver=new ResizeObserver(updateNavSpace);
+  try{navObserver.observe(fixedNav,{box:'border-box'});}
+  catch{navObserver.observe(fixedNav);}
+ }
+ window.visualViewport?.addEventListener('resize',updateNavSpace,{passive:true});
  window.addEventListener('orientationchange',updateNavSpace,{passive:true});
  window.addEventListener('resize',updateNavSpace,{passive:true});
  const detectKeyboard=()=>{

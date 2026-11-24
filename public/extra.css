@@ -612,3 +612,7 @@ html.skije-android-device{
  #pano-modal .pano-options{top:60px;max-height:calc(100% - 70px)}
  #pano-modal .pano-hut-info,#pano-modal .pano-lift-info{max-height:48%!important}
 }
+
+.pano-option-actions{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:5px 0 10px}
+.pano-option-actions .btn{min-width:0;min-height:43px;font-size:12px;padding:7px 10px;flex:1 1 150px}
+.pano-printed-lift,.pano-printed-hut{user-select:none}

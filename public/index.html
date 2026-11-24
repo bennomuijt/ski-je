@@ -348,9 +348,10 @@ body.legal-open{overflow:hidden}
   </section>
   <section class="mode" id="page-webcams" aria-label="Webcams SkiWelt">
     <h1 class="banner">📷 Live webcams SkiWelt</h1>
-    <p class="subhead">Tik één keer op een camera. Het beeld opent meteen groot in dit scherm, zonder te scrollen.</p>
+    <p class="subhead">17 bergwebcams en 3 dalwebcams van SkiWelt op één plek. Kies een gebied en bekijk de beelden groot.</p>
     <div class="card">
-      <div class="row"><h2>Kies je uitzicht</h2><span class="pill">Direct bekijken</span></div>
+      <div class="row"><h2>Kies je uitzicht</h2><span class="pill" id="camera-count">20 webcams</span></div>
+      <div class="camera-filters"><label for="camera-area">Skigebied</label><select id="camera-area" aria-label="Filter webcams op deelgebied"><option value="all">Alle SkiWelt-webcams</option></select></div>
       <div id="camera-tiles" class="camera-tiles" aria-label="Selecteer een webcam"></div>
       <p class="hint">Livebeelden worden rechtstreeks bij de webcam-aanbieder geladen. Soms staat die geen weergave binnen een andere app toe; gebruik dan de knop naar de officiële livecam.</p>
     </div>
@@ -715,12 +716,13 @@ body.legal-open{overflow:hidden}
   <div class="webcam-panel">
     <div class="cam-head"><div class="cam-head-text"><strong id="camera-name">Live webcam</strong><small>SKI-je · SkiWelt</small></div><button type="button" class="cam-close" id="camera-close" aria-label="Terug naar webcams">← Terug</button></div>
     <div class="cam-picks" id="camera-picks" aria-label="Andere camera selecteren"></div>
-    <div class="cam-frame-wrap"><iframe id="camera-frame" title="Geselecteerde SkiWelt live webcam" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="cam-frame-wrap"><iframe id="camera-frame" title="Geselecteerde SkiWelt live webcam" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><img id="camera-still" hidden alt="SkiWelt webcam-momentopname"><span id="camera-loading" class="camera-loading" aria-live="polite" hidden>Beeld laden…</span></div>
     <div class="cam-error" id="camera-info">Een externe livecam kan het insluiten blokkeren. Blijft het beeld leeg? Gebruik de officiële cameraknop hieronder.</div>
-    <div class="cam-footer"><button type="button" class="btn" id="camera-back-bottom">← Terug naar webcams</button><a class="btn secondary" id="camera-source" href="https://www.skiwelt.at/en/webcams-in-winter.html" target="_blank" rel="noopener noreferrer">↗ Officiële livecam</a><span id="camera-location">SkiWelt · Tirol</span></div>
+    <div class="cam-footer"><button type="button" class="btn" id="camera-back-bottom">← Terug naar webcams</button><button type="button" class="btn secondary" id="camera-refresh" hidden>↻ Ververs foto</button><a class="btn secondary" id="camera-source" href="https://www.skiwelt.at/de/webcams-im-winter.html" target="_blank" rel="noopener noreferrer">↗ Open bij aanbieder</a><span id="camera-location">SkiWelt · Tirol</span></div>
   </div>
 </div>
 </div>
+<script src="skiwelt-webcams.js"></script>
 <script>
 'use strict';
 (() => {

@@ -52,6 +52,13 @@ try{
    document.documentElement.style.setProperty('--skije-bottom-safe',safe+'px');
    if(navigator.userAgent.includes('Android'))document.documentElement.classList.add('skije-android-standalone');
   },v.safe);
+  // Injected safe-area emulator changes footer height after the app booted.
+  // Allow the ResizeObserver to remeasure it, as on a real screen rotation.
+  await page.waitForFunction(()=>{
+   const h=document.querySelector('footer.bottom').getBoundingClientRect().height;
+   const reserved=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--skije-nav-height'));
+   return Number.isFinite(reserved)&&reserved>=h-1;
+  },null,{timeout:8000});
   await page.locator('footer.bottom button[data-page="webcams"]').click();
   const tiles=page.locator('#camera-tiles button[data-cam]');
   assert.equal(await tiles.count(),20,'20 webcams should be available in '+v.name);
@@ -66,6 +73,7 @@ try{
   assert.ok(dimensions.buttonMax<=v.height-v.safe+8,v.name+' system nav overlaps the fixed footer '+JSON.stringify(dimensions));
   assert.ok(parseFloat(dimensions.pagePad)>=dimensions.navHeight+10,v.name+' final page content may hide behind app menu '+JSON.stringify(dimensions));
   await tiles.last().scrollIntoViewIfNeeded();
+  await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
   const visible=await page.evaluate(()=>{
    const last=document.querySelector('#camera-tiles [data-cam]:last-child').getBoundingClientRect();
    const nav=document.querySelector('footer.bottom').getBoundingClientRect();

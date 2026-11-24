@@ -415,3 +415,61 @@ html.skije-keyboard-open .bottom{display:none!important}
  .cam-error{font-size:10px;padding:4px 9px}
  .cam-head{padding-top:6px;padding-bottom:6px}
 }
+
+/* 4.5.22 - Samsung S21 screenshot regression.
+   Edge-to-edge browser / installed shortcut can report zero CSS insets even
+   while Android draws its STATUS (top) and THREE-BUTTON bar (bottom) over us.
+   Keep the entire webcam sheet BETWEEN those system bars, not underneath. */
+:root{
+  --skije-camera-top-safe:env(safe-area-inset-top,0px);
+  --skije-camera-visual-top:0px;
+  --skije-camera-visual-bottom:0px;
+}
+html.skije-android-device{
+  --skije-bottom-safe:max(56px, env(safe-area-inset-bottom,0px));
+  --skije-camera-top-safe:max(32px, env(safe-area-inset-top,0px));
+}
+.webcam-modal{
+  top:max(var(--skije-camera-top-safe),var(--skije-camera-visual-top))!important;
+  bottom:max(var(--skije-bottom-safe),var(--skije-camera-visual-bottom))!important;
+  left:0!important;right:0!important;
+  height:auto!important;max-height:none!important;
+  padding:0!important;overflow:hidden!important;
+  align-items:stretch!important;justify-content:center;
+}
+.webcam-panel{
+  min-height:0!important;max-height:100%!important;
+}
+.cam-head,.cam-picks,.cam-error,.cam-footer{
+  flex:0 0 auto;
+}
+.cam-frame-wrap{flex:1 1 0!important;min-height:0!important;}
+.cam-footer{
+  position:relative;z-index:2;background:#fff;
+  border-top:1px solid #c8ddeb;box-shadow:0 -2px 8px #06345715;
+  padding:8px 10px!important;margin:0!important;
+}
+.cam-footer .btn{min-width:0;min-height:48px;touch-action:manipulation}
+#camera-close{min-height:48px;touch-action:manipulation}
+@media(max-width:760px),(max-height:560px){
+  .webcam-panel{
+    width:100%!important;max-width:none!important;
+    height:100%!important;max-height:100%!important;border-radius:0!important;
+  }
+  .cam-footer{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px!important;align-items:stretch;
+  }
+  #camera-back-bottom{grid-column:auto!important}
+  #camera-source{grid-column:auto!important;min-width:0;white-space:normal}
+  #camera-refresh:not([hidden]){grid-column:1/-1;grid-row:2}
+}
+@media(max-height:560px){
+  .cam-head{padding:5px 10px!important}
+  .cam-head small{display:none}
+  .cam-picks{padding:3px 8px!important}
+  .cam-switch{min-height:38px!important}
+  .cam-error{padding:4px 9px!important;font-size:10px}
+  .cam-footer{padding:5px 8px!important;gap:5px!important}
+  .cam-footer .btn{min-height:42px!important}
+}

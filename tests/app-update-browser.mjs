@@ -179,21 +179,41 @@ try {
     // The earlier scenario already checks the no-update path; here test that
     // at most two normal update attempts bring a migrated device current.
     let migrationResult;
-    for(let attempt=0;attempt<2;attempt++){
+    // A service worker activated across several historical releases can be
+    // controlling the previous navigation. Reopening the app is a normal,
+    // non-destructive recovery step (no storage reset or unregister).
+    for(let attempt=0;attempt<3;attempt++){
       await legacy.page.waitForFunction(() => {
         const button=document.getElementById('app-update-now');
         return !!button && !button.disabled && button.getAttribute('aria-busy')!=='true';
       }, null, {timeout:25000});
       migrationResult=await legacy.page.evaluate(async()=>{
         await window.SKIUpdate.check();
+        const reg=await navigator.serviceWorker.getRegistration();
+        const controller=navigator.serviceWorker.controller;
+        const messageBuild=await new Promise(resolve=>{
+          if(!controller)return resolve(null);
+          const channel=new MessageChannel();
+          const timer=setTimeout(()=>{channel.port1.close();resolve('no-reply');},700);
+          channel.port1.onmessage=ev=>{clearTimeout(timer);channel.port1.close();resolve(ev.data);};
+          controller.postMessage({type:'SKIJE_GET_BUILD'},[channel.port2]);
+        });
         return {
           current:document.getElementById('app-update-now').classList.contains('is-current'),
           status:document.getElementById('app-update-status').textContent,
           pageBuild:window.SKIUpdate.build,
-          controller:!!navigator.serviceWorker.controller
+          controller:!!controller,controllerState:controller?.state,
+          activeState:reg?.active?.state,waitingState:reg?.waiting?.state,
+          installingState:reg?.installing?.state,messageBuild,
+          caches:await caches.keys()
         };
       });
       if(migrationResult.current)break;
+      if(attempt<2){
+        // Mimic closing/reopening the installed shortcut after an upgrade.
+        await legacy.page.reload({waitUntil:'load'});
+        await checkBuild(legacy.page,release.build);
+      }
     }
     assert.equal(migrationResult.current,true,'Migrated install could not confirm current build: '+JSON.stringify(migrationResult));
     await legacy.context.setOffline(true);

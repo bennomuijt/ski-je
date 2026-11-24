@@ -199,7 +199,7 @@
   for(const {button,anchor} of points){
    const {x,y}=locationFor(anchor,g);
    button.style.left=x+'px';button.style.top=y+'px';
-   button.hidden=x<0||x>g.box.width||y<0||y>g.box.height;
+   button.hidden=(g.exactRevision&&g.zoom>=printedZoomThreshold)||x<0||x>g.box.width||y<0||y>g.box.height;
   }
   for(const anchor of printed){
    const {x,y}=locationFor(anchor,g);
@@ -272,8 +272,15 @@
  }
  toggle?.addEventListener('change',update);
  img.addEventListener('load',verifyMapImage);
- new MutationObserver(position).observe(img,{attributes:true,attributeFilter:['style','src']});
- if(typeof ResizeObserver!=='undefined')new ResizeObserver(position).observe(view);
+ // One animation frame per move: 149 map labels shouldn't trigger multiple
+ // expensive layouts during every pinch or pan pointer event.
+ let positionScheduled=false;
+ function schedulePosition(){
+  if(positionScheduled)return;positionScheduled=true;
+  requestAnimationFrame(()=>{positionScheduled=false;position();});
+ }
+ new MutationObserver(schedulePosition).observe(img,{attributes:true,attributeFilter:['style','src']});
+ if(typeof ResizeObserver!=='undefined')new ResizeObserver(schedulePosition).observe(view);
  $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));
  document.addEventListener('skije-languagechange',position);
  document.addEventListener('skije-photo-list-updated',()=>{if(!info.hidden&&select.value)showRestaurant(huts.find(h=>h.id===select.value));});

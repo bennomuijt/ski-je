@@ -20,6 +20,9 @@ if (navigator.connection?.saveData === true) document.documentElement.classList.
   const isApp = ['standalone','fullscreen','minimal-ui'].some(mode =>
     window.matchMedia?.(`(display-mode: ${mode})`)?.matches
   ) || /^android-app:\/\//i.test(document.referrer || '');
+  // Some Samsung browsers and installed shortcuts are edge-to-edge without reporting standalone.
+  // Reserve Android system bars regardless of which app/browser launch mode is detected.
+  if (isAndroid) document.documentElement.classList.add('skije-android-device');
   if (isAndroid && isApp) document.documentElement.classList.add('skije-android-standalone');
 })();
 </script>
@@ -1143,7 +1146,21 @@ function selectCamera(id){
  }
  $('camera-picks').querySelector('.cam-switch[aria-pressed="true"]')?.scrollIntoView({block:'nearest',inline:'nearest'});
 }
+// Fixed overlays are laid out against the CSS viewport, which can be larger than
+// the visibly usable area in edge-to-edge Android browsers. Account for both
+// Android system bars and any visualViewport clipping when opening the viewer.
+function syncCameraViewport(){
+ const vv=window.visualViewport;
+ const top=vv?Math.max(0,Math.ceil(vv.offsetTop)):0;
+ const bottom=vv?Math.max(0,Math.ceil(window.innerHeight-vv.offsetTop-vv.height)):0;
+ document.documentElement.style.setProperty('--skije-camera-visual-top',top+'px');
+ document.documentElement.style.setProperty('--skije-camera-visual-bottom',bottom+'px');
+}
+window.visualViewport?.addEventListener('resize',syncCameraViewport,{passive:true});
+window.visualViewport?.addEventListener('scroll',syncCameraViewport,{passive:true});
+window.addEventListener('orientationchange',syncCameraViewport,{passive:true});
 function openCamera(id){
+ syncCameraViewport();
  focusBeforeCam=document.activeElement;
  $('camera-modal').hidden=false;document.body.classList.add('cam-open');
  selectCamera(id);$('camera-close').focus({preventScroll:true});

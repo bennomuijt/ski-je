@@ -196,13 +196,13 @@
   for(const {b,area} of points){
    const {x,y}=locationFor(area,g);
    b.style.left=x+'px';b.style.top=y+'px';
-   b.hidden=x<0||x>g.box.width||y<0||y>g.box.height;
+   b.hidden=(g.exactRevision&&g.zoom>=printedZoomThreshold)||x<0||x>g.box.width||y<0||y>g.box.height;
   }
   for(const anchor of printed){
    const {x,y}=locationFor(anchor,g);
    anchor.b.style.left=x+'px';anchor.b.style.top=y+'px';
    anchor.b.hidden=!g.exactRevision||g.zoom<printedZoomThreshold||x<0||x>g.box.width||y<0||y>g.box.height;
-   anchor.b.style.width=anchor.b.style.height=g.zoom>=9?'62px':'48px';
+   anchor.b.style.width=anchor.b.style.height=g.zoom>=9?'36px':'28px';
   }
  }
  // Tapping a printed WHITE lift number works even when markers are hidden.
@@ -225,7 +225,12 @@
    const position=locationFor(anchor,g),dx=event.clientX-(g.box.left+position.x),dy=event.clientY-(g.box.top+position.y);
    return {anchor,distance:Math.hypot(dx,dy)};
   }).sort((a,b)=>a.distance-b.distance)[0];
-  if(hit?.distance<=Math.min(35,Math.max(20,g.zoom*2.8)))openPrinted(hit.anchor);
+  // Nearby green huts and white lifts must not both open from one tap.
+  const hutDistance=(window.SKIRestaurantMap?.printedLabels?.()||[]).reduce((closest,anchor)=>{
+   const p=locationFor(anchor,g);
+   return Math.min(closest,Math.hypot(event.clientX-(g.box.left+p.x),event.clientY-(g.box.top+p.y)));
+  },Infinity);
+  if(hit?.distance<=Math.min(35,Math.max(20,g.zoom*2.8))&&hit.distance<hutDistance)openPrinted(hit.anchor);
  });
  for(const name of ['pointercancel','lostpointercapture'])view.addEventListener(name,event=>starts.delete(event.pointerId));
  function update(){
@@ -259,8 +264,15 @@
  }
  toggle.addEventListener('change',update);
  img.addEventListener('load',verifyMapImage);
- new MutationObserver(position).observe(img,{attributes:true,attributeFilter:['style','src']});
- if(typeof ResizeObserver!=='undefined')new ResizeObserver(position).observe(view);
+ // One animation frame per move: 149 map labels shouldn't trigger multiple
+ // expensive layouts during every pinch or pan pointer event.
+ let positionScheduled=false;
+ function schedulePosition(){
+  if(positionScheduled)return;positionScheduled=true;
+  requestAnimationFrame(()=>{positionScheduled=false;position();});
+ }
+ new MutationObserver(schedulePosition).observe(img,{attributes:true,attributeFilter:['style','src']});
+ if(typeof ResizeObserver!=='undefined')new ResizeObserver(schedulePosition).observe(view);
  $('pano-open')?.addEventListener('click',()=>requestAnimationFrame(position));
  document.addEventListener('skije-photo-list-updated',()=>{if(!info.hidden&&select.value)setLift(lifts.find(l=>l.number===select.value));});
  fillOptions(null);update();

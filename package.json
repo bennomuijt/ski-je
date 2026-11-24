@@ -1,13 +1,13 @@
 {
   "name": "ski-je-cloudflare",
   "private": true,
-  "version": "4.5.20",
+  "version": "4.5.21",
   "description": "SKI-je: Cloudflare Worker with static assets and Durable Objects group GPS",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "npm run build:icons && wrangler deploy",
-    "check": "npm run build:icons && node scripts/build-release.mjs --check && node --check public/i18n-data.js && node --check public/i18n.js && node --check public/share-location.js && node --check public/day-planner.js && node --check public/skiwelt-corridors.js && node --check public/skiwelt-reference-tours.js && node --check public/skiwelt-tour-ui.js && node --check public/skiwelt-map-router.js && node --check public/skiwelt-geometry-view.js && node --check public/day-ui.js && node --check public/day-pdf.js && node --check src/index.js && node --check src/photos.js && node --check public/photo-community.js && node --check public/ski-photo-sources.js && node --check public/group-cloudflare.js && node --check public/group-social.js && node --check public/group-photo.js && node --check public/route-engine.js && node --check public/highlights-core.js && node --check public/ski-highlights.js && node --check public/extra.js && node --check public/panorama-tools.js && node --check public/skiwelt-printed-hut-labels.js && node --check public/pano-restaurants.js && node --check public/hut-catalogue.js && node --check public/skiwelt-lift-connections.js && node --check public/lift-catalogue.js && node --check public/skiwelt-printed-lift-labels.js && node --check public/pano-lifts.js && node --test tests/*.test.js",
+    "check": "npm run build:icons && node scripts/build-release.mjs --check && node --check public/i18n-data.js && node --check public/i18n.js && node --check public/share-location.js && node --check public/day-planner.js && node --check public/skiwelt-corridors.js && node --check public/skiwelt-reference-tours.js && node --check public/skiwelt-tour-ui.js && node --check public/skiwelt-map-router.js && node --check public/skiwelt-geometry-view.js && node --check public/day-ui.js && node --check public/day-pdf.js && node --check src/index.js && node --check src/photos.js && node --check public/photo-community.js && node --check public/ski-photo-sources.js && node --check public/group-cloudflare.js && node --check public/group-social.js && node --check public/group-photo.js && node --check public/route-engine.js && node --check public/highlights-core.js && node --check public/ski-highlights.js && node --check public/extra.js && node --check public/panorama-tools.js && node --check public/skiwelt-webcams.js && node --check public/skiwelt-printed-hut-labels.js && node --check public/pano-restaurants.js && node --check public/hut-catalogue.js && node --check public/skiwelt-lift-connections.js && node --check public/lift-catalogue.js && node --check public/skiwelt-printed-lift-labels.js && node --check public/pano-lifts.js && node --test tests/*.test.js",
     "build:icons": "node scripts/build-icons.mjs",
     "build:release": "node scripts/build-release.mjs"
   },

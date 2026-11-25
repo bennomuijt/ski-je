@@ -2241,6 +2241,126 @@
   "颜色未知",
   "kolor nieznany",
   "ukendt farve"
+ ],
+ [
+  "Route volgt aaneengesloten OpenSkiData/OSM-lijnen; de getekende knooppunten zijn geen door SkiWelt bevestigde overstappen.",
+  "The route follows connected OpenSkiData/OSM lines; mapped junctions are not transfers confirmed by SkiWelt.",
+  "Die Route folgt verbundenen OpenSkiData/OSM-Linien; die Knoten sind keine von SkiWelt bestätigten Übergänge.",
+  "L'itinéraire suit des tracés OpenSkiData/OSM continus ; les jonctions ne sont pas des passages confirmés par SkiWelt.",
+  "La ruta sigue líneas conectadas de OpenSkiData/OSM; los cruces no son conexiones confirmadas por SkiWelt.",
+  "路线沿连续的 OpenSkiData/OSM 线路规划；图上节点并非 SkiWelt 确认的换乘点。",
+  "Trasa prowadzi po połączonych liniach OpenSkiData/OSM; węzły nie są przejściami potwierdzonymi przez SkiWelt.",
+  "Ruten følger sammenhængende OpenSkiData/OSM-linjer; knudepunkterne er ikke overgange bekræftet af SkiWelt."
+ ],
+ [
+  "{0} kaartovergangen zijn slechts op afstand gekoppeld. Controleer deze overstappen ter plaatse.",
+  "{0} map connections are linked by distance only. Check these transfers on site.",
+  "{0} Kartenübergänge sind nur anhand der Entfernung verbunden. Vor Ort prüfen.",
+  "{0} liaisons cartographiques sont reliées uniquement par proximité. Vérifiez ces passages sur place.",
+  "{0} conexiones del mapa se han unido solo por distancia. Compruébalas in situ.",
+  "{0} 处地图连接仅依据距离建立。请现场核实。",
+  "{0} połączeń na mapie powiązano wyłącznie według odległości. Sprawdź je na miejscu.",
+  "{0} kortovergange er kun forbundet ud fra afstand. Kontrollér dem på stedet."
+ ],
+ [
+  "{0} kaartkruisingen tonen een geschatte stijging van meer dan 12 m. Dat is niet als skibare verbinding bevestigd; zie onzekere overstappen.",
+  "{0} mapped junctions show an estimated ascent over 12 m. Skiable access is not confirmed; see uncertain transfers.",
+  "{0} Kartenkreuzungen zeigen einen geschätzten Anstieg über 12 m. Skifahrbare Verbindung nicht bestätigt; siehe unsichere Übergänge.",
+  "{0} jonctions indiquent une montée estimée de plus de 12 m. Passage à ski non confirmé ; voir les liaisons incertaines.",
+  "{0} cruces indican una subida estimada superior a 12 m. No se ha confirmado el paso esquiable; consulta las conexiones inciertas.",
+  "{0} 个地图交叉点估计上升超过 12 米。未确认可滑行；请查看不确定的连接。",
+  "{0} skrzyżowań wskazuje szacowany wzrost wysokości ponad 12 m. Przejazd na nartach niepotwierdzony; patrz niepewne przejścia.",
+  "{0} kortkryds viser en anslået stigning over 12 m. Skibar forbindelse er ikke bekræftet; se usikre overgange."
+ ],
+ [
+  "{0} korte vlakke/hoogte-onzekere lijnstukken. Richting en kruisingen zijn hier niet onafhankelijk bevestigd.",
+  "{0} short flat or elevation-uncertain segments. Direction and junctions are not independently verified.",
+  "{0} kurze flache bzw. höhenunsichere Abschnitte. Richtung und Kreuzungen nicht unabhängig bestätigt.",
+  "{0} tronçons courts plats ou à altitude incertaine. Sens et jonctions non vérifiés indépendamment.",
+  "{0} tramos cortos llanos o de altitud incierta. Sentido y cruces no verificados independientemente.",
+  "{0} 个短平缓或高程不确定路段。方向和交叉点未经独立核实。",
+  "{0} krótkich płaskich odcinków lub o niepewnej wysokości. Kierunek i skrzyżowania niezweryfikowane niezależnie.",
+  "{0} korte flade eller højdeusikre strækninger. Retning og kryds er ikke uafhængigt bekræftet."
+ ],
+ [
+  "{0} kaartoverstappen vragen extra controle op de officiële pistekaart.",
+  "{0} mapped transfers require additional checks against the official slope map.",
+  "{0} Kartenübergänge müssen zusätzlich auf dem offiziellen Pistenplan geprüft werden.",
+  "{0} passages nécessitent une vérification supplémentaire sur le plan officiel.",
+  "{0} conexiones necesitan una comprobación adicional en el mapa oficial.",
+  "{0} 处地图连接需要对照官方雪道图进一步核实。",
+  "{0} przejść wymaga dodatkowego sprawdzenia na oficjalnej mapie tras.",
+  "{0} kortovergange kræver ekstra kontrol på det officielle pistekort."
+ ],
+ [
+  "Een of meer pistekleuren zijn niet bevestigd. Controleer of het niveau geschikt is.",
+  "One or more slope colours are unconfirmed. Check that the difficulty is suitable.",
+  "Eine oder mehrere Pistenfarben sind nicht bestätigt. Eignung der Schwierigkeit prüfen.",
+  "Une ou plusieurs couleurs de piste ne sont pas confirmées. Vérifiez le niveau requis.",
+  "Uno o más colores de pista no están confirmados. Comprueba que la dificultad sea adecuada.",
+  "一条或多条雪道颜色尚未确认。请核实难度是否适合。",
+  "Kolor jednej lub kilku tras nie jest potwierdzony. Sprawdź odpowiedni poziom trudności.",
+  "En eller flere pistefarver er ikke bekræftet. Tjek om sværhedsgraden passer."
+ ],
+ [
+  "SkiWelt Tour bevestigt 111 → 117 als route, maar het exacte OSM-overstappunt heeft een tegenstrijdige DEM-hoogte. Volg de pisteborden; deze verbinding is voorlopig.",
+  "SkiWelt Tour confirms 111 → 117 as a route, but the exact OSM transfer point has conflicting DEM elevation. Follow slope signs; this connection is provisional.",
+  "Die SkiWelt Tour bestätigt 111 → 117 als Route, aber die DEM-Höhe am genauen OSM-Übergang ist widersprüchlich. Pistenbeschilderung folgen; Verbindung vorläufig.",
+  "Le SkiWelt Tour confirme 111 → 117, mais l'altitude DEM du passage OSM est contradictoire. Suivez les panneaux ; liaison provisoire.",
+  "El SkiWelt Tour confirma 111 → 117, pero la elevación DEM del cruce OSM es contradictoria. Sigue las señales; conexión provisional.",
+  "SkiWelt Tour 确认路线 111 → 117，但 OSM 换乘点的 DEM 高程存在矛盾。请遵循雪道标志；该连接暂定。",
+  "SkiWelt Tour potwierdza 111 → 117, lecz wysokość DEM punktu OSM jest sprzeczna. Przestrzegaj znaków; połączenie wstępne.",
+  "SkiWelt Tour bekræfter 111 → 117, men DEM-højden ved OSM-overgangen er modstridende. Følg pisteskiltene; forbindelsen er foreløbig."
+ ],
+ [
+  "Piste 20a is volgens SkiWelt een rode dalafdaling van 3.293 meter. De kaartgeometrie beschrijft slechts een deel van de lijn: tijd en afstand blijven indicatief.",
+  "According to SkiWelt, slope 20a is a red valley descent of 3,293 metres. The map covers only part of it: time and distance remain estimates.",
+  "Laut SkiWelt ist Piste 20a eine rote Talabfahrt von 3.293 Metern. Die Karte zeigt nur einen Teil: Zeit und Entfernung bleiben Schätzwerte.",
+  "Selon SkiWelt, la piste 20a est une descente rouge de 3 293 mètres. Le tracé cartographique n'en couvre qu'une partie : durée et distance indicatives.",
+  "Según SkiWelt, la pista 20a es un descenso rojo de 3.293 metros. El mapa solo cubre parte: tiempo y distancia orientativos.",
+  "据 SkiWelt，20a 为 3,293 米红色山谷雪道。地图仅覆盖部分线路；时间和距离为估计值。",
+  "Według SkiWelt trasa 20a to czerwony zjazd o długości 3293 m. Mapa obejmuje tylko część: czas i odległość są szacunkowe.",
+  "Ifølge SkiWelt er piste 20a en rød dalnedfart på 3.293 meter. Kortet dækker kun en del: tid og afstand er vejledende."
+ ],
+ [
+  "Piste 20a is kaarttechnisch bereikbaar zonder een lift. Alleen mogelijk als de piste daadwerkelijk open en veilig is.",
+  "The map indicates that slope 20a can be reached without a lift. Only possible if it is actually open and safe.",
+  "Piste 20a ist laut Karte ohne Lift erreichbar. Nur möglich, wenn sie tatsächlich offen und sicher ist.",
+  "La carte indique que la piste 20a est accessible sans remontée. Seulement si elle est réellement ouverte et sûre.",
+  "El mapa indica que se puede acceder a la pista 20a sin remonte. Solo si está realmente abierta y es segura.",
+  "地图显示可不乘缆车到达 20a 雪道。仅在实际开放且安全时可行。",
+  "Mapa wskazuje dostęp do trasy 20a bez wyciągu. Tylko jeśli jest rzeczywiście otwarta i bezpieczna.",
+  "Kortet viser adgang til piste 20a uden lift. Kun muligt, hvis pisten faktisk er åben og sikker."
+ ],
+ [
+  "Piste 20a is niet beschikbaar in de huidige kaart- en sluitingsgegevens; voor het dal is mogelijk nog een lift nodig.",
+  "Slope 20a is unavailable in current map and closure data; a lift may still be needed to reach the valley.",
+  "Piste 20a ist in aktuellen Karten- und Sperrdaten nicht verfügbar; ins Tal ist eventuell noch ein Lift nötig.",
+  "La piste 20a est indisponible dans les données actuelles ; une remontée peut être nécessaire pour rejoindre la vallée.",
+  "La pista 20a no está disponible en los datos actuales; puede necesitarse un remonte para llegar al valle.",
+  "当前地图与关闭数据中 20a 不可用；下山可能仍需乘缆车。",
+  "Trasa 20a jest niedostępna w bieżących danych; dotarcie do doliny może wymagać wyciągu.",
+  "Piste 20a er ikke tilgængelig i aktuelle kort- og lukningsdata; en lift kan stadig være nødvendig til dalen."
+ ],
+ [
+  "Zorg uiterlijk {0} bij het eindpunt te zijn.",
+  "Be at the destination by {0} at the latest.",
+  "Spätestens um {0} am Ziel sein.",
+  "Soyez à destination au plus tard à {0}.",
+  "Llega al destino como máximo a las {0}.",
+  "请最迟于 {0} 到达终点。",
+  "Dotrzyj do celu najpóźniej o {0}.",
+  "Vær ved slutpunktet senest kl. {0}."
+ ],
+ [
+  "Geen volledige route met alle gewenste pistes, lunch en terugweg binnen de beschikbare tijd. Er zijn geen aansluitingen overgeslagen.",
+  "No complete route including requested slopes, lunch and return within the available time. No connections were skipped.",
+  "Keine vollständige Route mit gewünschten Pisten, Mittagessen und Rückweg in der verfügbaren Zeit. Keine Verbindungen übersprungen.",
+  "Aucun itinéraire complet incluant les pistes souhaitées, le déjeuner et le retour dans le temps disponible. Aucune liaison omise.",
+  "No hay ruta completa con las pistas deseadas, almuerzo y regreso en el tiempo disponible. No se han omitido conexiones.",
+  "可用时间内无法完成包含所选雪道、午餐及返回的完整路线。未跳过连接。",
+  "Brak pełnej trasy z wybranymi trasami, lunchem i powrotem w dostępnym czasie. Nie pominięto połączeń.",
+  "Ingen komplet rute med ønskede pister, frokost og retur inden for tiden. Ingen forbindelser er sprunget over."
  ]
 ];
  const config=window.SKI_I18N_DATA;

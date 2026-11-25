@@ -7,7 +7,9 @@
  if(!planner||!network||!detail||!$('create')||!$('plan-output'))return;
  const KEY='skije-local-closures-2026-v1';
  let current=null,readyPdf=null,readyPdfLang=null,renderRequest=0;
- const t=source=>window.SKILanguage?.translate?.(source)||source;
+ // Keep original DOM text in Dutch so the language observer can switch repeatedly.
+ const t=source=>source;
+ const shareT=source=>window.SKILanguage?.translate?.(source)||source;
  const el=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=String(text);return node;};
  function getClosures(){
   try{return network.parseClosures(JSON.parse(localStorage.getItem(KEY)||'[]'));}
@@ -29,14 +31,14 @@
  function composeMessage(data){
   const p=data.plan,n=data.route,it=data.itinerary;
   return [
-   'SKI-je · '+t('Voorlopige skidagplanning'),
+   'SKI-je · '+shareT('Voorlopige skidagplanning'),
    p.date||'',p.startPoint+' → '+p.endPoint,
-   p.departure+' – '+p.returnTime+'  ('+t('Streefaankomst')+': '+p.safeArrival+')',
-   ...it.steps.map(s=>s.start+'–'+s.end+'  '+(s.type==='lift'?'🚡 ':s.type==='piste'?'⛷️ ':'')+s.label),
-   n.steps.length?t('Voorgestelde gebiedsverbindingen')+':':'',
-   ...n.steps.map(s=>'⚠ '+s.from+' → '+s.to+': '+s.via),
-   ...n.notes.slice(0,4),
-   t('Geen live garantie. Officiële piste- en liftinformatie gaat altijd voor.')
+   p.departure+' – '+p.returnTime+'  ('+shareT('Streefaankomst')+': '+p.safeArrival+')',
+   ...it.steps.map(s=>s.start+'–'+s.end+'  '+(s.type==='lift'?'🚡 ':s.type==='piste'?'⛷️ ':'')+shareT(s.label)),
+   n.steps.length?shareT('Voorgestelde gebiedsverbindingen')+':':'',
+   ...n.steps.map(s=>'⚠ '+s.from+' → '+s.to+': '+shareT(s.via)),
+   ...n.notes.slice(0,4).map(shareT),
+   shareT('Geen live garantie. Officiële piste- en liftinformatie gaat altijd voor.')
   ].filter(Boolean).join('\n');
  }
  function addNotes(parent,notes){
@@ -49,7 +51,7 @@
   const rows=getClosures();
   if(!rows.length){list.append(el('p','hint',t('Nog geen eigen sluitingen gemeld.')));return;}
   for(const [index,item] of rows.entries()){
-   const row=el('div','closure-row');const label=el('span','',item.kind+' '+item.code+(item.note?' · '+item.note:''));const remove=el('button','btn secondary small-btn',t('Melding verwijderen'));remove.type='button';
+   const row=el('div','closure-row');const label=el('span','',item.kind+' '+item.code+(item.note?' · '+item.note:''));label.dataset.skijeNoTranslate='';const remove=el('button','btn secondary small-btn',t('Melding verwijderen'));remove.type='button';
    remove.addEventListener('click',()=>{const next=getClosures();next.splice(index,1);saveClosures(next);renderClosures();render();});
    row.append(label,remove);list.append(row);
   }

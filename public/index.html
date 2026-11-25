@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="skije-build" content="b35715dff28db62dba922c87">
+<meta name="skije-build" content="97c092a40c4af930dd9c31af">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07538c">
 <link rel="manifest" href="manifest.webmanifest?v=4514">
@@ -173,6 +173,53 @@ body.legal-open{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.ski-intro-sign .ski-original-logo{animation:none!important}}
 
 #hopfgarten-route-settings{margin:12px 0;padding:14px;border:1px solid #a9d2e6;background:#edf8ff;border-radius:14px}#hopfgarten-route-settings[hidden]{display:none!important}#hopfgarten-route-settings .field{margin-bottom:10px}
+
+/* Mountain weather: compact controls, horizontal forecasts, no viewport overflow. */
+#page-weather .wx-card{min-width:0;overflow:hidden}
+#page-weather .wx-selects{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.78fr);gap:8px}
+#page-weather .wx-current{margin:12px 0;border-radius:17px;padding:15px;background:linear-gradient(135deg,#064b7f,#087fbe 66%,#52b7d3);color:white}
+#page-weather .wx-current-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#page-weather .wx-current-top #temp-value{font-size:46px;font-weight:850;color:white;line-height:1.06;letter-spacing:-2px}
+#page-weather .wx-current-condition{display:flex;align-items:center;gap:6px;font-weight:700;flex-wrap:wrap}
+#page-weather .wx-current-icon{font-size:36px}
+#page-weather .wx-current small{color:#e2f4ff}
+#page-weather .wx-current .weather{margin-top:12px;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#page-weather .wx-current .metric{background:#ffffff24;min-height:0;padding:9px;color:white}
+#page-weather .wx-current .metric strong{color:white;font-size:20px;line-height:1.1}
+#page-weather .wx-current .metric small{font-size:10px}
+#page-weather .wx-current .warningwind{color:#ffe0ab}
+#page-weather .wx-days{display:flex;gap:7px;overflow:auto;max-width:100%;padding:4px 0 9px;scroll-snap-type:x proximity}
+#page-weather .wx-day{flex:0 0 105px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 5px;background:#f1f8fc;border:1px solid #c7dfed;border-radius:13px;color:#183f5c;text-align:center;font-size:11px;min-height:150px}
+#page-weather .wx-day[aria-pressed=true]{background:#075d98;border-color:#075d98;color:white;box-shadow:0 3px 10px #075d9833}
+#page-weather .wx-day b{font-size:12px}
+#page-weather .wx-day strong{font-size:15px;font-variant-numeric:tabular-nums}
+#page-weather .wx-icon{font-size:25px;line-height:1.3}
+#page-weather .wx-condition{font-size:10px;line-height:1.15;min-height:12px}
+#page-weather .wx-trend{display:inline-block;font-size:10px;font-weight:700;padding:3px 5px;border-radius:6px;background:#fff1cc;color:#855600}
+#page-weather .wx-day-heading{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:14px 0 7px;flex-wrap:wrap}
+#page-weather .wx-day-heading h3{margin:0;font-size:16px}
+#page-weather .wx-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#page-weather .wx-stat{padding:8px;border-radius:10px;background:#eef7fc;min-width:0}
+#page-weather .wx-stat small{display:block;color:#54738c;font-size:10px;overflow-wrap:anywhere}
+#page-weather .wx-stat strong{display:block;color:#07568e;font-size:15px;margin-top:3px}
+#page-weather .wx-chart{margin:9px 0;min-width:0;overflow:hidden;border:1px solid #dcecf5;border-radius:12px;background:#f8fcff}
+#page-weather .wx-chart:empty{display:none}
+#page-weather .wx-chart svg{display:block;width:100%;height:auto}
+#page-weather .wx-legend{display:flex;flex-wrap:wrap;gap:8px;font-size:11px}
+#page-weather .wx-legend span:first-child{color:#087fbe}
+#page-weather .wx-legend span:last-child{color:#a85c17}
+#page-weather .wx-hour-switch{display:flex;gap:6px;margin:12px 0 4px}
+#page-weather .wx-hour-switch button{flex:1;min-width:0;padding:8px 5px;font-size:12px;min-height:44px;border:1px solid #c9dfed;border-radius:10px;background:#f2f8fc;color:#175b83;font-weight:700}
+#page-weather .wx-hour-switch button[aria-pressed=true]{background:#075d98;color:white;border-color:#075d98}
+#page-weather .forecasthours{max-width:100%;gap:7px;scroll-snap-type:x proximity}
+#page-weather .wx-hour{flex:0 0 124px;scroll-snap-align:start;padding:9px;text-align:center}
+#page-weather .wx-hour-temp{display:block;font-size:25px;line-height:1.15;color:#07568e}
+#page-weather .wx-hour-details{margin:8px 0 0;border-top:1px solid #d5e5ef;padding-top:7px;text-align:left}
+#page-weather .wx-hour-details dt{font-size:10px;color:#55758c;margin-top:6px}
+#page-weather .wx-hour-details dd{margin:1px 0 0;font-size:12px;font-weight:700;color:#173e5d}
+#page-weather .wx-swipe{margin:6px 0;font-size:11px;color:#55758c}
+@media(max-width:360px){#page-weather .wx-selects{grid-template-columns:1fr}#page-weather .wx-current .weather{grid-template-columns:repeat(2,minmax(0,1fr))}#page-weather .wx-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 <link rel="stylesheet" href="i18n.css">
 <link rel="stylesheet" href="extra.css">
@@ -193,7 +240,7 @@ body.legal-open{overflow:hidden}
 <div class="wrap">
 <header class="ski-hero">
   <div class="hero-scene" aria-hidden="true"><img data-src="ski-sfeer.webp" alt="" width="1536" height="864" decoding="async"></div>
-  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.23</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
+  <div class="brand"><div class="brand-lockup" id="skije-header-lockup"><img class="ski-original-logo" src="brand-skije.svg" width="160" height="107" alt="SKI-je: originele logo met skiër, bergen en rode letters"><div class="brand-meta"><small>By BenMu Development</small><small class="app-version">v4.5.24</small></div></div><button class="hero-mini brand-update-btn" type="button" id="app-update-now" aria-label="SKI-je nu bijwerken naar de nieuwste versie">&#8635; Update</button><select class="skije-language-select" data-skije-language-select aria-label="Kies taal" title="Kies taal"></select></div>
   <p>Jouw skidag in één oogopslag · SkiWelt Wilder Kaiser</p>
 <div class="hero-actions" id="skije-hero-actions">
   <button class="hero-mini" type="button" id="open-sos">&#128680; SOS</button>
@@ -321,19 +368,29 @@ body.legal-open{overflow:hidden}
   </section>
   <section class="mode" id="page-weather" aria-label="Weer en buienradar">
     <h1 class="banner">🌨️ Buien, sneeuw & wind</h1>
-    <div class="subhead">Weer rond jouw locatie of rond SkiWelt, zonder extra klikken.</div>
+    <div class="subhead">Bergweer, dalweer en 14 dagen vooruit.</div>
     <div class="toolbar" style="margin-top:0"><button class="btn secondary" id="weather-webcams">📷 Bekijk webcams direct</button></div>
-    <div class="card"><div class="row"><h2>Weer voor SkiWelt</h2><span class="pill" id="weather-label">SkiWelt</span></div>
+    <div class="card wx-card"><div class="row"><h2>Weer voor SkiWelt</h2><span class="pill" id="weather-label">SkiWelt</span></div>
+      <div class="wx-selects"><div class="field"><label for="wx-area">Skigebied</label><select id="wx-area"><option value="hopfgarten">Hopfgarten / Hohe Salve</option><option value="salve">Söll / Hohe Salve</option><option value="hartkaiser">Ellmau / Hartkaiser</option><option value="scheffau">Scheffau / Brandstadl</option><option value="brixen">Brixen / Hochbrixen</option><option value="westendorf">Westendorf / Choralpe</option><option value="going">Going / Astberg</option><option value="itter">Itter / Kleine Salve</option></select></div><div class="field"><label for="wx-level">Hoogte</label><select id="wx-level"><option value="mountain">Berg</option><option value="valley">Dal</option></select></div></div>
       <div class="toolbar"><button class="btn" id="load-weather">↻ Ververs weer</button><button class="btn secondary" id="weather-gps">◎ Mijn locatie (delen met weerbron)</button><button class="btn clear" id="weather-area">SkiWelt-weer</button></div>
       <div id="weather-status" class="gps-status" aria-live="polite">Ververs de voorspelling om actuele gegevens op te halen.</div>
-      <div class="weather">
-        <div class="metric"><small>Temperatuur (model)</small><strong id="temp-value">—</strong><small id="temp-time">Niet geladen</small></div>
-        <div class="metric"><small>Neerslag (mm)</small><strong id="precip-value">—</strong><small id="snow-value">Sneeuw: —</small></div>
-        <div class="metric"><small>Wind (km/u)</small><strong id="wind-value">—</strong><small id="wind-dir">Richting: —</small></div>
-        <div class="metric"><small>Windstoten (km/u)</small><strong id="gust-value">—</strong><small id="gust-warning">Modelverwachting</small></div>
+      <div class="wx-current">
+        <div class="wx-current-top"><div><small>Temperatuur (model)</small><div id="temp-value">—</div><small id="temp-time">Niet geladen</small></div><div><div id="wx-current-condition" class="wx-current-condition">—</div><small>Gevoelstemperatuur</small> <b id="wx-feels">—</b></div></div>
+        <div class="weather">
+          <div class="metric"><small>Neerslag (mm)</small><strong id="precip-value">—</strong><small id="snow-value">Sneeuw: —</small></div>
+          <div class="metric"><small>Wind (km/u)</small><strong id="wind-value">—</strong><small id="wind-dir">Richting: —</small></div>
+          <div class="metric"><small>Windstoten (km/u)</small><strong id="gust-value">—</strong><small id="gust-warning">Modelverwachting</small></div>
+        </div>
       </div>
-      <h3 style="margin-top:17px">Komende uren</h3><div class="forecasthours" id="forecast-hours"><span class="muted small">Nog geen gegevens.</span></div>
-      <p class="tiny">Weer wordt maximaal eens per 30 minuten automatisch opgehaald; handmatig verversen blijft mogelijk. Modelgegevens Open-Meteo. Berg- en dalcondities kunnen aanzienlijk verschillen. Hoge windwaarden betekenen niet automatisch dat een lift gesloten is; controleer altijd de officiële liftstatus.</p>
+      <h3>14-daagse verwachting</h3><p class="wx-swipe">Veeg en tik op een dag voor de uurverwachting.</p>
+      <div class="wx-days" id="wx-days" aria-label="14-daagse verwachting"></div>
+      <div id="wx-day-detail"></div>
+      <div class="wx-hour-switch"><button type="button" id="wx-all-hours" aria-pressed="true">Alle uren</button><button type="button" id="wx-ski-hours" aria-pressed="false">Ski-uren 08–17</button></div>
+      <h3>Temperatuur per uur</h3><div class="wx-legend"><span>● Temperatuur</span><span>┄ Gevoelstemperatuur</span></div>
+      <div class="wx-chart" id="wx-chart"></div>
+      <p class="wx-swipe">Veeg voor alle uren. Per uur zie je ook wind, sneeuw, zicht en vorstgrens.</p>
+      <div class="forecasthours" id="forecast-hours"><span class="muted small">Nog geen gegevens.</span></div>
+      <p class="tiny">Bron: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Modelverwachting op benaderde berg- en dalpunten, geen lokale meting. Dag 8–14 is een minder zekere trend. De vorstgrens is niet hetzelfde als de sneeuwgrens. Controleer bij sterke wind en onweer de officiële liftstatus en waarschuwingen. Automatisch vernieuwen bij openen of terugkeren naar deze pagina na 30 minuten; handmatig verversen kan altijd.</p>
     </div>
     <div class="card"><div class="row"><h2>🌧️ Buienradar</h2><span class="pill">Historische radar</span></div>
       <div class="map radar" id="radar-map" data-loaded="false" role="region" aria-label="Radarkaart neerslag rond SkiWelt"></div>
@@ -628,7 +685,7 @@ body.legal-open{overflow:hidden}
       <p class="hint" id="backup-import-status" role="status"></p>
       </details>
       <div class="notice">GPS wordt alleen naar een weerbron gestuurd als je expliciet Weer op mijn locatie kiest. Groepslocaties worden uitsluitend verzonden na jouw toestemming in Mijn groep; ijkpunten blijven lokaal. De app kan bij opstarten de logoanimatie tonen; zware beelden en GPS staan normaal uit. Offline kaarten en achtergrondsynchronisatie zijn nog niet beschikbaar.</div>
-      <p class="tiny">SKI-je v4.5.23-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
+      <p class="tiny">SKI-je v4.5.24-Cloudflare-test · By BenMu Development · Testversie · Gebruik op eigen risico. <a href="#legal-section" id="legal-inline-link">Disclaimer en gebruiksvoorwaarden</a>.</p>
       <p class="tiny">Weer: Open-Meteo. Radar: RainViewer (historisch). Kaartgegevens: OpenStreetMap / OpenSnowMap. Livebeeld: Feratel. Controleer de bijbehorende licenties voor commercieel gebruik.</p>
     </details>
   </section>
@@ -752,6 +809,7 @@ body.legal-open{overflow:hidden}
 </div>
 </div>
 <script src="skiwelt-webcams.js"></script>
+<script src="weather-dashboard.js"></script>
 <script>
 'use strict';
 (() => {
@@ -1059,44 +1117,64 @@ $('reset-map').addEventListener('click',()=>{if(map){map.setView(SKIWELT,12);has
 $('toggle-pistes').addEventListener('click',()=>{if(!map||!pistes)return;const enabled=map.hasLayer(pistes);if(enabled)map.removeLayer(pistes);else pistes.addTo(map);$('toggle-pistes').setAttribute('aria-pressed',String(!enabled));$('toggle-pistes').textContent=enabled?'⛷️ Pistes uit':'⛷️ Pistes aan';});
 function selectedCoords(){return state.weatherGpsSelected&&state.lastLocation?[state.lastLocation.lat,state.lastLocation.lng]:SKIWELT;}
 const fmt=(v,d=0)=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v).toFixed(d):'—';
-function compass(deg){if(!Number.isFinite(Number(deg)))return '—';let d=['N','NO','O','ZO','Z','ZW','W','NW'];return d[Math.round((Number(deg)%360)/45)%8];}
-function forecastField(x,key,i){return x&&Array.isArray(x[key])?x[key][i]:null;}
-function showWeather(data,note){
- const c=data.current||{};
- $('temp-value').textContent=fmt(c.temperature_2m,0)+'°';$('temp-time').textContent=(c.time||'')+' • lokaal';
- $('precip-value').textContent=fmt(c.precipitation,1);$('snow-value').textContent='Sneeuw: '+fmt(c.snowfall,1)+' cm';
- $('wind-value').textContent=fmt(c.wind_speed_10m,0);$('wind-dir').textContent='Uit '+compass(c.wind_direction_10m)+' ('+fmt(c.wind_direction_10m)+'°)';
- $('gust-value').textContent=fmt(c.wind_gusts_10m,0);
- const g=Number(c.wind_gusts_10m);$('gust-warning').textContent=g>=60?'Sterke windstoten mogelijk; check liften':g>=40?'Verhoogde windstoten':'Modelverwachting';$('gust-warning').classList.toggle('warningwind',g>=60);
- const times=data.hourly?.time||[],start=times.findIndex(t=>t>=(c.time||''));const s=Math.max(start,0),forecast=[];
- for(let i=s;i<Math.min(s+8,times.length);i++){forecast.push(`<div class="hour"><b>${times[i].slice(11,16)}</b><span>🌨️ ${fmt(forecastField(data.hourly,'precipitation',i),1)} mm</span><span>❄️ ${fmt(forecastField(data.hourly,'snowfall',i),1)} cm</span><span>💨 ${fmt(forecastField(data.hourly,'wind_speed_10m',i))} km/u</span><span>🌬️ ${fmt(forecastField(data.hourly,'wind_gusts_10m',i))} km/u stoot</span></div>`);}
- $('forecast-hours').innerHTML=forecast.join('')||'Geen uurverwachting beschikbaar.';
- $('weather-label').textContent=state.weatherGpsSelected&&state.lastLocation?'Mijn GPS':'SkiWelt (gebied)';$('weather-status').textContent=note;
- $('weather-status').dataset.loaded='true';
+function compass(deg){if(deg==null||!Number.isFinite(Number(deg)))return '—';let d=['N','NO','O','ZO','Z','ZW','W','NW'];return d[Math.round(((Number(deg)%360)+360)%360/45)%8];}
+const WX=window.SKIWeather, wxStorage='skije-weather-v2';
+const wxArea=$('wx-area'),wxLevel=$('wx-level');
+wxArea.value=Object.hasOwn(WX.areas,state.weatherArea)?state.weatherArea:'hopfgarten';
+wxLevel.value=state.weatherLevel==='valley'?'valley':'mountain';
+// Explicit consent is still needed for GPS weather. Radar GPS does not enable it.
+function weatherPoint(){
+ const gps=state.weatherGpsSelected&&state.weatherGpsPoint;
+ if(gps&&Number.isFinite(gps.lat)&&Number.isFinite(gps.lng))return {name:'Mijn GPS',lat:gps.lat,lng:gps.lng,timezone:'auto'};
+ return WX.point(wxArea.value,wxLevel.value);
 }
-let weatherPromise=null;
+let wxCache={};
+try{const raw=JSON.parse(localStorage.getItem(wxStorage)||'{}');if(raw&&typeof raw==='object'&&!Array.isArray(raw))wxCache=raw;}catch{}
+function cacheWeather(k,data){wxCache[k]={data,savedAt:Date.now()};wxCache=Object.fromEntries(Object.entries(wxCache).filter(([,v])=>v&&WX.valid(v.data)&&Number.isFinite(v.savedAt)).sort((a,b)=>b[1].savedAt-a[1].savedAt).slice(0,4));try{localStorage.setItem(wxStorage,JSON.stringify(wxCache));}catch{}}
+function resetWeather(){WX.clear();for(const id of ['temp-value','temp-time','precip-value','snow-value','wind-value','wind-dir','gust-value','gust-warning','wx-feels'])$(id).textContent='—';$('gust-warning').classList.remove('warningwind');$('weather-status').dataset.loaded='false';}
+function showWeather(data,note,p,k){
+ const c=data.current||{};
+ $('temp-value').textContent=WX.fmt(c.temperature_2m,0,'°C');$('temp-time').textContent=(c.time||'').replace('T',' ')+' • '+(data.timezone_abbreviation||'lokaal');
+ $('precip-value').textContent=WX.fmt(c.precipitation,1);$('snow-value').textContent='❄ '+WX.fmt(c.snowfall,1,' cm');
+ $('wind-value').textContent=WX.fmt(c.wind_speed_10m);$('wind-dir').textContent=compass(c.wind_direction_10m)+' ('+WX.fmt(c.wind_direction_10m,0,'°')+')';
+ $('gust-value').textContent=WX.fmt(c.wind_gusts_10m);
+ const g=c.wind_gusts_10m;$('gust-warning').textContent=g>=60?'Sterke windstoten mogelijk; check liften':g>=40?'Verhoogde windstoten':'Modelverwachting';$('gust-warning').classList.toggle('warningwind',g>=60);
+ $('weather-label').textContent=p.name+(p.elevation?' · ca. '+p.elevation+' m':'');
+ $('weather-status').textContent=note;$('weather-status').dataset.loaded='true';
+ WX.render(data,k);
+}
+let weatherPromise=null,weatherRequestKey='',weatherAbort=null,wxVisibleKey='';
 async function fetchWeather(force=false){
- const coords=selectedCoords(),cached=state.weatherCache;
- const same= cached && Math.abs(cached.coords[0]-coords[0])<0.005 && Math.abs(cached.coords[1]-coords[1])<0.005;
- const fresh=same && Date.now()-cached.savedAt<30*60000;
- if(same && cached.data){showWeather(cached.data,`Bewaarde verwachting • ${new Date(cached.savedAt).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}${fresh?'':' • mogelijk verouderd'}`);}
- if(!force && fresh)return;
- if(!navigator.onLine){$('weather-status').textContent=same?'Offline • laatste opgeslagen verwachting (mogelijk verouderd)':'Offline • geen opgeslagen voorspelling beschikbaar';return;}
- if(weatherPromise)return weatherPromise;
+ const p=weatherPoint(),k=WX.key(p),cached=wxCache[k],same=!!(cached&&WX.valid(cached.data)&&Number.isFinite(cached.savedAt)),fresh=same&&Date.now()-cached.savedAt<30*60000;
+ if(k!==wxVisibleKey){wxVisibleKey=k;resetWeather();}
+ $('weather-label').textContent=p.name+(p.elevation?' · ca. '+p.elevation+' m':'');
+ if(weatherRequestKey!==k&&weatherAbort){weatherAbort.abort();weatherPromise=null;weatherAbort=null;}
+ if(same)showWeather(cached.data,'Bewaarde verwachting • '+new Date(cached.savedAt).toLocaleString('nl-NL')+(fresh?'':' • mogelijk verouderd'),p,k);
+ if(!navigator.onLine){$('weather-status').textContent=same?'Offline • bewaarde verwachting (mogelijk verouderd) • '+new Date(cached.savedAt).toLocaleString('nl-NL'):'Offline • geen opgeslagen voorspelling voor deze locatie';return;}
+ if(!force&&fresh)return;
+ if(weatherPromise&&weatherRequestKey===k)return weatherPromise;
+ const controller=new AbortController();weatherAbort=controller;weatherRequestKey=k;
  $('weather-status').textContent='Nieuwe verwachting wordt opgehaald…';
+ const timer=setTimeout(()=>controller.abort(),15000);
  weatherPromise=(async()=>{
  try{
- const q=new URLSearchParams({latitude:String(coords[0]),longitude:String(coords[1]),timezone:'Europe/Vienna',forecast_days:'1',current:'temperature_2m,precipitation,snowfall,wind_speed_10m,wind_direction_10m,wind_gusts_10m',hourly:'precipitation,snowfall,wind_speed_10m,wind_gusts_10m'});
- const resp=await fetch('https://api.open-meteo.com/v1/forecast?'+q);
- if(!resp.ok)throw new Error('HTTP '+resp.status);const data=await resp.json();
- state.weatherCache={data,coords,savedAt:Date.now()};save();showWeather(data,'Open-Meteo modelgegevens • bijgewerkt '+new Date().toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}));
- }catch(e){$('weather-status').textContent=same?'Nieuwe gegevens niet beschikbaar; oudere voorspelling getoond.':'Weer niet beschikbaar: '+e.message;}
- finally{weatherPromise=null;}
+  const resp=await fetch('https://api.open-meteo.com/v1/forecast?'+WX.query(p),{signal:controller.signal,cache:'no-store'});
+  if(!resp.ok)throw new Error('HTTP '+resp.status);
+  const data=await resp.json();if(!WX.valid(data))throw new Error('onvolledige modelgegevens');
+  if(controller.signal.aborted||weatherAbort!==controller||wxVisibleKey!==k)return;
+  cacheWeather(k,data);showWeather(data,'Open-Meteo • bijgewerkt '+new Date().toLocaleString('nl-NL'),p,k);
+ }catch(e){if(weatherAbort===controller&&wxVisibleKey===k){$('weather-status').textContent=same?'Nieuwe gegevens niet beschikbaar; bewaard model van '+new Date(cached.savedAt).toLocaleString('nl-NL'):'Weer tijdelijk niet beschikbaar. Probeer opnieuw.';}}
+ finally{clearTimeout(timer);if(weatherAbort===controller){weatherPromise=null;weatherAbort=null;}}
  })();return weatherPromise;
 }
+function selectSkiWeather(){state.weatherGpsSelected=false;state.weatherArea=wxArea.value;state.weatherLevel=wxLevel.value;save();fetchWeather(false);}
+wxArea.addEventListener('change',selectSkiWeather);wxLevel.addEventListener('change',selectSkiWeather);
 $('load-weather').addEventListener('click',()=>fetchWeather(true));
-$('weather-gps').addEventListener('click',()=>{if(!navigator.geolocation){$('weather-status').textContent='Geen GPS mogelijk.';return;}navigator.geolocation.getCurrentPosition(p=>{state.lastLocation={lat:p.coords.latitude,lng:p.coords.longitude};state.weatherGpsSelected=true;save();fetchWeather(true);},e=>$('weather-status').textContent='Locatie niet beschikbaar: '+e.message,{enableHighAccuracy:false,maximumAge:600000,timeout:9000});});
-$('weather-area').addEventListener('click',()=>{state.weatherGpsSelected=false;save();fetchWeather(true);});
+$('weather-gps').addEventListener('click',()=>{if(!navigator.geolocation){$('weather-status').textContent='Geen GPS mogelijk.';return;}const b=$('weather-gps');b.disabled=true;navigator.geolocation.getCurrentPosition(p=>{b.disabled=false;state.weatherGpsPoint={lat:p.coords.latitude,lng:p.coords.longitude};state.lastLocation={...state.weatherGpsPoint};state.weatherGpsSelected=true;save();fetchWeather(true);},e=>{b.disabled=false;$('weather-status').textContent='Locatie niet beschikbaar: '+e.message;},{enableHighAccuracy:false,maximumAge:600000,timeout:9000});});
+$('weather-area').addEventListener('click',selectSkiWeather);
+$('wx-all-hours').addEventListener('click',()=>WX.setHours(false));
+$('wx-ski-hours').addEventListener('click',()=>WX.setHours(true));
+document.addEventListener('skije-languagechange',()=>{const p=weatherPoint(),k=WX.key(p),entry=wxCache[k];if(entry&&WX.valid(entry.data)&&wxVisibleKey===k)WX.render(entry.data,k);});
 async function fetchRadar(){if(!radarMap){$('radar-status').textContent='Radarkaart niet beschikbaar.';return;}try{const resp=await fetch('https://api.rainviewer.com/public/weather-maps.json');if(!resp.ok)throw new Error('HTTP '+resp.status);const data=await resp.json();radarFrames=data.radar?.past||[];if(!radarFrames.length)throw new Error('geen radarbeelden');radar={host:data.host};$('radar-timeline').disabled=false;$('radar-timeline').max=String(radarFrames.length-1);setRadarFrame(radarFrames.length-1);$('radar-play').disabled=false;$('radar-status').textContent='Waargenomen radar van circa afgelopen 2 uur • geen voorspelling. Korte animatie speelt maximaal één keer af.';}catch(e){$('radar-status').textContent='Radar nu niet beschikbaar: '+e.message;}}
 function setRadarFrame(i){if(!radarMap||!radarFrames.length||!radar)return;i=Math.min(Math.max(0,i),radarFrames.length-1);radarIndex=i;const frame=radarFrames[i];if(radar.layer){radarMap.removeLayer(radar.layer);}
 const host=String(radar.host||'');if(!host.startsWith('https://'))return;const url=host+frame.path+'/256/{z}/{x}/{y}/2/1_1.png';radar.layer=L.tileLayer(url,{opacity:.72,maxNativeZoom:7,maxZoom:10,attribution:'Radar © RainViewer'}).addTo(radarMap);
@@ -1113,7 +1191,7 @@ $('radar-gps').addEventListener('click',()=>{
   b.disabled=false;
   const lat=pos.coords.latitude,lng=pos.coords.longitude;
   if(!Number.isFinite(lat)||!Number.isFinite(lng)){$('radar-status').textContent='GPS-positie ongeldig.';return;}
-  state.lastLocation={lat,lng};state.weatherGpsSelected=true;save();
+  state.lastLocation={lat,lng};save();
   if(!radarMap)await showRadar();
   if(radarMap){radarMap.setView([lat,lng],8);
    $('radar-status').textContent='📍 Radar afgestemd op jouw GPS. Het zijn historische neerslagbeelden, geen voorspelling.';

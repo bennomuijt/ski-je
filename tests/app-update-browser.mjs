@@ -37,6 +37,7 @@ const storage = {
 let served;
 let serveStalePhoto = false;
 let browser;
+const requestTrace = [];
 const server = createServer(async (request, response) => {
   try {
     let pathname = new URL(request.url, 'http://localhost').pathname;
@@ -55,6 +56,7 @@ const server = createServer(async (request, response) => {
     const file = resolve(base, '.' + decodeURIComponent(pathname));
     if (!file.startsWith(base + sep)) throw Error('Path outside the fixture');
     const bytes = serveStalePhoto && pathname === '/' + photo ? oldPhoto : await readFile(file);
+    if(pathname==='/sw.js'||pathname==='/'+photo||pathname==='/index.html'||pathname==='/i18n-extra.js'||pathname==='/i18n-pdf.js')requestTrace.push({path:pathname,build:served.release.build,stale:serveStalePhoto,digest:digest(bytes).slice(0,16)});
     const type = extname(file);
     const headers = {
       'content-type': mime[type] || 'application/octet-stream',
@@ -73,8 +75,16 @@ const server = createServer(async (request, response) => {
   }
 });
 
-function checkBuild(page, build) {
-  return page.waitForFunction(expected => window.SKIUpdate?.build === expected, build);
+async function checkBuild(page, build) {
+  try{await page.waitForFunction(expected => window.SKIUpdate?.build === expected, build);}
+  catch(error){
+    const state=await page.evaluate(async()=>{
+      const reg=await navigator.serviceWorker.getRegistration();
+      return {meta:document.querySelector('meta[name="skije-build"]')?.content,api:window.SKIUpdate?.build,status:document.getElementById('app-update-status')?.textContent,button:document.getElementById('app-update-now')?.className,controller:navigator.serviceWorker.controller?.state,active:reg?.active?.state,installing:reg?.installing?.state,waiting:reg?.waiting?.state,caches:await caches.keys()};
+    }).catch(()=>null);
+    console.error('Update build diagnostic',JSON.stringify({expected:build,state,requests:requestTrace.slice(-35)}));
+    throw error;
+  }
 }
 
 function clickUpdate(page) {
@@ -119,6 +129,8 @@ try {
       sessionStorage.setItem('test-seeded', '1');
     }, storage);
     const page = await context.newPage();
+    page.on('pageerror',error=>console.error('Browser exception:',error.message));
+    page.on('console',message=>{if(message.type()==='error'&&/integrity|service worker|failed to load resource/i.test(message.text()))console.log('Browser resource:',message.text().slice(0,300));});
     await page.goto(origin, { waitUntil: 'load' });
     await page.waitForFunction(() => !!navigator.serviceWorker.controller);
     // The app normalizes saved settings on startup. Compare against the data

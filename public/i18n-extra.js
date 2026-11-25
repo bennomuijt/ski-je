@@ -2081,6 +2081,166 @@
   "未找到餐厅",
   "Nie znaleziono restauracji",
   "Ingen restaurant fundet"
+ ],
+ [
+  "Lift {0}",
+  "Lift {0}",
+  "Lift {0}",
+  "Remontée {0}",
+  "Remonte {0}",
+  "缆车 {0}",
+  "Wyciąg {0}",
+  "Lift {0}"
+ ],
+ [
+  "Piste {0}",
+  "Slope {0}",
+  "Piste {0}",
+  "Piste {0}",
+  "Pista {0}",
+  "雪道 {0}",
+  "Trasa {0}",
+  "Piste {0}"
+ ],
+ [
+  "Overstap {0}",
+  "Transfer {0}",
+  "Übergang {0}",
+  "Liaison {0}",
+  "Conexión {0}",
+  "换乘 {0}",
+  "Przejście {0}",
+  "Overgang {0}"
+ ],
+ [
+  "Loop/prik {0}",
+  "Walk/pole {0}",
+  "Gehen/Schieben {0}",
+  "Marche/poussée {0}",
+  "Caminar/remar {0}",
+  "步行/撑杖 {0}",
+  "Marsz/odpychanie {0}",
+  "Gang/stavtag {0}"
+ ],
+ [
+  "Skitraject · {0}",
+  "Ski leg · {0}",
+  "Skiabschnitt · {0}",
+  "Tronçon à ski · {0}",
+  "Tramo de esquí · {0}",
+  "滑雪路段 · {0}",
+  "Odcinek narciarski · {0}",
+  "Skietape · {0}"
+ ],
+ [
+  "Skitraject",
+  "Ski leg",
+  "Skiabschnitt",
+  "Tronçon à ski",
+  "Tramo de esquí",
+  "滑雪路段",
+  "Odcinek narciarski",
+  "Skietape"
+ ],
+ [
+  "Lift {0} m · circa {1} min inclusief 2 min voor instappen en een korte wachtrij. Bij drukte langer; geen live wachttijd of sluitingscontrole.",
+  "Lift {0} m · about {1} min including 2 min for boarding and a short queue. Longer when busy; no live queue or closure check.",
+  "Lift {0} m · ca. {1} Min. einschließlich 2 Min. Einstieg und kurzer Warteschlange. Bei Andrang länger; keine Live-Wartezeit- oder Sperrprüfung.",
+  "Remontée {0} m · env. {1} min dont 2 min pour embarquer et une courte file. Plus si affluence ; aucune vérification en direct des files ou fermetures.",
+  "Remonte {0} m · aprox. {1} min con 2 min de embarque y cola corta. Más si hay afluencia; sin comprobar colas ni cierres en directo.",
+  "缆车 {0} 米 · 约 {1} 分钟，含 2 分钟登乘及短时排队。繁忙时更久；未实时核实排队或关闭情况。",
+  "Wyciąg {0} m · ok. {1} min, w tym 2 min na wejście i krótką kolejkę. W tłoku dłużej; bez kontroli kolejek i zamknięć na żywo.",
+  "Lift {0} m · ca. {1} min inkl. 2 min til påstigning og kort kø. Længere ved travlhed; ingen livekontrol af køer eller lukninger."
+ ],
+ [
+  "Verbinding {0} meter op de kaart. Controleer of deze overgang geopend en fysiek bereikbaar is.",
+  "Mapped connection {0} metres. Check that the transfer is open and physically accessible.",
+  "Kartenverbindung {0} Meter. Prüfen, ob dieser Übergang geöffnet und tatsächlich erreichbar ist.",
+  "Liaison de {0} mètres sur la carte. Vérifiez si elle est ouverte et physiquement accessible.",
+  "Conexión de {0} metros en el mapa. Comprueba que esté abierta y sea físicamente accesible.",
+  "地图连接 {0} 米。核实该连接是否开放且实际可达。",
+  "Połączenie {0} metrów na mapie. Sprawdź, czy jest otwarte i fizycznie dostępne.",
+  "Kortforbindelse {0} meter. Tjek om overgangen er åben og fysisk tilgængelig."
+ ],
+ [
+  "Loop/prik {0} m; hoogteverschil {1} m (hoogte geschat). Rustig rekenen: {2} min. Op kaart gecontroleerd, fysieke doorgang niet overal officieel bevestigd. Volg de borden.",
+  "Walk/pole {0} m; elevation difference {1} m (estimated). Allow {2} min. Checked on map, physical access not officially confirmed everywhere. Follow signs.",
+  "Gehen/Schieben {0} m; Höhenunterschied {1} m (geschätzt). {2} Min. einplanen. Auf Karte geprüft, tatsächlicher Durchgang nicht überall offiziell bestätigt. Schilder beachten.",
+  "Marche/poussée {0} m ; dénivelé {1} m (estimé). Comptez {2} min. Vérifié sur la carte, passage réel non confirmé partout officiellement. Suivez les panneaux.",
+  "Caminar/remar {0} m; desnivel {1} m (estimado). Reserva {2} min. Comprobado en mapa, paso físico no confirmado oficialmente en todos los puntos. Sigue las señales.",
+  "步行/撑杖 {0} 米；高差 {1} 米（估计）。预留 {2} 分钟。已核对地图，但实际通行并非处处获官方确认。遵循标志。",
+  "Marsz/odpychanie {0} m; różnica wysokości {1} m (szac.). Przewidź {2} min. Sprawdzono na mapie, rzeczywiste przejście nie wszędzie oficjalnie potwierdzone. Przestrzegaj znaków.",
+  "Gang/stavtag {0} m; højdeforskel {1} m (skøn). Afsæt {2} min. Kontrolleret på kort, fysisk passage ikke officielt bekræftet overalt. Følg skiltene."
+ ],
+ [
+  "Kaartlijn {0} m · {1} · Bron: OpenSkiData/OSM; geen live lift-/pistestatus",
+  "Mapped line {0} m · {1} · Source: OpenSkiData/OSM; no live lift/slope status",
+  "Kartenlinie {0} m · {1} · Quelle: OpenSkiData/OSM; kein Live-Lift-/Pistenstatus",
+  "Tracé cartographique {0} m · {1} · Source : OpenSkiData/OSM ; aucun état en direct des pistes/remontées",
+  "Trazado del mapa {0} m · {1} · Fuente: OpenSkiData/OSM; sin estado en directo de remontes/pistas",
+  "地图线路 {0} 米 · {1} · 来源：OpenSkiData/OSM；无实时缆车/雪道状态",
+  "Linia mapy {0} m · {1} · Źródło: OpenSkiData/OSM; bez statusu wyciągów/tras na żywo",
+  "Kortlinje {0} m · {1} · Kilde: OpenSkiData/OSM; ingen live lift-/pistestatus"
+ ],
+ [
+  "De SkiWelt Tour 2026/27 bevestigt piste 111 naar 117 als routevolgorde. In OSM ligt 22 m tussen de gekozen kaartlijnen; het grove hoogtemodel geeft een tegenstrijdig hoogteverschil. Dit is geen GPS-gecontroleerde fysieke oversteek of nieuw officieel pistedeel. Controleer ter plaatse de borden.",
+  "The SkiWelt Tour 2026/27 confirms the order of slopes 111 to 117. OSM shows a 22 m gap; the coarse elevation model gives a conflicting elevation difference. This is not a GPS-verified crossing or new official slope. Check signs on site.",
+  "Die SkiWelt Tour 2026/27 bestätigt die Reihenfolge Piste 111 zu 117. In OSM liegen 22 m zwischen den Linien; das grobe Höhenmodell ergibt einen widersprüchlichen Höhenunterschied. Kein GPS-geprüfter Übergang oder neuer offizieller Pistenabschnitt. Schilder vor Ort prüfen.",
+  "Le SkiWelt Tour 2026/27 confirme l'ordre des pistes 111 vers 117. OSM montre un écart de 22 m ; le modèle altimétrique grossier indique un dénivelé contradictoire. Ce n'est ni un passage vérifié par GPS ni une nouvelle piste officielle. Vérifiez les panneaux sur place.",
+  "El SkiWelt Tour 2026/27 confirma el orden de las pistas 111 a 117. OSM muestra una separación de 22 m; el modelo de elevación grueso da un desnivel contradictorio. No es un paso verificado por GPS ni una nueva pista oficial. Comprueba las señales in situ.",
+  "SkiWelt Tour 2026/27 确认雪道 111 至 117 的顺序。OSM 线路间隔 22 米，粗略高程模型的高差存在矛盾。这不是经 GPS 核实的通行点或新官方雪道路段。请现场核实标志。",
+  "SkiWelt Tour 2026/27 potwierdza kolejność tras 111 do 117. W OSM odstęp wynosi 22 m; zgrubny model wysokości daje sprzeczną różnicę wysokości. To nie jest przejście potwierdzone GPS ani nowy oficjalny odcinek trasy. Sprawdź znaki na miejscu.",
+  "SkiWelt Tour 2026/27 bekræfter rækkefølgen piste 111 til 117. OSM viser 22 m mellem linjerne; den grove højdemodel giver en modstridende højdeforskel. Ikke en GPS-kontrolleret passage eller ny officiel piste. Tjek skiltene på stedet."
+ ],
+ [
+  "Voor de lunch",
+  "Before lunch",
+  "Vor dem Mittagessen",
+  "Avant le déjeuner",
+  "Antes del almuerzo",
+  "午餐前",
+  "Przed lunchem",
+  "Før frokost"
+ ],
+ [
+  "Na de lunch",
+  "After lunch",
+  "Nach dem Mittagessen",
+  "Après le déjeuner",
+  "Después del almuerzo",
+  "午餐后",
+  "Po lunchu",
+  "Efter frokost"
+ ],
+ [
+  "planning",
+  "planning",
+  "Planung",
+  "planification",
+  "planificación",
+  "计划",
+  "planowanie",
+  "planlægning"
+ ],
+ [
+  "kleur niet bevestigd",
+  "colour not confirmed",
+  "Farbe nicht bestätigt",
+  "couleur non confirmée",
+  "color no confirmado",
+  "颜色未确认",
+  "kolor niepotwierdzony",
+  "farve ikke bekræftet"
+ ],
+ [
+  "kleur onbekend",
+  "unknown colour",
+  "Farbe unbekannt",
+  "couleur inconnue",
+  "color desconocido",
+  "颜色未知",
+  "kolor nieznany",
+  "ukendt farve"
  ]
 ];
  const config=window.SKI_I18N_DATA;

@@ -75,6 +75,7 @@
  function translateAttributes(element,lang){
   if(!element||element.nodeType!==1||element.closest(SKIP))return;
   const attrs=['aria-label','title','placeholder','alt'];
+  if(element.tagName==='OPTGROUP')attrs.push('label');
   let memo=attributes.get(element);if(!memo){memo={};attributes.set(element,memo);}
   for(const key of attrs){
    if(!element.hasAttribute(key))continue;
@@ -133,6 +134,6 @@
    }
   }
  });
- observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','placeholder','alt']});
+ observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','placeholder','alt','label']});
  window.SKILanguage={get:()=>current,set:(lang)=>apply(lang,true),available:config.languages.map(([id])=>id),translate:(source,lang=current)=>translateValue(source,lang)};
 })();

@@ -421,6 +421,216 @@
   "颜色：缆车为紫色；难度未知的雪道为蓝色。",
   "Kolory: wyciągi fioletowe; trasy niebieskie, chyba że znana jest trudność.",
   "Farvekode: lifte lilla; pister blå, medmindre sværhedsgrad er kendt."
+ ],
+ [
+  "Hopfgarten: middenstation als eindpunt; piste 20a is een optionele, niet ingeplande afdaling.",
+  "Hopfgarten: finish at the middle station; slope 20a is an optional descent outside the schedule.",
+  "Hopfgarten: Mittelstation als Ziel; Piste 20a ist eine optionale, nicht eingeplante Abfahrt.",
+  "Hopfgarten : arrivée à la station intermédiaire ; la piste 20a est une descente facultative hors programme.",
+  "Hopfgarten: final en la estación intermedia; la pista 20a es un descenso opcional fuera del horario.",
+  "Hopfgarten：终点为中间站；20a 雪道为未计入行程的可选下山路线。",
+  "Hopfgarten: koniec na stacji pośredniej; trasa 20a to opcjonalny zjazd poza planem.",
+  "Hopfgarten: slut ved mellemstationen; piste 20a er en valgfri nedfart uden for tidsplanen."
+ ],
+ [
+  "Hopfgarten: route eindigt na piste 20a bij het dalstation; de piste moet officieel open zijn.",
+  "Hopfgarten: the route ends at the valley station after slope 20a; the slope must be officially open.",
+  "Hopfgarten: Die Route endet nach Piste 20a an der Talstation; die Piste muss offiziell geöffnet sein.",
+  "Hopfgarten : arrivée à la station aval après la piste 20a ; elle doit être officiellement ouverte.",
+  "Hopfgarten: la ruta termina en la estación inferior tras la pista 20a; debe estar oficialmente abierta.",
+  "Hopfgarten：经 20a 雪道到达山谷站；该雪道必须正式开放。",
+  "Hopfgarten: trasa kończy się na dolnej stacji po trasie 20a; musi ona być oficjalnie otwarta.",
+  "Hopfgarten: ruten slutter ved dalstationen efter piste 20a; pisten skal være officielt åben."
+ ],
+ [
+  "Ski-je volgt kaartlijnen, maar alle kruisingen en pistes moeten officieel gecontroleerd blijven.",
+  "SKI-je follows mapped lines; all junctions and slopes must still be checked against official information.",
+  "SKI-je folgt Kartenlinien; alle Kreuzungen und Pisten müssen weiterhin offiziell geprüft werden.",
+  "SKI-je suit les tracés de la carte ; vérifiez toujours les croisements et pistes auprès des sources officielles.",
+  "SKI-je sigue los trazados del mapa; comprueba siempre los cruces y pistas con fuentes oficiales.",
+  "SKI-je 根据地图线路规划；仍须通过官方信息核实所有交叉点和雪道。",
+  "SKI-je korzysta z linii mapy; wszystkie skrzyżowania i trasy nadal należy sprawdzać w oficjalnych źródłach.",
+  "SKI-je følger kortlinjer; alle kryds og pister skal stadig kontrolleres officielt."
+ ],
+ [
+  "Afstanden zijn indicaties van beschreven deeltrajecten, niet GPS-gemeten.",
+  "Distances are estimates of listed legs, not GPS measurements.",
+  "Entfernungen sind Schätzungen der beschriebenen Abschnitte, keine GPS-Messungen.",
+  "Les distances sont des estimations des tronçons décrits, pas des mesures GPS.",
+  "Las distancias son estimaciones de los tramos descritos, no mediciones GPS.",
+  "距离为所列路段的估算值，并非 GPS 实测。",
+  "Odległości są szacunkami opisanych odcinków, nie pomiarami GPS.",
+  "Afstandene er skøn for de beskrevne etaper, ikke GPS-målinger."
+ ],
+ [
+  "© SkiWelt voor officiële verbindingsinformatie; gebruik op eigen risico.",
+  "© SkiWelt for official connection information; use at your own risk.",
+  "© SkiWelt für offizielle Verbindungsinformationen; Nutzung auf eigene Gefahr.",
+  "© SkiWelt pour les informations officielles de liaison ; utilisation à vos risques.",
+  "© SkiWelt por la información oficial de conexiones; uso bajo tu responsabilidad.",
+  "© SkiWelt 官方连接信息；使用风险自负。",
+  "© SkiWelt za oficjalne informacje o połączeniach; użycie na własne ryzyko.",
+  "© SkiWelt for officielle forbindelsesoplysninger; brug på eget ansvar."
+ ],
+ [
+  "Salvenbahn I middenstation → Hopfgarten dalstation",
+  "Salvenbahn I middle station → Hopfgarten valley station",
+  "Salvenbahn I Mittelstation → Hopfgarten Talstation",
+  "Salvenbahn I station intermédiaire → Hopfgarten station aval",
+  "Salvenbahn I estación intermedia → Hopfgarten estación inferior",
+  "Salvenbahn I 中间站 → Hopfgarten 山谷站",
+  "Salvenbahn I stacja pośrednia → Hopfgarten stacja dolna",
+  "Salvenbahn I mellemstation → Hopfgarten dalstation"
+ ],
+ [
+  "Deze afdaling staat NIET in de geplande skitijd. Alleen gebruiken als piste 20a officieel open is en de condities het toelaten.",
+  "This descent is NOT included in the scheduled ski time. Use only when slope 20a is officially open and conditions allow.",
+  "Diese Abfahrt ist NICHT in der geplanten Skizeit enthalten. Nur nutzen, wenn Piste 20a offiziell offen ist und die Bedingungen es erlauben.",
+  "Cette descente n'est PAS incluse dans le temps de ski prévu. À emprunter seulement si la piste 20a est officiellement ouverte et si les conditions le permettent.",
+  "Este descenso NO está incluido en el tiempo previsto. Úsalo solo si la pista 20a está oficialmente abierta y las condiciones lo permiten.",
+  "此下山路线不计入计划滑雪时间。仅在 20a 雪道正式开放且条件允许时使用。",
+  "Ten zjazd NIE jest uwzględniony w planowanym czasie. Korzystaj tylko wtedy, gdy trasa 20a jest oficjalnie otwarta i warunki na to pozwalają.",
+  "Denne nedfart er IKKE med i den planlagte skitid. Brug den kun, når piste 20a officielt er åben, og forholdene tillader det."
+ ],
+ [
+  "Geschatte afdaling: {0} minuten, exclusief onverwachte vertraging.",
+  "Estimated descent: {0} minutes, excluding unexpected delays.",
+  "Geschätzte Abfahrt: {0} Minuten, ohne unerwartete Verzögerungen.",
+  "Descente estimée : {0} minutes, hors retards imprévus.",
+  "Descenso estimado: {0} minutos, sin retrasos imprevistos.",
+  "预计下山：{0} 分钟，不含意外延误。",
+  "Szacowany zjazd: {0} minut, bez nieprzewidzianych opóźnień.",
+  "Anslået nedfart: {0} minutter, uden uventede forsinkelser."
+ ],
+ [
+  "Ingeplande aankomst middenstation: {0}",
+  "Scheduled arrival at middle station: {0}",
+  "Geplante Ankunft Mittelstation: {0}",
+  "Arrivée prévue à la station intermédiaire : {0}",
+  "Llegada prevista a la estación intermedia: {0}",
+  "计划到达中间站：{0}",
+  "Planowany przyjazd do stacji pośredniej: {0}",
+  "Planlagt ankomst til mellemstationen: {0}"
+ ],
+ [
+  "Geen veilige liftvrije verbinding aangetoond. Reken niet automatisch op de gondel, zeker niet na sluitingstijd.",
+  "No safe lift-free connection established. Do not rely on the gondola, especially after closing time.",
+  "Keine sichere liftfreie Verbindung nachgewiesen. Nicht automatisch auf die Gondel zählen, besonders nach Betriebsschluss.",
+  "Aucune liaison sûre sans remontée démontrée. Ne comptez pas sur la télécabine, surtout après sa fermeture.",
+  "No se ha demostrado una conexión segura sin remontes. No cuentes con la góndola, sobre todo tras el cierre.",
+  "尚未证实有安全的免乘缆车连接。不要依赖吊厢，尤其在停运后。",
+  "Nie potwierdzono bezpiecznego połączenia bez wyciągu. Nie licz na gondolę, zwłaszcza po zamknięciu.",
+  "Ingen sikker forbindelse uden lift påvist. Regn ikke med gondolen, især ikke efter lukketid."
+ ],
+ [
+  "Bron: OpenSkiData/OSM + officiële SkiWelt-kaart. Controleer piste-openstelling en borden.",
+  "Source: OpenSkiData/OSM + official SkiWelt map. Check slope opening status and signs.",
+  "Quelle: OpenSkiData/OSM + offizielle SkiWelt-Karte. Pistenöffnung und Beschilderung prüfen.",
+  "Source : OpenSkiData/OSM + carte officielle SkiWelt. Vérifiez l'ouverture des pistes et les panneaux.",
+  "Fuente: OpenSkiData/OSM + mapa oficial de SkiWelt. Comprueba la apertura y la señalización.",
+  "来源：OpenSkiData/OSM 与 SkiWelt 官方地图。核实雪道开放状态和标志。",
+  "Źródło: OpenSkiData/OSM i oficjalna mapa SkiWelt. Sprawdź otwarcie tras i oznakowanie.",
+  "Kilde: OpenSkiData/OSM + officielt SkiWelt-kort. Tjek pisteåbning og skilte."
+ ],
+ [
+  "Niet bekend",
+  "Unknown",
+  "Nicht bekannt",
+  "Inconnu",
+  "Desconocido",
+  "未知",
+  "Nieznane",
+  "Ukendt"
+ ],
+ [
+  "Niet ingepland",
+  "Not scheduled",
+  "Nicht eingeplant",
+  "Non prévu",
+  "No programado",
+  "未安排",
+  "Nie zaplanowano",
+  "Ikke planlagt"
+ ],
+ [
+  "Eigen keuze",
+  "Your choice",
+  "Eigene Wahl",
+  "Votre choix",
+  "A tu elección",
+  "自行选择",
+  "Własny wybór",
+  "Eget valg"
+ ],
+ [
+  "{0} minuten",
+  "{0} minutes",
+  "{0} Minuten",
+  "{0} minutes",
+  "{0} minutos",
+  "{0} 分钟",
+  "{0} minut",
+  "{0} minutter"
+ ],
+ [
+  "Vertrek: {0}",
+  "Departure: {0}",
+  "Abfahrt: {0}",
+  "Départ : {0}",
+  "Salida: {0}",
+  "出发：{0}",
+  "Wyjazd: {0}",
+  "Afgang: {0}"
+ ],
+ [
+  "Eindpunt: {0}",
+  "Destination: {0}",
+  "Ziel: {0}",
+  "Arrivée : {0}",
+  "Destino: {0}",
+  "终点：{0}",
+  "Cel: {0}",
+  "Slutpunkt: {0}"
+ ],
+ [
+  "Datum: {0}",
+  "Date: {0}",
+  "Datum: {0}",
+  "Date : {0}",
+  "Fecha: {0}",
+  "日期：{0}",
+  "Data: {0}",
+  "Dato: {0}"
+ ],
+ [
+  "Bron: {0}",
+  "Source: {0}",
+  "Quelle: {0}",
+  "Source : {0}",
+  "Fuente: {0}",
+  "来源：{0}",
+  "Źródło: {0}",
+  "Kilde: {0}"
+ ],
+ [
+  "{0} km (schatting)",
+  "{0} km (estimate)",
+  "{0} km (Schätzung)",
+  "{0} km (estimation)",
+  "{0} km (estimación)",
+  "{0} 公里（估计）",
+  "{0} km (szacunek)",
+  "{0} km (skøn)"
+ ],
+ [
+  "{0} min  ·  {1}",
+  "{0} min  ·  {1}",
+  "{0} Min.  ·  {1}",
+  "{0} min  ·  {1}",
+  "{0} min  ·  {1}",
+  "{0} 分钟 · {1}",
+  "{0} min · {1}",
+  "{0} min · {1}"
  ]
 ];
  const tables=window.SKI_I18N_DATA?.translations;

@@ -1,0 +1,311 @@
+/* Localised PDF headings; plain text, no external services. */
+(()=>{
+ 'use strict';
+ const rows=[
+ [
+  "SKI-JE · MIJN SKIDAG",
+  "SKI-JE · MY SKI DAY",
+  "SKI-JE · MEIN SKITAG",
+  "SKI-JE · MA JOURNÉE DE SKI",
+  "SKI-JE · MI DÍA DE ESQUÍ",
+  "SKI-JE · 我的滑雪日",
+  "SKI-JE · MÓJ DZIEŃ NA STOKU",
+  "SKI-JE · MIN SKIDAG"
+ ],
+ [
+  "DAGOVERZICHT · ALLE TRAJECTEN OP VOLGENDE BLADEN",
+  "DAY OVERVIEW · ALL LEGS ON FOLLOWING PAGES",
+  "TAGESÜBERSICHT · ALLE ABSCHNITTE AUF DEN FOLGESEITEN",
+  "APERÇU · TOUS LES TRAJETS AUX PAGES SUIVANTES",
+  "RESUMEN · TODOS LOS TRAMOS EN LAS PÁGINAS SIGUIENTES",
+  "日程概览 · 后续页面包含全部路段",
+  "PLAN DNIA · WSZYSTKIE ODCINKI NA KOLEJNYCH STRONACH",
+  "DAGSOVERSIGT · ALLE ETAPER PÅ DE FØLGENDE SIDER"
+ ],
+ [
+  "DATUM {0}",
+  "DATE {0}",
+  "DATUM {0}",
+  "DATE {0}",
+  "FECHA {0}",
+  "日期 {0}",
+  "DATA {0}",
+  "DATO {0}"
+ ],
+ [
+  "VERTREK",
+  "DEPARTURE",
+  "ABFAHRT",
+  "DÉPART",
+  "SALIDA",
+  "出发",
+  "WYJAZD",
+  "AFGANG"
+ ],
+ [
+  "STREEFAANKOMST",
+  "TARGET ARRIVAL",
+  "ZIELANKUNFT",
+  "ARRIVÉE PRÉVUE",
+  "LLEGADA PREVISTA",
+  "目标到达时间",
+  "PLANOWANY PRZYJAZD",
+  "PLANLAGT ANKOMST"
+ ],
+ [
+  "UITERLIJK TERUG",
+  "RETURN BY",
+  "SPÄTESTENS ZURÜCK",
+  "RETOUR AVANT",
+  "REGRESO ANTES DE",
+  "最迟返回",
+  "POWRÓT NAJPÓŹNIEJ",
+  "SENEST TILBAGE"
+ ],
+ [
+  "VOORLOPIGE ROUTE – NIET LIVE GECONTROLEERD",
+  "PROVISIONAL ROUTE – NOT LIVE VERIFIED",
+  "VORLÄUFIGE ROUTE – NICHT LIVE GEPRÜFT",
+  "ITINÉRAIRE PROVISOIRE – NON VÉRIFIÉ EN DIRECT",
+  "RUTA PROVISIONAL – SIN VERIFICACIÓN EN DIRECTO",
+  "临时路线 – 未实时核实",
+  "TRASA WSTĘPNA – BEZ WERYFIKACJI NA ŻYWO",
+  "FORELØBIG RUTE – IKKE LIVEKONTROLLERET"
+ ],
+ [
+  "AANDACHTSPUNTEN – VERVOLG",
+  "CAUTIONS – CONTINUED",
+  "HINWEISE – FORTSETZUNG",
+  "POINTS DE VIGILANCE – SUITE",
+  "AVISOS – CONTINUACIÓN",
+  "注意事项（续）",
+  "UWAGI – CIĄG DALSZY",
+  "BEMÆRKNINGER – FORTSAT"
+ ],
+ [
+  "VERBINDINGEN & WAARSCHUWINGEN",
+  "CONNECTIONS & WARNINGS",
+  "VERBINDUNGEN & WARNHINWEISE",
+  "LIAISONS ET AVERTISSEMENTS",
+  "CONEXIONES Y ADVERTENCIAS",
+  "连接与警告",
+  "POŁĄCZENIA I OSTRZEŻENIA",
+  "FORBINDELSER OG ADVARSLER"
+ ],
+ [
+  "BELANGRIJK",
+  "IMPORTANT",
+  "WICHTIG",
+  "IMPORTANT",
+  "IMPORTANTE",
+  "重要",
+  "WAŻNE",
+  "VIGTIGT"
+ ],
+ [
+  "LIFT",
+  "LIFT",
+  "LIFT",
+  "REMONTÉE",
+  "REMONTES",
+  "缆车",
+  "WYCIĄG",
+  "LIFT"
+ ],
+ [
+  "PISTE",
+  "SLOPE",
+  "PISTE",
+  "PISTE",
+  "PISTA",
+  "雪道",
+  "TRASA",
+  "PISTE"
+ ],
+ [
+  "OVERSTAP",
+  "TRANSFER",
+  "ÜBERGANG",
+  "LIAISON",
+  "CONEXIÓN",
+  "换乘",
+  "PRZEJŚCIE",
+  "OVERGANG"
+ ],
+ [
+  "LUNCH",
+  "LUNCH",
+  "MITTAGESSEN",
+  "DÉJEUNER",
+  "ALMUERZO",
+  "午餐",
+  "LUNCH",
+  "FROKOST"
+ ],
+ [
+  "TERUG",
+  "RETURN",
+  "RÜCKWEG",
+  "RETOUR",
+  "REGRESO",
+  "返回",
+  "POWRÓT",
+  "RETUR"
+ ],
+ [
+  "MARGE",
+  "BUFFER",
+  "PUFFER",
+  "MARGE",
+  "MARGEN",
+  "余量",
+  "ZAPAS",
+  "BUFFER"
+ ],
+ [
+  "PISTE-, LIFT- EN TIJDSCHEMA",
+  "SLOPE, LIFT & TIME SCHEDULE",
+  "PISTEN-, LIFT- UND ZEITPLAN",
+  "PISTES, REMONTÉES ET HORAIRES",
+  "PISTAS, REMONTES Y HORARIOS",
+  "雪道、缆车与时间表",
+  "TRASY, WYCIĄGI I GODZINY",
+  "PISTE-, LIFT- OG TIDSPLAN"
+ ],
+ [
+  "WC-LOCATIES & AANDACHTSPUNTEN",
+  "TOILETS & CAUTIONS",
+  "WC-STANDORTE & HINWEISE",
+  "TOILETTES ET POINTS DE VIGILANCE",
+  "ASEOS Y AVISOS",
+  "卫生间与注意事项",
+  "TOALETY I UWAGI",
+  "TOILETTER OG BEMÆRKNINGER"
+ ],
+ [
+  "ROUTEVERSLAG & CONTROLE",
+  "ROUTE REPORT & CHECKS",
+  "ROUTENBERICHT & KONTROLLE",
+  "RAPPORT D’ITINÉRAIRE ET CONTRÔLES",
+  "INFORME DE RUTA Y COMPROBACIONES",
+  "路线报告与核对",
+  "RAPORT TRASY I KONTROLA",
+  "RUTERAPPORT OG KONTROL"
+ ],
+ [
+  "VOORGESTELDE REISTIJD",
+  "SUGGESTED TRAVEL TIME",
+  "VORGESCHLAGENE FAHRZEIT",
+  "TEMPS DE TRAJET PROPOSÉ",
+  "TIEMPO DE TRAYECTO PROPUESTO",
+  "建议行程时间",
+  "PROPONOWANY CZAS PRZEJAZDU",
+  "FORESLÅET REJSETID"
+ ],
+ [
+  "PISTEKILOMETERS",
+  "SLOPE DISTANCE",
+  "PISTENKILOMETER",
+  "DISTANCE SUR PISTES",
+  "DISTANCIA EN PISTAS",
+  "雪道里程",
+  "KILOMETRY TRAS",
+  "PISTEKILOMETER"
+ ],
+ [
+  "LIFTKILOMETERS",
+  "LIFT DISTANCE",
+  "LIFTKILOMETER",
+  "DISTANCE EN REMONTÉES",
+  "DISTANCIA EN REMONTES",
+  "缆车里程",
+  "KILOMETRY WYCIĄGÓW",
+  "LIFTKILOMETER"
+ ],
+ [
+  "IN LIFTEN (GESCHAT)",
+  "ON LIFTS (EST.)",
+  "IM LIFT (GESCHÄTZT)",
+  "EN REMONTÉE (EST.)",
+  "EN REMONTES (EST.)",
+  "乘缆车时间（估计）",
+  "W WYCIĄGACH (SZAC.)",
+  "I LIFTE (EST.)"
+ ],
+ [
+  "OP PISTES (GESCHAT)",
+  "ON SLOPES (EST.)",
+  "AUF PISTEN (GESCHÄTZT)",
+  "SUR PISTES (EST.)",
+  "EN PISTAS (EST.)",
+  "雪道时间（估计）",
+  "NA TRASACH (SZAC.)",
+  "PÅ PISTER (EST.)"
+ ],
+ [
+  "LUNCHLOCATIE",
+  "LUNCH LOCATION",
+  "MITTAGESSEN: ORT",
+  "LIEU DU DÉJEUNER",
+  "LUGAR DEL ALMUERZO",
+  "午餐地点",
+  "MIEJSCE LUNCHU",
+  "FROKOSTSTED"
+ ],
+ [
+  "WERKELIJKE SITUATIE CONTROLEREN",
+  "CHECK ACTUAL CONDITIONS",
+  "TATSÄCHLICHE LAGE PRÜFEN",
+  "VÉRIFIER LES CONDITIONS RÉELLES",
+  "COMPROBAR CONDICIONES REALES",
+  "核实实际情况",
+  "SPRAWDŹ RZECZYWISTE WARUNKI",
+  "KONTROLLÉR DE FAKTISKE FORHOLD"
+ ],
+ [
+  "OPTIONELE DALAFDALING HOPFGARTEN",
+  "OPTIONAL HOPFGARTEN VALLEY DESCENT",
+  "OPTIONALE TALABFAHRT HOPFGARTEN",
+  "DESCENTE FACULTATIVE VERS HOPFGARTEN",
+  "BAJADA OPCIONAL A HOPFGARTEN",
+  "可选霍普夫加滕山谷下滑",
+  "OPCJONALNY ZJAZD DO HOPFGARTEN",
+  "VALGFRI DALNEDFART HOPFGARTEN"
+ ],
+ [
+  "PISTES, LIFTEN EN OVERSTAPPEN",
+  "SLOPES, LIFTS AND TRANSFERS",
+  "PISTEN, LIFTE UND ÜBERGÄNGE",
+  "PISTES, REMONTÉES ET LIAISONS",
+  "PISTAS, REMONTES Y CONEXIONES",
+  "雪道、缆车与换乘",
+  "TRASY, WYCIĄGI I PRZEJŚCIA",
+  "PISTER, LIFTE OG OVERGANGE"
+ ],
+ [
+  "SKITRAJECT",
+  "SKI LEG",
+  "SKIABSCHNITT",
+  "TRONÇON À SKI",
+  "TRAMO DE ESQUÍ",
+  "滑雪路段",
+  "ODCINEK NARCIARSKI",
+  "SKIETAPE"
+ ],
+ [
+  "Compleet overzicht op volgorde · geen delen weggelaten",
+  "Complete overview in order · no legs omitted",
+  "Vollständige Übersicht in Reihenfolge · keine Abschnitte ausgelassen",
+  "Aperçu complet dans l’ordre · aucun tronçon omis",
+  "Resumen completo en orden · ningún tramo omitido",
+  "完整顺序概览 · 无遗漏路段",
+  "Pełny przegląd w kolejności · bez pominiętych odcinków",
+  "Fuld oversigt i rækkefølge · ingen etaper udeladt"
+ ]
+];
+ const tables=window.SKI_I18N_DATA?.translations;
+ if(!tables)return;
+ for(const [i,lang] of ['en','de','fr','es','zh','pl','da'].entries()){
+  for(const [key,...values] of rows)Object.defineProperty(tables[lang],key,{value:values[i],enumerable:true,configurable:true,writable:true});
+ }
+})();

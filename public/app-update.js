@@ -32,14 +32,16 @@
 
   async function controllerHasBuild(serviceWorker, build) {
     const controller = serviceWorker.controller;
-    if (!controller) return false;
+    // Activation can expose a controller before its cache cleanup finishes.
+    if (!controller || controller.state !== 'activated') return false;
     const channel = new MessageChannel();
     try {
       const reply = new Promise(resolve => {
         channel.port1.onmessage = event => resolve(event.data);
         controller.postMessage({ type: 'SKIJE_GET_BUILD' }, [channel.port2]);
       });
-      return await withTimeout(reply, 500) === build && serviceWorker.controller === controller;
+      return await withTimeout(reply, 500) === build &&
+        serviceWorker.controller === controller && controller.state === 'activated';
     } catch {
       return false;
     } finally {

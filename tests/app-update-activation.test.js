@@ -29,10 +29,11 @@ test('waiting service worker only accepts activation for its own build', async (
   assert.equal(skips, 1);
 });
 
-test('update requests activation of the waiting build and reloads only after it controls the page', async () => {
+test('update requests activation of the waiting build and reloads only after activation and control', async () => {
   const build = 'a'.repeat(24);
   const oldBuild = 'b'.repeat(24);
   const makeWorker = id => ({
+    state: 'activated',
     postMessage(message, ports) {
       assert.equal(message.type, 'SKIJE_GET_BUILD');
       ports[0].postMessage(id);
@@ -56,8 +57,13 @@ test('update requests activation of the waiting build and reloads only after it 
         assert.equal(message.build, build);
         assert.equal(reloads, 0);
         requests++;
+        newWorker.state = 'activating';
         serviceWorker.controller = newWorker;
         registration.waiting = null;
+        setTimeout(() => {
+          assert.equal(reloads, 0, 'Do not reload before activation finishes');
+          newWorker.state = 'activated';
+        }, 350);
       }
     }
   };
@@ -78,7 +84,7 @@ test('update requests activation of the waiting build and reloads only after it 
     },
     navigator: { onLine: true, serviceWorker },
     fetch: async () => ({ ok: true, json: async () => ({ build, version: '4.5.25-cf' }) }),
-    location: { reload() { assert.equal(serviceWorker.controller, newWorker); reloads++; } }
+    location: { reload() { assert.equal(serviceWorker.controller, newWorker); assert.equal(newWorker.state, 'activated'); reloads++; } }
   });
   await window.SKIUpdate.check();
   assert.equal(requests, 1);

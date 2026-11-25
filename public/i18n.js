@@ -52,7 +52,7 @@
  }
  function translateValue(source,lang){
   if(typeof source!=='string')return source;
-  if(lang==='nl')return source;
+  if(lang==='nl'||!supported.has(lang))return source;
   const table=config.translations[lang];
   if(!table)return source;
   const exact=lookup(source.trim(),table);

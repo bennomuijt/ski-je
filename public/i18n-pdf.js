@@ -301,6 +301,126 @@
   "完整顺序概览 · 无遗漏路段",
   "Pełny przegląd w kolejności · bez pominiętych odcinków",
   "Fuld oversigt i rækkefølge · ingen etaper udeladt"
+ ],
+ [
+  "SKI-je is alleen een hulpmiddel. Officiële borden en liftstatus zijn altijd leidend.",
+  "SKI-je is only an aid. Official signs and lift status always take precedence.",
+  "SKI-je ist nur ein Hilfsmittel. Offizielle Schilder und der Liftstatus haben immer Vorrang.",
+  "SKI-je est uniquement une aide. Les panneaux officiels et l'état des remontées priment toujours.",
+  "SKI-je es solo una ayuda. Las señales oficiales y el estado de los remontes siempre prevalecen.",
+  "SKI-je 仅为辅助工具。官方标志和缆车状态始终优先。",
+  "SKI-je to jedynie pomoc. Oficjalne oznakowanie i status wyciągów zawsze mają pierwszeństwo.",
+  "SKI-je er kun et hjælpemiddel. Officielle skilte og liftstatus har altid forrang."
+ ],
+ [
+  "Pagina {0}/{1}  ·  Verwachte tijden zijn indicatief. Gecontroleer altijd ter plaatse.",
+  "Page {0}/{1} · Times are estimates. Always check on site.",
+  "Seite {0}/{1} · Zeitangaben sind Richtwerte. Immer vor Ort prüfen.",
+  "Page {0}/{1} · Horaires indicatifs. Vérifiez toujours sur place.",
+  "Página {0}/{1} · Horarios orientativos. Comprueba siempre in situ.",
+  "第 {0}/{1} 页 · 时间仅供参考。请务必现场核实。",
+  "Strona {0}/{1} · Czasy orientacyjne. Zawsze sprawdzaj na miejscu.",
+  "Side {0}/{1} · Tiderne er vejledende. Kontrollér altid på stedet."
+ ],
+ [
+  "Pistes op kaart voor planning aangenomen open; controleer actuele sluitingen.",
+  "Mapped slopes are assumed open for planning; check current closures.",
+  "Pisten werden für die Planung als offen angenommen; aktuelle Sperrungen prüfen.",
+  "Les pistes de la carte sont supposées ouvertes ; vérifiez les fermetures actuelles.",
+  "Se supone que las pistas del mapa están abiertas; comprueba los cierres actuales.",
+  "规划时假定地图上的雪道开放；请核实当前关闭情况。",
+  "Na potrzeby planu trasy uznano za otwarte; sprawdź aktualne zamknięcia.",
+  "Pisterne på kortet antages åbne ved planlægning; tjek aktuelle lukninger."
+ ],
+ [
+  "Alle pistes en liften met nummers, kloktijden en overgangen staan op het volledige detailoverzicht en de genummerde route-index.",
+  "All slopes, lifts, numbers, times and transfers appear in the detailed schedule and numbered route index.",
+  "Alle Pisten, Lifte, Nummern, Zeiten und Übergänge stehen im Detailplan und Routenindex.",
+  "Toutes les pistes, remontées, numéros, horaires et liaisons figurent dans le détail et l'index numéroté.",
+  "Todas las pistas, remontes, números, horarios y conexiones figuran en el detalle y el índice numerado.",
+  "完整明细和编号路线索引列出全部雪道、缆车、编号、时间及换乘。",
+  "Wszystkie trasy, wyciągi, numery, godziny i przejścia są w szczegółach i numerowanym indeksie.",
+  "Alle pister, lifte, numre, tider og overgange findes i detaljeplanen og ruteindekset."
+ ],
+ [
+  "Niet live gecontroleerd · {0} minuten indicatief",
+  "Not live verified · about {0} minutes",
+  "Nicht live geprüft · ca. {0} Minuten",
+  "Non vérifié en direct · environ {0} minutes",
+  "Sin verificación en directo · unos {0} minutos",
+  "未实时核实 · 约 {0} 分钟",
+  "Bez weryfikacji na żywo · około {0} minut",
+  "Ikke livekontrolleret · ca. {0} minutter"
+ ],
+ [
+  "Geen gedocumenteerde open verbinding beschikbaar. Het dagtijdschema blijft bruikbaar, maar is geen navigatieroute.",
+  "No documented open connection available. The day schedule is not a navigation route.",
+  "Keine dokumentierte offene Verbindung verfügbar. Der Tagesplan ist keine Navigationsroute.",
+  "Aucune liaison ouverte documentée. Le programme n'est pas un itinéraire de navigation.",
+  "No hay conexión abierta documentada. El horario no es una ruta de navegación.",
+  "没有记录在案的开放连接。日程可参考，但不是导航路线。",
+  "Brak udokumentowanego otwartego połączenia. Harmonogram nie jest trasą nawigacyjną.",
+  "Ingen dokumenteret åben forbindelse. Dagsplanen er ikke en navigationsrute."
+ ],
+ [
+  "Blad {0}/{1} · Controleer tijdens het skiën je verwachte doorkomsttijd.",
+  "Sheet {0}/{1} · Check your expected passing time while skiing.",
+  "Blatt {0}/{1} · Beim Skifahren die voraussichtliche Durchfahrtszeit prüfen.",
+  "Feuille {0}/{1} · Vérifiez votre heure de passage prévue pendant le ski.",
+  "Hoja {0}/{1} · Comprueba tu hora de paso prevista mientras esquías.",
+  "第 {0}/{1} 张 · 滑雪时核对预计通过时间。",
+  "Arkusz {0}/{1} · Sprawdzaj przewidywany czas przejazdu podczas jazdy.",
+  "Ark {0}/{1} · Tjek din forventede passagetid under skiløbet."
+ ],
+ [
+  "Alle toiletten optioneel; controleer toegankelijkheid en omweg.",
+  "All toilets are optional; check access and detours.",
+  "Alle Toiletten sind optional; Zugang und Umweg prüfen.",
+  "Toutes les toilettes sont facultatives ; vérifiez l'accès et le détour.",
+  "Todos los aseos son opcionales; comprueba el acceso y el desvío.",
+  "所有卫生间均为可选；核实可达性和绕行。",
+  "Wszystkie toalety są opcjonalne; sprawdź dostęp i objazd.",
+  "Alle toiletter er valgfrie; tjek adgang og omvej."
+ ],
+ [
+  "Geen officieel onderbouwde WC-plek langs deze gebiedsroute gevonden. Vraag bij liftstations of restaurants.",
+  "No officially documented toilet found along this route. Ask at lift stations or restaurants.",
+  "Keine offiziell belegte Toilette entlang dieser Route gefunden. An Liftstationen oder in Restaurants nachfragen.",
+  "Aucune toilette officiellement documentée sur ce trajet. Renseignez-vous aux stations ou restaurants.",
+  "No se ha encontrado un aseo documentado oficialmente. Pregunta en remontes o restaurantes.",
+  "此路线未找到有官方依据的卫生间。请向缆车站或餐厅询问。",
+  "Nie znaleziono oficjalnie udokumentowanej toalety. Zapytaj przy wyciągach lub w restauracjach.",
+  "Intet officielt dokumenteret toilet fundet. Spørg ved liftstationer eller restauranter."
+ ],
+ [
+  "Liftwachttijden, actuele afsluitingen, weer en pistecondities kunnen afwijken.",
+  "Lift queues, closures, weather and slope conditions may differ.",
+  "Liftwartezeiten, Sperrungen, Wetter und Pistenbedingungen können abweichen.",
+  "Les files d'attente, fermetures, météo et conditions des pistes peuvent varier.",
+  "Las colas, cierres, tiempo y condiciones de las pistas pueden variar.",
+  "缆车排队、关闭、天气及雪道状况可能不同。",
+  "Kolejki, zamknięcia, pogoda i warunki na trasach mogą się różnić.",
+  "Liftkøer, lukninger, vejr og pisteforhold kan afvige."
+ ],
+ [
+  "Terugweg eerst op tijd starten. GPS is op de panoramakaart niet exact.",
+  "Start the return journey in good time. GPS is not exact on the panorama map.",
+  "Rückweg rechtzeitig beginnen. GPS auf der Panoramakarte ist nicht exakt.",
+  "Entamez le retour à temps. Le GPS n'est pas précis sur la carte panoramique.",
+  "Inicia el regreso a tiempo. El GPS no es exacto en el mapa panorámico.",
+  "请及时开始返回。全景地图上的 GPS 位置并不精确。",
+  "Rozpocznij powrót odpowiednio wcześnie. GPS na mapie panoramicznej nie jest dokładny.",
+  "Start returen i god tid. GPS er ikke præcis på panoramakortet."
+ ],
+ [
+  "Kleurcode: liften paars; pistes blauw (tenzij moeilijkheid bekend is).",
+  "Colour code: lifts purple; slopes blue unless difficulty is known.",
+  "Farbcode: Lifte violett; Pisten blau, sofern Schwierigkeit unbekannt.",
+  "Code couleur : remontées violettes, pistes bleues sauf difficulté connue.",
+  "Código de color: remontes morados; pistas azules salvo dificultad conocida.",
+  "颜色：缆车为紫色；难度未知的雪道为蓝色。",
+  "Kolory: wyciągi fioletowe; trasy niebieskie, chyba że znana jest trudność.",
+  "Farvekode: lifte lilla; pister blå, medmindre sværhedsgrad er kendt."
  ]
 ];
  const tables=window.SKI_I18N_DATA?.translations;

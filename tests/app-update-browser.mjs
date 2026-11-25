@@ -220,14 +220,20 @@ try {
           caches:await caches.keys()
         };
       });
-      if(migrationResult.current)break;
+      console.log('Legacy update attempt',attempt+1,JSON.stringify(migrationResult));
+      if(migrationResult.current&&migrationResult.messageBuild===release.build)break;
       if(attempt<2){
-        // Mimic closing/reopening the installed shortcut after an upgrade.
-        await legacy.page.reload({waitUntil:'load'});
+        // The app's offline shell and deferred scripts, not optional remote
+        // images/maps, determine whether a reopened installation is ready.
+        // Keep the build, controlling-worker and stored-data assertions below.
+        await legacy.page.reload({waitUntil:'domcontentloaded'});
         await checkBuild(legacy.page,release.build);
       }
     }
     assert.equal(migrationResult.current,true,'Migrated install could not confirm current build: '+JSON.stringify(migrationResult));
+    assert.equal(migrationResult.pageBuild,release.build,'Legacy page must be the target build');
+    assert.equal(migrationResult.messageBuild,release.build,'Legacy controlling worker must be the target build');
+    assert.deepEqual(migrationResult.caches.filter(name=>name.startsWith('skije-shell-')),['skije-shell-'+release.build],'Only the new verified shell may remain');
     await legacy.context.setOffline(true);
     assert.equal(await photoDigest(legacy.page), digest(mainPhoto));
     assert.deepEqual(await savedData(legacy.page), legacy.before);

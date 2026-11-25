@@ -6,8 +6,8 @@
  const planner=window.SKI_DayPlanner,network=window.SKIWeltCorridors,detail=window.SKIRouteDetail;
  if(!planner||!network||!detail||!$('create')||!$('plan-output'))return;
  const KEY='skije-local-closures-2026-v1';
- let current=null,readyPdf=null,renderRequest=0;
- const t=source=>window.SKI_I18N_DATA?.translations?.[window.SKILanguage?.get?.()||'nl']?.[source]||source;
+ let current=null,readyPdf=null,readyPdfLang=null,renderRequest=0;
+ const t=source=>window.SKILanguage?.translate?.(source)||source;
  const el=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=String(text);return node;};
  function getClosures(){
   try{return network.parseClosures(JSON.parse(localStorage.getItem(KEY)||'[]'));}
@@ -223,10 +223,13 @@
   const status=el('p','hint');status.id='day-export-status';status.setAttribute('role','status');
   actions.append(pdf,share,sharePdf,mapRoute);output.insertBefore(actions,routeDetails);output.insertBefore(status,routeDetails);
   async function getPdf(){
-   if(readyPdf)return readyPdf;
+   const language=window.SKILanguage?.get?.()||'nl';
+   const route=current;
+   if(readyPdf&&readyPdfLang===language)return readyPdf;
    if(!window.SKIPdf){throw Error('PDF-module nog niet beschikbaar');}
-   readyPdf=await window.SKIPdf.generate(current);
-   return readyPdf;
+   const blob=await window.SKIPdf.generate(route,language);
+   if(route===current){readyPdf=blob;readyPdfLang=language;}
+   return blob;
   }
   pdf.addEventListener('click',async()=>{
    pdf.disabled=true;status.textContent=t('PDF maken…');

@@ -31,25 +31,45 @@
   add(ascii('trailer\n<< /Size '+objects.length+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF\n'));
   return join(chunks);
  }
- const COL={navy:'#0a3657',blue:'#0875ab',orange:'#f18424',green:'#128467',red:'#b44848',ink:'#183c55',gray:'#5f7889'};
- function label(ctx,txt,x,y,size=25,color=COL.ink,bold=false){
-  ctx.font=(bold?'700 ':'400 ')+size+'px system-ui,"Segoe UI",sans-serif';ctx.fillStyle=color;
-  ctx.fillText(String(txt||''),x,y);
+ const languages=new WeakMap();
+ function local(ctx,value){
+  const source=String(value??'');
+  return window.SKILanguage?.translate?.(source,languages.get(ctx)||'nl')??source;
  }
- function wrap(ctx,str,maxWidth,font=20,limit=3){
+ const COL={navy:'#0a3657',blue:'#0875ab',orange:'#f18424',green:'#128467',red:'#b44848',ink:'#183c55',gray:'#5f7889'};
+ function drawLabel(ctx,txt,x,y,size=25,color=COL.ink,bold=false,maxWidth=W-x-52){
+  ctx.font=(bold?'700 ':'400 ')+size+'px system-ui,"Segoe UI",sans-serif';ctx.fillStyle=color;
+  ctx.fillText(String(txt??''),x,y,Math.max(1,maxWidth));
+ }
+ function label(ctx,txt,x,y,size=25,color=COL.ink,bold=false,maxWidth=W-x-52){
+  drawLabel(ctx,local(ctx,txt),x,y,size,color,bold,maxWidth);
+ }
+ function wrap(ctx,str,maxWidth,font){
   ctx.font='400 '+font+'px system-ui,sans-serif';
-  const words=String(str||'').split(/\s+/);const output=[];let current='';
-  for(const w of words){
-   const next=current?current+' '+w:w;
-   if(ctx.measureText(next).width<=maxWidth||!current){current=next;continue;}
-   output.push(current);current=w;
-   if(output.length===limit-1)break;
+  // Break at spaces or Han characters. Split overlong tokens instead of
+  // dropping any part of a route warning.
+  const tokens=String(str??'').match(/\p{Script=Han}|[^\p{Script=Han}\s]+|\s+/gu)||[];
+  const output=[];let current='';
+  for(const token of tokens){
+   if(ctx.measureText(current+token).width<=maxWidth){current+=token;continue;}
+   if(current.trim()){output.push(current.trim());current='';}
+   if(!token.trim())continue;
+   for(const char of Array.from(token)){
+    if(current&&ctx.measureText(current+char).width>maxWidth){output.push(current);current='';}
+    current+=char;
+   }
   }
-  if(current)output.push(current);return output.slice(0,limit);
+  if(current.trim())output.push(current.trim());
+  return output;
  }
  function lines(ctx,text,x,y,width,size=20,limit=3,color=COL.ink){
-  const content=wrap(ctx,text,width,size,limit);
-  content.forEach((v,i)=>label(ctx,v,x,y+i*(size+5),size,color));return content.length;
+  const translated=local(ctx,text);
+  let font=size,content=wrap(ctx,translated,width,font);
+  while(content.length>limit&&font>12){font--;content=wrap(ctx,translated,width,font);}
+  // If a particularly long source cannot fit at normal sizes, retain all
+  // text in the available lines. Never truncate the closing safety sentence.
+  if(content.length>limit)content=[...content.slice(0,limit-1),content.slice(limit-1).join(' ')];
+  content.forEach((v,i)=>drawLabel(ctx,v,x,y+i*(size+5),font,color,false,width));return content.length;
  }
  async function loadWatermark(date){
   if(typeof Image==='undefined')return null;
@@ -89,7 +109,7 @@
  function box(ctx,x,y,w,h,bg){ctx.fillStyle=bg;ctx.fillRect(x,y,w,h);}
  function schedule(ctx,plan){
   label(ctx,'DAGOVERZICHT · ALLE TRAJECTEN OP VOLGENDE BLADEN',62,289,29,COL.navy,true);
-  const localDate=plan.date||new Date().toLocaleDateString('nl-NL');
+  const localDate=plan.date||new Date().toLocaleDateString(languages.get(ctx)||'nl');
   label(ctx,'DATUM '+localDate,798,289,22,COL.blue,true);
   lines(ctx,plan.startPoint+'  →  '+plan.endPoint,62,328,1115,25,2,COL.blue);
   box(ctx,58,375,1120,102,'#e7f3fa');
@@ -109,8 +129,8 @@
    label(ctx,row.minutes+' min',88,y+80,20,COL.gray);
    // Shrink unusually long restaurant labels rather than running into the margin.
    let titleSize=24;
-   do{ctx.font='700 '+titleSize+'px system-ui,"Segoe UI",sans-serif';if(ctx.measureText(row.label).width<=744||titleSize===17)break;titleSize--;}while(true);
-   label(ctx,row.label,402,y+36,titleSize,COL.ink,true);
+   do{ctx.font='700 '+titleSize+'px system-ui,"Segoe UI",sans-serif';if(ctx.measureText(local(ctx,row.label)).width<=744||titleSize===17)break;titleSize--;}while(true);
+   label(ctx,row.label,402,y+36,titleSize,COL.ink,true,744);
    // Keep both lines of longer safety notes. No more clipped last words.
    lines(ctx,row.detail,403,y+65,742,17,2,COL.gray);y+=103;
   }
@@ -165,7 +185,7 @@
  function drawLegend(ctx,y){
   const labels=[['lift','LIFT'],['piste','PISTE'],['transfer','OVERSTAP'],['lunch','LUNCH'],['return','TERUG'],['buffer','MARGE']];
   let x=68;for(const [kind,name] of labels){
-   box(ctx,x,y,18,18,decorate(ctx,kind));label(ctx,name,x+26,y+17,18,COL.navy,true);
+   box(ctx,x,y,18,18,decorate(ctx,kind));label(ctx,name,x+26,y+17,18,COL.navy,true,kind==='transfer'?166:128);
    x+=name==='OVERSTAP'?196:158;
   }
  }
@@ -179,10 +199,10 @@
    box(ctx,58,y,1120,h,'#ffffff');
    box(ctx,58,y,10,h,decorate(ctx,s.type,s.level));
    label(ctx,s.start+' – '+s.end,85,y+42,25,COL.navy,true);
-   label(ctx,s.minutes+' min  ·  '+(s.phase||'planning'),85,y+74,15,COL.gray);
+   label(ctx,s.minutes+' min  ·  '+local(ctx,s.phase||'planning'),85,y+74,15,COL.gray,false,300);
    let title=String(s.label||'');
-   let font=23;do{ctx.font='700 '+font+'px system-ui,sans-serif';if(ctx.measureText(title).width<730||font===17)break;font--;}while(true);
-   label(ctx,title,403,y+40,font,COL.ink,true);
+   let font=23;do{ctx.font='700 '+font+'px system-ui,sans-serif';if(ctx.measureText(local(ctx,title)).width<730||font===17)break;font--;}while(true);
+   label(ctx,title,403,y+40,font,COL.ink,true,730);
    lines(ctx,s.detail||'',403,y+70,722,16,2,COL.gray);
    y+=129;
   }
@@ -227,8 +247,8 @@
   let y=455;
   for(const [name,value] of cards){
    box(ctx,64,y,1110,70,'#e9f5fc');
-   label(ctx,name,82,y+28,18,COL.gray,true);
-   label(ctx,String(value).slice(0,62),447,y+44,22,COL.navy,true);
+   label(ctx,name,82,y+28,18,COL.gray,true,350);
+   label(ctx,String(value),447,y+44,22,COL.navy,true,705);
    y+=80;
   }
   y+=22;
@@ -289,11 +309,10 @@
    box(ctx,62,y,7,53,colour);
    label(ctx,String(row.position).padStart(2,'0'),84,y+33,18,COL.gray,true);
    label(ctx,row.time+'-'+row.until,142,y+33,19,COL.navy,true);
-   label(ctx,type,340,y+33,18,colour,true);
+   label(ctx,type,340,y+33,18,colour,true,138);
    label(ctx,row.code.slice(0,18),492,y+33,18,COL.navy,true);
    const description=row.label.replace(/^(?:⛷️|🚡|⇄|🚶)\s*/u,'');
-   const text=description.slice(0,55);
-   label(ctx,text,785,y+33,15,COL.gray);
+   label(ctx,description,785,y+33,15,COL.gray,false,380);
    y+=61;
   }
  }
@@ -314,7 +333,7 @@
   pages.push({kind:'summary'});
   return pages;
  }
- async function generate(data){
+ async function generate(data,language=window.SKILanguage?.get?.()||'nl'){
   const {plan,route}=data||{};
   if(!plan?.ok)throw Error('Maak eerst een geldige dagplanning');
   if(typeof document==='undefined')throw Error('PDF vereist een browser');
@@ -325,6 +344,7 @@
   for(let page=0;page<pages.length;page++){
    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
    const ctx=canvas.getContext('2d');if(!ctx)throw Error('Geen canvas');
+   languages.set(ctx,language);
    pageStart(ctx,logo,page+1,pages.length,watermark);
    const section=pages[page];
    if(section.kind==='schedule')schedule(ctx,plan);

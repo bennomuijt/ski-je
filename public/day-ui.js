@@ -76,6 +76,10 @@
   if(!routeResult.ok){
    output.append(el('strong','',t('Controleer je planning')));
    output.append(el('p','route-errors',routeResult.reason));
+   if(routeResult.unresolvedClosures?.length){
+    const codes=el('p','hint',routeResult.unresolvedClosures.join(', '));
+    codes.dataset.skijeNoTranslate='';output.append(codes);
+   }
    output.append(el('p','hint','Er is geen ononderbroken piste-/liftroute gevonden voor deze keuzes. Ontbrekende aansluitingen worden niet overgeslagen.'));
    return;
   }
@@ -265,7 +269,7 @@
   const rows=getClosures();const item={kind,code,note,at:new Date().toISOString()};
   if(!rows.some(x=>x.kind===kind&&x.code===code))rows.push(item);
   if(!saveClosures(rows)){message.textContent=t('Opslaan van melding mislukt.');return;}
-  message.textContent=t('Sluiting lokaal gemeld. Je volgende routeberekening vermijdt deze verbinding.');
+  message.textContent=t('Sluiting lokaal gemeld. De routeberekening verwerkt de melding of geeft een waarschuwing.');
   $('closed-code').value='';$('closed-note').value='';
   renderClosures();render();
  }

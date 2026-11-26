@@ -63,7 +63,7 @@ function openPage({ pageBuild = previousBuild, workerBuild = build, online = tru
     querySelector: selector => selector.startsWith('meta') ? { content: pageBuild } : { textContent: 'v4.5.15' }
   };
   const serviceWorker = {
-    controller: { postMessage: (_, [port]) => port.postMessage(workerBuild) },
+    controller: { state: 'activated', postMessage: (_, [port]) => port.postMessage(workerBuild) },
     getRegistration: async () => ({
       update: async () => {
         if (error) throw error;

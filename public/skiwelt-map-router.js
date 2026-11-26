@@ -194,6 +194,10 @@
    source>=adj.length||destination>=adj.length)return null;
   if(source===destination)return{edgeIds:[],minutes:0,metres:0};
   const closed=closureSet(closures),best=new Float64Array(adj.length),prior=new Int32Array(adj.length);
+  // Optional heuristic candidates only: final schedule is always checked with
+  // group(). The normal graph weights remain the first choice.
+  const featureLengths=opts.timingProfile===1?new Float64Array(graph.features.length):null;
+  if(featureLengths)for(const e of graph.edges)if(e[2]>=0)featureLengths[e[2]]+=e[3];
   best.fill(Infinity);prior.fill(-1);best[source]=0;
   const heap=new Heap();heap.push([0,source]);let explored=0;
   while(heap.size&&explored++<60000){
@@ -208,6 +212,19 @@
     if(kind==='lift')distance+=0.15;
     if(kind==='transfer')distance+=row[4]==='walk-pole'?Math.max(2,Math.ceil(row[3]/35)):row[3]<=3?0.015:row[4]==='station-walk'||row[4]==='village-walk'?1.7:0.35;
     if(row[4]==='flat-possible')distance+=0.5;
+    if(opts.timingProfile){
+     const m=row[3],previous=graph.edges[prior[node]],same=previous&&previous[2]===row[2]&&previous[4]===row[4];
+     const share=featureLengths?m/Math.max(1,featureLengths[row[2]]||m):0;
+     if(kind==='lift')distance=metresToMin(m,kind,opts.speed,feature?.liftType)+(featureLengths?2.4*share:same?0:2.5);
+     else if(kind==='piste'){
+      distance=metresToMin(m,kind,opts.speed)+(featureLengths?share:same?0:1);
+      if(featureLengths&&feature?.ref==='20a'&&featureLengths[row[2]]>1500)distance=Math.max(distance,20*share);
+     }else if(m<=3&&['map-junction','map-crossing','station-access'].includes(row[4]))distance=.01;
+     else if(row[4]==='walk-pole')distance=Math.max(3,Math.ceil(m/30)+2);
+     else if(row[4]==='official-tour-provisional')distance=4;
+     else distance=Math.max(1,Math.ceil(metresToMin(m,kind,opts.speed)));
+     distance=Math.max(.001,distance);
+    }
     if(opts.avoid?.has(row[2]))distance+=1.4;
     const next=cost+distance;
     if(next+1e-6<best[row[1]]){best[row[1]]=next;prior[row[1]]=eId;heap.push([next,row[1]]);}
@@ -363,7 +380,7 @@
   foisching:{label:'Foisching, Brixen, Hochsöll & Rigi',morning:['lift:25:top','lift:7:top','lift:40:top'],afternoon:['lift:23:top','lift:25:top'],lunch:'lift:20:top'},
   itter:{label:'Itter, Brixen & KRAFTalm',morning:['lift:30:middle1','lift:1:top','lift:7:top'],afternoon:['Hohe Salve','lift:22:top'],lunch:'lift:30:middle1'}
  });
- function build(options={},closures=[]){
+ function build(options={},closures=[],retryTiming=false){
   if(!graph)return{ok:false,reason:'Kaartnetwerk nog niet geladen. Probeer opnieuw.'};
   const begin=clock(options.departure||'09:00'),end=clock(options.returnTime||'16:00');
   const useLunch=options.useLunch!==false,lunchClock=clock(options.lunchTime||'12:30');
@@ -378,7 +395,19 @@
   const routeCache=new Map(),groupCache=new Map();
   const find=(a,b)=>{
    const key=a+'|'+b;
-   if(!routeCache.has(key))routeCache.set(key,shortest(a,b,opts,closures));
+   if(!routeCache.has(key)){
+    let route=shortest(a,b,opts,closures);
+    if(retryTiming&&route){
+     let minutes=group(route,opts).reduce((n,s)=>n+s.minutes,0);
+     for(const timingProfile of [1,2]){
+      const candidate=shortest(a,b,{...opts,timingProfile},closures);
+      if(!candidate||!validateRoute(candidate,a,b))continue;
+      const t=group(candidate,opts).reduce((n,s)=>n+s.minutes,0);
+      if(t<minutes){route=candidate;minutes=t;}
+     }
+    }
+    routeCache.set(key,route);
+   }
    return routeCache.get(key);
   };
   const groupsFor=route=>{
@@ -425,7 +454,7 @@
   if(targetWishlist.length&&selectedTarget===undefined)return{ok:false,reason:'Gewenste bergtop heeft nog geen volledige aansluiting in het netwerk.'};
   // Candidate huts are near known lift stations. Without verified restaurant
   // coordinates, do NOT claim that the chosen lift station is the hut entrance.
-  const rest=String(options.lunchRestaurantLabel||'');
+  const rest=useLunch?String(options.lunchRestaurantLabel||''):'';
   // Restaurant stops are paired with a nearby mapped lift station, not a
   // fabricated exact entrance; the user sees this uncertainty.
   const restaurantPairs=[
@@ -470,7 +499,8 @@
    Number.isInteger(presetLunch)?[presetLunch]:autoLunch):[start];
   const scenic=['Brandstadl bergstation','Hartkaiser bergstation','Hohe Salve','Hopfgarten tussenstation',
    'Brixen dalstation','Söll dalstation'].map(x=>graph.stations[x]?.node).filter(Number.isInteger);
-  const breakMinutes=(options.morningBreak?Number(options.morningDuration??30):0)+(options.afternoonBreak?Number(options.afternoonDuration??30):0);
+  const morningMinutes=options.morningBreak?clamp(Number(options.morningDuration??30),5,120):0;
+  const afternoonMinutes=options.afternoonBreak?clamp(Number(options.afternoonDuration??30),5,120):0;
   const direct=isHopfgarten?find(start,routeFinish):find(start,finish);
   if(preset&&[...preset.morning,...preset.afternoon,preset.lunch].some(station=>!graph.stations[station]))
    return{ok:false,reason:'De gekozen dagroute heeft een niet gevonden liftstation in de kaart. De app mag dit niet overslaan.'};
@@ -495,7 +525,7 @@
    }
    if(!before)continue;
    const beforeGroups=groupsFor(before,opts),beforeMin=beforeGroups.reduce((n,s)=>n+s.minutes,0);
-   if(useLunch&&begin+beforeMin+Math.max(10,options.morningBreak?Number(options.morningDuration??30):0)>lunchClock)continue;
+   if(useLunch&&begin+beforeMin+Math.max(10,morningMinutes)>lunchClock)continue;
    const afterStops=preset?[null]:[null,...scenic];
    for(const afterTarget of afterStops){
     let post,back;
@@ -525,8 +555,11 @@
     }
     const postMin=groupsFor(post,opts).reduce((n,s)=>n+s.minutes,0);
     const backMin=groupsFor(back,opts).reduce((n,s)=>n+s.minutes,0);
-    const afterTime=(useLunch?lunchClock+Number(options.lunchDuration??60):begin+beforeMin)+postMin+backMin;
-    if(afterTime+breakMinutes>routeLimit)continue;
+    // Morning pause already fits before the fixed lunch time; do not charge
+    // it a second time against the afternoon. When lunch is disabled it
+    // still needs to count once in the entire day.
+    const afterTime=(useLunch?lunchClock+Number(options.lunchDuration??60):begin+beforeMin+morningMinutes)+postMin+backMin;
+    if(afterTime+afternoonMinutes>routeLimit)continue;
     const all=[...before.edgeIds,...post.edgeIds,...back.edgeIds];
     if(!all.length)continue;
     const chain={edgeIds:all};
@@ -548,6 +581,10 @@
   }
   bestOptions.sort((a,b)=>b.score-a.score||a.skiMin-b.skiMin);
   const chosen=bestOptions[0];
+  // Keep all explicit input settings unchanged. Retry with alternative path
+  // weights only for a failed explicit restaurant route, without invented
+  // edges, faster skiing assumptions, a shorter lunch or reduced safety.
+  if(!chosen&&!retryTiming&&useLunch&&requestedLunch!==null&&!preset)return build(options,closures,true);
   if(!chosen)return{ok:false,reason:'Geen volledige route met alle gewenste pistes, lunch en terugweg binnen de beschikbare tijd. Er zijn geen aansluitingen overgeslagen.'};
   const lunchName=useLunch?(rest?'Lunch bij '+rest+' (exacte huttoegang controleren)':
    'Lunch bij '+(lunchLabels.get(chosen.lunch)||'restaurantomgeving')+' (exacte toegang controleren)'):'';

@@ -75,7 +75,7 @@ test('all eight valley round trips: automatic lunch plus every actual restaurant
   }
   console.log('LUNCH_MATRIX '+JSON.stringify({start,automatic:a.lunchLabel,autoArrival:a.actualArrival,namedFeasible:yes,namedRefused:no}));
  }
- assert.equal(automatic,8);assert.equal(named+refused,104);assert.ok(named>0);
+ assert.equal(automatic,8);assert.equal(named+refused,104);assert.ok(named>=88,'fixed-time coverage must improve over 87');
  console.log('LUNCH_TOTAL '+JSON.stringify({automatic,named,refused,west}));
 });
 test('automatic lunch is possible at both allowed time boundaries, or explicitly refused',()=>{
@@ -99,11 +99,38 @@ test('user Hopfgarten–Talkaser–Hopfgarten exact 57-minute lunch regression',
   console.log('LUNCH_TALKASER '+JSON.stringify({style,...v,safeArrival:r.plan.safeArrival}));
  }
 });
-test('diagnose saved restaurant selection after lunch is disabled',()=>{
+test('saved restaurant selection cannot affect a route with lunch disabled',()=>{
  const options={...defaults,start:'Hopfgarten dalstation',finish:'Hopfgarten dalstation',useLunch:false};
  const baseline=map.build(options),stale=map.build({...options,lunchRestaurantLabel:'Previously selected unmapped restaurant'});
  assert.ok(baseline.ok,baseline.reason);
  assert.ok(!baseline.itinerary.steps.some(s=>s.type==='lunch'));
- console.log('LUNCH_DISABLED '+JSON.stringify({baseline:baseline.ok,stale:stale.ok,reason:stale.reason||'',knownLimitation:!stale.ok}));
- if(stale.ok)assert.ok(!stale.itinerary.steps.some(s=>s.type==='lunch'));
+ assert.ok(stale.ok,stale.reason);
+ assert.ok(!stale.itinerary.steps.some(s=>s.type==='lunch'));
+ assert.deepEqual(stale.path.edgeSegments,baseline.path.edgeSegments);
+ assert.equal(stale.plan.lunchRestaurant,'');
+ console.log('LUNCH_DISABLED '+JSON.stringify({baseline:baseline.ok,stale:stale.ok}));
+});
+
+test('separately requested earlier lunch times improve coverage without changing duration or safety',()=>{
+ const alternatives=[],unavailable=[];
+ let fixed=0;
+ for(const start of valleys)for(const choice of choices){
+  const options={...defaults,start,finish:start,lunchRestaurantLabel:choice.label};
+  const standard=map.build(options);
+  if(standard.ok){fixed++;continue;}
+  // These are NEW explicitly requested settings in a test, not an
+  // automatic change to a user's lunch time.
+  let found=false;
+  for(const lunchTime of ['12:25','12:20','12:15','12:00','11:50','11:45']){
+   const alternative={...options,lunchTime};
+   const r=map.build(alternative);
+   if(!r.ok)continue;
+   const v=verify(r,alternative,choice);
+   alternatives.push({start,restaurant:choice.name,lunchTime,actualArrival:v.actualArrival});
+   found=true;break;
+  }
+  if(!found)unavailable.push({start,restaurant:choice.name});
+ }
+ console.log('LUNCH_FLEX '+JSON.stringify({fixed,total:fixed+alternatives.length,alternatives,unavailable}));
+ assert.ok(fixed+alternatives.length>=102,'Expected improved lunch-window coverage');
 });

@@ -173,7 +173,12 @@
      (closed.has('piste:111')||closed.has('piste:117')))return false;
   const feature=row[2]===-1?null:graph.features[row[2]];
   if(!feature)return true;
-  if(closed.has(feature.kind+':'+String(feature.ref||'').toLowerCase()))return false;
+  const ref=String(feature.ref||'').toLowerCase();
+  if(closed.has(feature.kind+':'+ref))return false;
+  // Shared map lines carry compound piste references. Exclude them when any
+  // component is reported closed. Match whole codes, never number prefixes.
+  if(feature.kind==='piste'&&ref.includes(',')&&
+     ref.split(',').some(code=>closed.has('piste:'+code.trim())))return false;
   if(feature.kind==='lift')return opts.noLifts!==true;
   // Official SkiWelt piste listing classifies the ENTIRE 20a valley run red,
   // even though its OSM geometry contains a short easy-classified tail.

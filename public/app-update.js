@@ -32,14 +32,16 @@
 
   async function controllerHasBuild(serviceWorker, build) {
     const controller = serviceWorker.controller;
-    if (!controller) return false;
+    // Activation can expose a controller before its cache cleanup finishes.
+    if (!controller || controller.state !== 'activated') return false;
     const channel = new MessageChannel();
     try {
       const reply = new Promise(resolve => {
         channel.port1.onmessage = event => resolve(event.data);
         controller.postMessage({ type: 'SKIJE_GET_BUILD' }, [channel.port2]);
       });
-      return await withTimeout(reply, 500) === build && serviceWorker.controller === controller;
+      return await withTimeout(reply, 500) === build &&
+        serviceWorker.controller === controller && controller.state === 'activated';
     } catch {
       return false;
     } finally {
@@ -48,17 +50,27 @@
   }
 
   async function installBuild(serviceWorker, build) {
-    const registration = await withTimeout(serviceWorker.getRegistration(), 5000);
+    let registration = await withTimeout(serviceWorker.getRegistration(), 5000);
     if (registration) {
       await withTimeout(registration.update(), 12000);
     } else {
-      await withTimeout(serviceWorker.register('./sw.js', { updateViaCache: 'none' }), 12000);
+      registration = await withTimeout(serviceWorker.register('./sw.js', { updateViaCache: 'none' }), 12000);
     }
     // update() can finish before install and activation do. An older worker
     // may also take control first, so wait for the specific server build.
     const deadline = Date.now() + 20000;
+    let requestedWorker, requestedAt = 0;
     do {
       if (await controllerHasBuild(serviceWorker, build)) return;
+      // A successfully installed worker can remain waiting after a failed
+      // previous attempt. Request activation of this exact build; never
+      // bypass the install-time integrity check or accept the old controller.
+      const waiting = registration.waiting;
+      if (waiting && (waiting !== requestedWorker || Date.now() - requestedAt >= 1000)) {
+        requestedWorker = waiting;
+        requestedAt = Date.now();
+        try { waiting.postMessage({ type: 'SKIJE_ACTIVATE_BUILD', build }); } catch { /* Worker changed state. */ }
+      }
       await new Promise(resolve => setTimeout(resolve, 250));
     } while (Date.now() < deadline);
     throw new Error('The requested build did not take control');

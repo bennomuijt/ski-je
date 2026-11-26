@@ -27,11 +27,11 @@
    return;
   }
   if(meeting){
-   const heading=document.createElement('strong');heading.textContent='📍 '+meeting.place;
+   const heading=document.createElement('strong');heading.dataset.skijeNoTranslate='';heading.textContent='📍 '+meeting.place;
    const stamp=document.createElement('p');
    stamp.textContent=new Intl.DateTimeFormat('nl-NL',{dateStyle:'full',timeStyle:'short',timeZone:'Europe/Vienna'}).format(new Date(meeting.when))+' · door '+meeting.name+' (SkiWelt-tijd)';
    view.append(heading,stamp);
-   if(meeting.note){const note=document.createElement('p');note.textContent=meeting.note;view.append(note);}
+   if(meeting.note){const note=document.createElement('p');note.dataset.skijeNoTranslate='';note.textContent=meeting.note;view.append(note);}
   }else view.textContent='Nog geen groepsafspraak gemaakt.';
   $('cf-meeting-clear').hidden=!meeting||meeting.by!==me.memberId&&!me.owner;
   const visible=messages.filter(m=>m&&m.id&&m.name&&Number.isFinite(m.at)&&Date.now()-m.at<MAX_AGE).slice(-100);

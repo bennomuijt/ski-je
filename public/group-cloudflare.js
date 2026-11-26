@@ -45,10 +45,10 @@
    let marker=pins.get(peer.id);
    if(!marker){marker=L.circleMarker([pos.lat,pos.lng],{radius:11,color:'#fff',weight:3,fillColor:personColor(peer.id),fillOpacity:1});marker.addTo(map);pins.set(peer.id,marker);}
    marker.setLatLng([pos.lat,pos.lng]);
-   const content=document.createElement('div');const title=document.createElement('strong');title.textContent=peer.name;content.append(title);
+   const content=document.createElement('div');const title=document.createElement('strong');title.dataset.skijeNoTranslate='';title.textContent=peer.name;content.append(title);
    const info=document.createElement('p');info.textContent=`GPS ±${pos.accuracy} m · laatste meting ${labelTime(pos.at)} (${Math.floor((t-pos.at)/1000)} sec geleden)`;content.append(info);
    marker.bindPopup(content);
-   marker.bindTooltip(peer.name,{permanent:true,direction:'top',offset:[0,-10],className:'cf-map-name'});
+   const tooltip=document.createElement('span');tooltip.dataset.skijeNoTranslate='';tooltip.textContent=peer.name;marker.bindTooltip(tooltip,{permanent:true,direction:'top',offset:[0,-10],className:'cf-map-name'});
   }
   for(const [id,m] of pins){if(!valid.has(id)){map.removeLayer(m);pins.delete(id);}}
  }
@@ -67,7 +67,7 @@
    const peer=peers.get(member.id),age=peer?.last?Date.now()-peer.last.at:null;
    const canShow=!member.self&&member.online&&age!==null&&age<TTL;
    const el=document.createElement('div');el.className='cf-member';
-   const name=document.createElement('strong');name.textContent=(member.online?'🟢 ':'⚪ ')+member.name+(member.self?' (jij)':'');
+   const name=document.createElement('strong');name.dataset.skijeNoTranslate='';name.textContent=(member.online?'🟢 ':'⚪ ')+member.name+(member.self?' (jij)':'');
    const detail=document.createElement('small');
    const presence=member.online?'Online':'Offline';
    detail.textContent=member.self?presence+' · '+(sharing?'Locatie delen AAN':'Locatie delen UIT'):

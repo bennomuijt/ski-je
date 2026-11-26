@@ -24,17 +24,43 @@
  }
  let current=getSaved();
  const SELECTOR='[data-skije-language-select]';
- const SKIP='script,style,noscript,svg,code,pre,textarea,[contenteditable="true"],#legal-text';
+ const SKIP='script,style,noscript,svg,code,pre,textarea,[contenteditable="true"],#legal-text,[data-skije-no-translate],.cf-chat-item,#skije-legal-translation-note';
+ // Translate only registered message formats. Literal separators, not executable
+ // regular expressions from translation data. Slots are copied as plain text.
+ const templates=Object.keys(config.translations.en||{}).filter(key=>/\{\d+\}/.test(key))
+  .sort((a,b)=>b.length-a.length).map(key=>({key,parts:key.split(/(\{\d+\})/)}));
+ function fromTemplate(source,table){
+  if(source.length>4096)return undefined;
+  for(const {key,parts} of templates){
+   if(!Object.hasOwn(table,key)||!source.startsWith(parts[0]))continue;
+   let position=parts[0].length,valid=true;
+   const values=Object.create(null);
+   for(let i=1;i<parts.length;i+=2){
+    const separator=parts[i+1],last=i===parts.length-2;
+    const end=last?(source.endsWith(separator)?source.length-separator.length:-1):source.indexOf(separator,position);
+    if(end<=position||(!last&&!separator)){valid=false;break;}
+    values[parts[i].slice(1,-1)]=source.slice(position,end);
+    position=end+separator.length;
+   }
+   if(valid&&position===source.length)return table[key].replace(/\{(\d+)\}/g,(slot,n)=>Object.hasOwn(values,n)?values[n]:slot);
+  }
+  return undefined;
+ }
+ function lookup(source,table){
+  if(Object.hasOwn(table,source)&&typeof table[source]==='string')return table[source];
+  return fromTemplate(source,table);
+ }
  function translateValue(source,lang){
-  if(lang==='nl')return source;
+  if(typeof source!=='string')return source;
+  if(lang==='nl'||!supported.has(lang))return source;
   const table=config.translations[lang];
   if(!table)return source;
-  const exact=table[source.trim()];
-  if(exact!==undefined)return source.replace(source.trim(),exact);
+  const exact=lookup(source.trim(),table);
+  if(exact!==undefined)return source.replace(source.trim(),()=>exact);
   // Keep symbols and emoji before menu labels, including their spacing.
   const pieces=source.match(/^(\s*[^\p{L}\p{N}]*)([\s\S]*?)(\s*)$/u);
   if(!pieces)return source;
-  const translated=table[pieces[2]];
+  const translated=lookup(pieces[2],table);
   return translated===undefined?source:pieces[1]+translated+pieces[3];
  }
  function textNode(node,lang){
@@ -49,6 +75,7 @@
  function translateAttributes(element,lang){
   if(!element||element.nodeType!==1||element.closest(SKIP))return;
   const attrs=['aria-label','title','placeholder','alt'];
+  if(element.tagName==='OPTGROUP')attrs.push('label');
   let memo=attributes.get(element);if(!memo){memo={};attributes.set(element,memo);}
   for(const key of attrs){
    if(!element.hasAttribute(key))continue;
@@ -101,11 +128,12 @@
  const observer=new MutationObserver(changes=>{
   for(const change of changes){
    if(change.type==='characterData')textNode(change.target,current);
+   if(change.type==='attributes')translateAttributes(change.target,current);
    if(change.type==='childList'){
     for(const node of change.addedNodes)visit(node,current);
    }
   }
  });
- observer.observe(document.body,{subtree:true,childList:true,characterData:true});
- window.SKILanguage={get:()=>current,set:(lang)=>apply(lang,true),available:config.languages.map(([id])=>id)};
+ observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','placeholder','alt','label']});
+ window.SKILanguage={get:()=>current,set:(lang)=>apply(lang,true),available:config.languages.map(([id])=>id),translate:(source,lang=current)=>translateValue(source,lang)};
 })();

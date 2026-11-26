@@ -31,7 +31,7 @@ test('PDF preserves every detail row, route-index row, code and time across page
 const source = readFileSync(new URL('../public/day-ui.js', import.meta.url),'utf8');
 function shareHandler(canShare) {
   // Execute the actual registered callback with a minimal browser stub.
-  const match = source.match(/sharePdf\.addEventListener\('click',async\(\)=>\{([\s\S]*?)\n   \}\);/);
+  const match = source.match(/sharePdf\.addEventListener\('click',async\(\)=>\{([\s\S]*?)\r?\n[ \t]*\}\);/);
   assert.ok(match,'PDF share callback found');
   const saves=[], shares=[];
   const plan={date:'2026-12-20',departure:'09:00',returnTime:'16:00'};

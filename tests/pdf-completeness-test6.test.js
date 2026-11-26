@@ -59,3 +59,44 @@ test('PDF share fallback downloads with the same date and time filename',async()
   assert.equal(s.saves[0][0],s.blob);
   assert.equal(s.saves[0][1],s.fileName);
 });
+
+test('PDF overview title, date and route occupy distinct drawing areas in all eight languages', async()=>{
+  const read = name=>readFileSync(new URL('../public/'+name,import.meta.url),'utf8');
+  const printed=[];
+  const document={
+    body:{nodeType:1,matches:()=>false,closest:()=>null,hasAttribute:()=>false},
+    documentElement:{},querySelectorAll:()=>[],getElementById:()=>null,
+    createTreeWalker:()=>({nextNode:()=>null}),dispatchEvent:()=>{},
+    createElement:()=>{
+      const rows=[];printed.push(rows);
+      const ctx={font:'20px sans-serif',fillRect(){},
+        fillText(text,x,y,maxWidth){rows.push({text:String(text),x,y,maxWidth,size:Number(this.font.match(/(\d+)px/)[1])});},
+        measureText(text){return {width:String(text).length*Number(this.font.match(/(\d+)px/)[1])*0.65};},
+        createLinearGradient(){return {addColorStop(){}};}
+      };
+      return {getContext:()=>ctx,toDataURL:()=>'data:image/jpeg;base64,/9j/2Q=='};
+    }
+  };
+  const sandbox={window:{},document,Blob,TextEncoder,Uint8Array,atob,NodeFilter:{SHOW_ELEMENT:1,SHOW_TEXT:4},
+    CustomEvent:class{},MutationObserver:class{observe(){}},localStorage:{getItem:()=>null,setItem:()=>{}}};
+  runInNewContext(['i18n-data.js','i18n-extra.js','i18n-pdf.js','i18n.js','day-pdf.js'].map(read).join('\n;\n'),sandbox);
+  const plan={ok:true,date:'2026-12-20',startPoint:'Hopfgarten dalstation',endPoint:'Westendorf dalstation',
+    departure:'09:00',safeArrival:'15:30',returnTime:'16:00',sections:[],notes:[]};
+  const data={plan,route:{steps:[],notes:[]},itinerary:{steps:[],warnings:[]}};
+  const overlaps=(a,b)=>a.x<b.x+b.maxWidth&&b.x<a.x+a.maxWidth&&
+    a.y-a.size<b.y+3&&b.y-b.size<a.y+3;
+  for(const lang of ['nl','en','de','fr','es','zh','pl','da']){
+    printed.length=0;
+    await sandbox.SKIPdf.generate(data,lang);
+    const rows=printed[0],t=v=>sandbox.window.SKILanguage.translate(v,lang);
+    const title=rows.find(r=>r.text===t('DAGOVERZICHT · ALLE TRAJECTEN OP VOLGENDE BLADEN'));
+    const date=rows.find(r=>r.text===t('DATUM '+plan.date));
+    const routeRows=rows.filter(r=>r.text.includes('Hopfgarten')||r.text.includes('Westendorf'));
+    assert.ok(title&&date&&routeRows.length,lang+' overview fields');
+    assert.ok(!overlaps(title,date),lang+' title/date overlap');
+    for(const route of routeRows){
+      assert.ok(!overlaps(route,date),lang+' route/date overlap');
+      assert.ok(!overlaps(route,title),lang+' route/title overlap');
+    }
+  }
+});

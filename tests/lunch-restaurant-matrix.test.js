@@ -134,3 +134,62 @@ test('separately requested earlier lunch times improve coverage without changing
  console.log('LUNCH_FLEX '+JSON.stringify({fixed,total:fixed+alternatives.length,alternatives,unavailable}));
  assert.ok(fixed+alternatives.length>=102,'Expected improved lunch-window coverage');
 });
+
+test('Going–Talkaser–Going: explicit day-time alternatives, with unchanged lunch and reserve',()=>{
+ const choice=choices.find(x=>x.number==='69');
+ // 20–24 Dec 2026. Published operating windows, not live status.
+ // The access-lift dated page takes precedence over the general tour table
+ // where the two disagree. For this diagnostic only, do not invent windows
+ // for unlisted lifts or call an incomplete schedule a verified route.
+ // https://kitzskiwelttour.skiwelt.at/de/going/info/astbergbahn-going.html
+ // https://kitzskiwelttour.skiwelt.at/de/ellmau/info/hartkaiserbahn.html
+ // https://kitzskiwelttour.skiwelt.at/nl/westendorf/info/alpenrosenbahn-westendorf.html
+ // https://www.skiwelt.at/nl/kitzskiwelt-tour-1.html
+ const windows={
+  '100':['08:00','16:00'],'80':['08:00','16:00'],
+  '102':['08:15','16:00'],'97':['08:30','16:00'],'98':['08:15','16:00'],
+  '99':['08:30','16:00'],'67':['08:30','16:30'],'71':['08:30','16:15'],
+  '11':['08:30','15:45'],'112':['07:30','16:45'],
+  '18':['08:30','16:00'],'12':['08:30','16:00'],
+  '1':['08:45','16:15'],'3':['09:00','16:45'],
+  '110':['08:00','16:15'],'111':['08:00','16:15'],
+  '69':['08:30','16:30'],'90':['08:00','16:00']
+ };
+ const scenarios=[
+  ['09:00','16:00'],['08:30','16:00'],['09:00','16:10'],
+  ['08:30','16:10'],['09:00','16:15'],['08:30','16:15'],
+  ['08:30','16:20'],['08:45','16:20']
+ ];
+ const results=[];
+ for(const [departure,returnTime] of scenarios){
+  const options={...defaults,start:'Going dalstation',finish:'Going dalstation',
+   date:'2026-12-22',departure,returnTime,lunchTime:'11:45',
+   lunchRestaurantLabel:choice.label,lunchDuration:60,safetyMarginMin:30};
+  const r=map.build(options);
+  if(!r.ok){results.push({departure,returnTime,ok:false,reason:r.reason});continue;}
+  const v=verify(r,options,choice);
+  const lifts=r.itinerary.steps.filter(s=>s.type==='lift').map(s=>({
+   code:s.code,label:s.label,start:s.start,end:s.end,
+   ...(windows[s.code]?{open:windows[s.code][0],close:windows[s.code][1]}:{})
+  }));
+  const outside=lifts.filter(s=>s.open&&
+   (map.clock(s.start)<map.clock(s.open)||map.clock(s.end)>map.clock(s.close)));
+  const unconfirmed=[...new Set(lifts.filter(s=>!s.open).map(s=>s.code))];
+  const critical=lifts.filter(s=>['11','112','18','12','96','90'].includes(s.code));
+  const returnLifts=lifts.filter(s=>map.clock(s.start)>=map.clock('12:45')).map(s=>s.code);
+  const last=lifts.at(-1);
+  const knownLastLiftReserve=last.close?map.clock(last.close)-map.clock(last.end):null;
+  results.push({departure,returnTime,ok:true,actualArrival:v.actualArrival,
+   safeArrival:r.plan.safeArrival,knownLastLiftReserve,critical,returnLifts,
+   outside,unconfirmed,lifts,
+   hasOfficialBand:returnLifts.includes('18'),
+   pisteCodes:r.itinerary.steps.filter(s=>s.type==='piste').map(s=>s.code),
+   unverifiedTransitions:r.itinerary.unverifiedTransitions.length});
+ }
+ console.log('LUNCH_EXTENDED_DAY '+JSON.stringify(results));
+ assert.ok(results.some(x=>x.ok&&x.outside.length===0&&
+   x.knownLastLiftReserve!==null&&x.knownLastLiftReserve>=10),
+  'At least one explicit extended-day model must keep known lift windows and 30 minute end margin');
+ // Report missing windows and the Sonnenband bypass separately, not as
+ // successful physical/access certification. Never mutate user settings.
+});

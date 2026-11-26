@@ -122,11 +122,21 @@
  function initialize(data){
   if(!data||data.version!==1||!Array.isArray(data.nodes)||!Array.isArray(data.edges)||
      data.nodes.length<1000||!data.stations)throw Error('SkiWelt-kaartnetwerk ontbreekt of is onjuist.');
-  const audit=auditedWalkEdges(data),tourAudit=auditedOfficialPisteEdges(data);
+  const audit=auditedWalkEdges(data);
   const features=data.features.map(feature=>{
+   // Operator's 2026/27 piste catalogues identify the uniquely named
+   // Höhninger Abfahrt as 117b, not 117 (Neuhögen). Source way 765993194
+   // has 717m mapped length / ~150m drop versus official 786m / 164m.
+   // No geometry or difficulty is changed. Require exact source identity.
+   // https://skimap.skiwelt.at/
+   // https://www.skiwelt.at/westendorf/de/pistenstatus.html
+   if(feature.kind==='piste'&&feature.osm==='way/765993194'&&
+      feature.ref==='117'&&feature.name==='Höhninger Abfahrt')
+    return {...feature,ref:'117b'};
    const ref=feature.kind==='piste'&&!feature.ref&&PISTE_REFS_BY_WAY[feature.osm];
    return ref?{...feature,ref}:feature;
   });
+  const tourAudit=auditedOfficialPisteEdges({...data,features});
   graph={...data,features,edges:[...data.edges,...audit.out.flatMap(pair=>pair.edges),...tourAudit.edges],
    localTransferAudit:{accepted:audit.out.map(({entry,metres,gain})=>({
     from:entry.a,to:entry.b,metres,heightDelta:gain,source:entry.source,status:entry.status

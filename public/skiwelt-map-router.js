@@ -163,8 +163,32 @@
   return graph.features[row[2]]?.kind||'transfer';
  }
  function closureSet(rows=[]){
-  return new Set((Array.isArray(rows)?rows:[]).filter(x=>x&&['lift','piste'].includes(x.kind))
-   .map(x=>x.kind+':'+String(x.code||'').toLowerCase()));
+  const closed=new Set((Array.isArray(rows)?rows:[]).filter(x=>x&&['lift','piste'].includes(x.kind))
+   .map(x=>x.kind+':'+String(x.code||'').trim().toLowerCase()));
+  // Hexenwasser has a single lift identity, printed as 40 on the map
+  // and 26 in the official status list. Never alias piste numbers.
+  if(closed.has('lift:26')||closed.has('lift:40')){
+   closed.add('lift:26');closed.add('lift:40');
+  }
+  return closed;
+ }
+ function corridorReported(rows){
+  return Array.isArray(rows)&&rows.some(x=>x?.kind==='corridor');
+ }
+ function unresolvedClosures(rows){
+  const known=new Set();
+  for(const f of graph.features){
+   const ref=String(f.ref||'').trim().toLowerCase();
+   if(!ref)continue;
+   known.add(f.kind+':'+ref);
+   if(f.kind==='piste')for(const part of ref.split(','))known.add('piste:'+part.trim());
+  }
+  if(known.has('lift:40')||known.has('lift:26')){
+   known.add('lift:26');known.add('lift:40');
+  }
+  return (Array.isArray(rows)?rows:[]).filter(x=>x&&['lift','piste'].includes(x.kind)&&
+   !known.has(x.kind+':'+String(x.code||'').trim().toLowerCase()))
+   .map(x=>x.kind+':'+String(x.code||'').trim().toLowerCase());
  }
  function usable(row,opts,closed){
   // An official tour's junction still cannot bypass a closure of either
@@ -189,7 +213,7 @@
   return true; // Unknown piste colours remain explicitly flagged in each output.
  }
  function shortest(source,destination,opts={},closures=[]){
-  if(!graph||!adj)return null;
+  if(!graph||!adj||corridorReported(closures))return null;
   if(!Number.isInteger(source)||!Number.isInteger(destination)||source<0||destination<0||
    source>=adj.length||destination>=adj.length)return null;
   if(source===destination)return{edgeIds:[],minutes:0,metres:0};
@@ -365,6 +389,12 @@
  });
  function build(options={},closures=[]){
   if(!graph)return{ok:false,reason:'Kaartnetwerk nog niet geladen. Probeer opnieuw.'};
+  // Area descriptions are not verified edge-level closure boundaries.
+  // Reject an unresolvable closure instead of silently ignoring it or
+  // blocking unrelated, possibly open routes based on a rough corridor.
+  if(corridorReported(closures))return{ok:false,reason:'De gemelde gebiedsverbinding kan niet betrouwbaar op de kaart worden afgesloten. Meld de exact gesloten pistes en liften.'};
+  const unresolved=unresolvedClosures(closures);
+  if(unresolved.length)return{ok:false,reason:'Een gemelde sluiting kan niet betrouwbaar aan de kaart worden gekoppeld. Controleer het nummer en volg de officiële pisteborden.',unresolvedClosures:unresolved};
   const begin=clock(options.departure||'09:00'),end=clock(options.returnTime||'16:00');
   const useLunch=options.useLunch!==false,lunchClock=clock(options.lunchTime||'12:30');
   const margin=options.useSafety===false?0:clamp(Number(options.safetyMarginMin??30),0,120);

@@ -16,3 +16,9 @@ De 518 kaartfeatures (438 piste, 80 lift) bevatten 3813 knopen en 6265 gerichte 
 - Fysieke doorgang, actuele lift-/pistestatus, volledige vertaaldekking, werkelijke huttoegang en fysieke toesteltests blijven open.
 
 Geen nieuwe functies, geen wijziging brongeometrie. Testbranch houdt versienummer 4.5.25 met nieuwe build-ID; niet publiceren zonder geslaagde controles.
+
+## Test 4 – sluitingen en omleidingen
+- 168 gerichte scenario's (56 verschillende dalstationparen × lift/piste/beide) plus 24 volledige dagplannen vanaf alle acht dalstations. Een niet beschikbare omleiding is een geldige uitkomst; geen omleiding verzinnen. Hertoets continuïteit, exacte sluitingen, lunch, veiligheidsmarge en geen zwarte pistes.
+- Geografische router negeerde corridor-meldingen en onherkenbare nummers. Gebiedsgrenzen zijn niet exact gekoppeld aan fysieke kanten; toon een expliciete foutmelding bij onoplosbare gebieds- of onbekende nummermeldingen in plaats van een schijnbaar geldige route. Dit kan ook een route blokkeren die in werkelijkheid wel mogelijk is, totdat de exacte sluiting kan worden gekoppeld.
+- Hexenwasser is dezelfde gondel met kaartnummer 40 en statusnummer 26. Beide liftmeldingen blokkeren dezelfde lift, niet gelijkgenummerde pistes. Officiële Tour toont beide meldingen. Bron https://www.skiwelt.at/nl/liftstatus-winter.html en bestaand visueel kaartcontrolerapport 22 november.
+- Geen actuele live-sluitingen of nieuwe fysieke verbindingen; alleen lokale meldingen. Nieuwe meldingen in acht talen. CI vereist vóór publicatie.

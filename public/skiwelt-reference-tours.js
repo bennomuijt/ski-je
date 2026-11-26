@@ -575,7 +575,8 @@
   for(const stage of stages){
    const codes=stage.liftNumber.split('/').map(x=>x.trim());
    const slopes=stage.pistes.flatMap(p=>typeof p==='string'?[p]:p.alternatives);
-   const blocked=(closures||[]).filter(row=>(row.kind==='lift'&&codes.includes(row.code))||
+   const blocked=(closures||[]).filter(row=>(row.kind==='lift'&&(codes.includes(row.code)||
+     (['26','40'].includes(row.code)&&codes.some(code=>['26','40'].includes(code)))))||
      (row.kind==='piste'&&slopes.includes(row.code)));
    if(blocked.length)flagged.push({id:stage.id,stage,blocked});
   }

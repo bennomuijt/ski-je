@@ -1,0 +1,1148 @@
+{
+  "source": "https://media.skiwelt.at/media/panorama/winter/SkiWelt-Panorama-26-27-NL.pdf",
+  "extraction": "PyMuPDF page.get_text('dict') span coordinates; first page 1698 x 1174; no OCR",
+  "date": "2026-11-21",
+  "status": "research-candidates-not-visually-approved",
+  "warning": "Numerical labels matched by font + color + official catalogue. These are exact PDF text box center positions, not GPS. Do not publish on the live map until visual confirmation of each marker and image source identity.",
+  "liftCandidates": {
+    "1": {
+      "name": "6er Gondelbahn Hochbrixen",
+      "points": [
+        {
+          "x": 0.66623,
+          "y": 0.54966,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "2": {
+      "name": "Kälbersalvenbahn",
+      "points": [
+        {
+          "x": 0.62692,
+          "y": 0.5797,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "3": {
+      "name": "Zinsbergbahn",
+      "points": [
+        {
+          "x": 0.62212,
+          "y": 0.50874,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "4": {
+      "name": "Poldangerlift",
+      "points": [
+        {
+          "x": 0.61389,
+          "y": 0.53078,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "6": {
+      "name": "Jochbahn",
+      "points": [
+        {
+          "x": 0.61953,
+          "y": 0.47293,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "7": {
+      "name": "Filzbodenbahn",
+      "points": [
+        {
+          "x": 0.5935,
+          "y": 0.53458,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "8": {
+      "name": "Würstlexpress",
+      "points": [
+        {
+          "x": 0.6413,
+          "y": 0.54915,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "9": {
+      "name": "Übungslift Hochbrixen",
+      "points": [
+        {
+          "x": 0.61993,
+          "y": 0.54194,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "10": {
+      "name": "Skischullift Hochbrixen",
+      "points": [
+        {
+          "x": 0.62212,
+          "y": 0.55964,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "11": {
+      "name": "8er SkiWeltbahn",
+      "points": [
+        {
+          "x": 0.76622,
+          "y": 0.51848,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "12": {
+      "name": "Sonnenlift",
+      "points": [
+        {
+          "x": 0.72404,
+          "y": 0.54673,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "17": {
+      "name": "Schusterbühellift",
+      "points": [
+        {
+          "x": 0.73278,
+          "y": 0.49643,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "18": {
+      "name": "Sonnenband",
+      "points": [
+        {
+          "x": 0.72245,
+          "y": 0.53345,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "20": {
+      "name": "8er Gondelbahn Salvenbahn I",
+      "points": [
+        {
+          "x": 0.69153,
+          "y": 0.76055,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "21": {
+      "name": "Hohe Salve I",
+      "points": [
+        {
+          "x": 0.61992,
+          "y": 0.6649,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "22": {
+      "name": "8er Gondelbahn Salvenbahn II",
+      "points": [
+        {
+          "x": 0.60433,
+          "y": 0.61557,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "23": {
+      "name": "Rigibahn",
+      "points": [
+        {
+          "x": 0.5806,
+          "y": 0.61025,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "24": {
+      "name": "Schernthannbahn",
+      "points": [
+        {
+          "x": 0.64602,
+          "y": 0.65318,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "25": {
+      "name": "Foischingbahn",
+      "points": [
+        {
+          "x": 0.65955,
+          "y": 0.63005,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "30": {
+      "name": "10er Gondelbahn Salvistabahn",
+      "points": [
+        {
+          "x": 0.51155,
+          "y": 0.77,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "31": {
+      "name": "Kasbichlbahn",
+      "points": [
+        {
+          "x": 0.57046,
+          "y": 0.67908,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "33": {
+      "name": "Tellerschlepplift Salvista",
+      "points": [
+        {
+          "x": 0.44992,
+          "y": 0.84108,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "40": {
+      "name": "10er Gondelbahn Hexenwasser",
+      "points": [
+        {
+          "x": 0.47452,
+          "y": 0.69398,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "42": {
+      "name": "8er Gondelbahn Hohe Salve",
+      "points": [
+        {
+          "x": 0.56484,
+          "y": 0.59364,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "43": {
+      "name": "4er Sesselbahn Keat",
+      "points": [
+        {
+          "x": 0.52984,
+          "y": 0.63062,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "44": {
+      "name": "Stöckl",
+      "points": [
+        {
+          "x": 0.52289,
+          "y": 0.69398,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "45": {
+      "name": "Hexen6er",
+      "points": [
+        {
+          "x": 0.54853,
+          "y": 0.65382,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "46": {
+      "name": "Rinner",
+      "points": [
+        {
+          "x": 0.53594,
+          "y": 0.73935,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "47": {
+      "name": "Hans im Glück",
+      "points": [
+        {
+          "x": 0.49846,
+          "y": 0.71475,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "51": {
+      "name": "Siller-Keat",
+      "points": [
+        {
+          "x": 0.49179,
+          "y": 0.61271,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "57": {
+      "name": "Knolln",
+      "points": [
+        {
+          "x": 0.39773,
+          "y": 0.74458,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "58": {
+      "name": "Hexenteppich 1",
+      "points": [
+        {
+          "x": 0.375,
+          "y": 0.74658,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "59": {
+      "name": "Mühlbichl (Übungsbereich im Dorf)",
+      "points": [
+        {
+          "x": 0.38716,
+          "y": 0.72734,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "60": {
+      "name": "4EUB Brandstadl",
+      "points": [
+        {
+          "x": 0.32442,
+          "y": 0.54139,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "61": {
+      "name": "8er Gondelbahn Brandstadl I",
+      "points": [
+        {
+          "x": 0.35737,
+          "y": 0.50467,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "62": {
+      "name": "8er Gondelbahn Brandstadl II",
+      "points": [
+        {
+          "x": 0.39613,
+          "y": 0.48425,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "64": {
+      "name": "Osthang",
+      "points": [
+        {
+          "x": 0.46956,
+          "y": 0.45978,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "65": {
+      "name": "Ostlift",
+      "points": [
+        {
+          "x": 0.46744,
+          "y": 0.4387,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "66": {
+      "name": "Südhang",
+      "points": [
+        {
+          "x": 0.44263,
+          "y": 0.49741,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "67": {
+      "name": "Eiberg",
+      "points": [
+        {
+          "x": 0.52221,
+          "y": 0.44641,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "69": {
+      "name": "Kummereralm-Lift",
+      "points": [
+        {
+          "x": 0.55789,
+          "y": 0.40856,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "70": {
+      "name": "Muldenbahn",
+      "points": [
+        {
+          "x": 0.58964,
+          "y": 0.41794,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "71": {
+      "name": "Aualm",
+      "points": [
+        {
+          "x": 0.51921,
+          "y": 0.5067,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "73": {
+      "name": "Hochfeldlift-Schwoich",
+      "points": [
+        {
+          "x": 0.1523,
+          "y": 0.76775,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 7.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "74": {
+      "name": "Babylift Schwoich",
+      "points": [
+        {
+          "x": 0.1392,
+          "y": 0.79909,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 7.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "77": {
+      "name": "Babylift",
+      "points": [
+        {
+          "x": 0.42312,
+          "y": 0.49243,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "78": {
+      "name": "Übungslift - Berg",
+      "points": [
+        {
+          "x": 0.49937,
+          "y": 0.44033,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "79": {
+      "name": "Übungslift - Dorf",
+      "points": [
+        {
+          "x": 0.19211,
+          "y": 0.54286,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 7.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "81": {
+      "name": "Marcher",
+      "points": [
+        {
+          "x": 0.28616,
+          "y": 0.3683,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "82": {
+      "name": "Vetterstätt Zauberteppich",
+      "points": [
+        {
+          "x": 0.27385,
+          "y": 0.38979,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "84": {
+      "name": "Vetterstätt",
+      "points": [
+        {
+          "x": 0.29804,
+          "y": 0.37774,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "86": {
+      "name": "Kirchbichl",
+      "points": [
+        {
+          "x": 0.32282,
+          "y": 0.42613,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "88": {
+      "name": "Schmiedalm",
+      "points": [
+        {
+          "x": 0.38307,
+          "y": 0.43515,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "90": {
+      "name": "Hausberg",
+      "points": [
+        {
+          "x": 0.35347,
+          "y": 0.37149,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "91": {
+      "name": "Ellmi's 6er",
+      "points": [
+        {
+          "x": 0.43985,
+          "y": 0.38379,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "96": {
+      "name": "Kaiserexpress",
+      "points": [
+        {
+          "x": 0.45705,
+          "y": 0.38224,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "97": {
+      "name": "Köglbahn",
+      "points": [
+        {
+          "x": 0.51334,
+          "y": 0.39953,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "98": {
+      "name": "Almbahn",
+      "points": [
+        {
+          "x": 0.49059,
+          "y": 0.36225,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "99": {
+      "name": "Tanzbodenbahn",
+      "points": [
+        {
+          "x": 0.46076,
+          "y": 0.41978,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "100": {
+      "name": "Astbergbahn",
+      "points": [
+        {
+          "x": 0.30862,
+          "y": 0.32729,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "102": {
+      "name": "Sonnenlift",
+      "points": [
+        {
+          "x": 0.37763,
+          "y": 0.31007,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "107": {
+      "name": "Maxilift",
+      "points": [
+        {
+          "x": 0.25629,
+          "y": 0.35257,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "108": {
+      "name": "Zauberteppich Astberg",
+      "points": [
+        {
+          "x": 0.25338,
+          "y": 0.33443,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "110": {
+      "name": "6er Gondelbahn Alpenrosenbahn I",
+      "points": [
+        {
+          "x": 0.83261,
+          "y": 0.53087,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "111": {
+      "name": "6er Gondelbahn Alpenrosenbahn II",
+      "points": [
+        {
+          "x": 0.87226,
+          "y": 0.46052,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "114": {
+      "name": "Talkaser",
+      "points": [
+        {
+          "x": 0.85765,
+          "y": 0.41725,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "115": {
+      "name": "Laubkogel",
+      "points": [
+        {
+          "x": 0.89319,
+          "y": 0.42767,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "117": {
+      "name": "Fleiding",
+      "points": [
+        {
+          "x": 0.92837,
+          "y": 0.40332,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "118": {
+      "name": "Windauberg",
+      "points": [
+        {
+          "x": 0.9148,
+          "y": 0.39805,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "119": {
+      "name": "Gampenkogel",
+      "points": [
+        {
+          "x": 0.86954,
+          "y": 0.37583,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "120": {
+      "name": "8er Gondelbahn KiWest",
+      "points": [
+        {
+          "x": 0.85371,
+          "y": 0.36524,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "125": {
+      "name": "Sammer",
+      "points": [
+        {
+          "x": 0.79652,
+          "y": 0.60395,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "126": {
+      "name": "Schneeberg",
+      "points": [
+        {
+          "x": 0.81023,
+          "y": 0.57273,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "27a": {
+      "name": "Zauberteppich Högerfeld",
+      "points": [
+        {
+          "x": 0.70829,
+          "y": 0.84904,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "27b": {
+      "name": "Zauberteppich Bodenschmied",
+      "points": [
+        {
+          "x": 0.73668,
+          "y": 0.83617,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "single-style-candidate"
+    }
+  },
+  "hutCandidates": {
+    "18": {
+      "name": "Das Brixx - Restaurant & Wine Bar",
+      "points": [
+        {
+          "x": 0.72142,
+          "y": 0.84198,
+          "color": "#ffffff",
+          "font": "MyriadPro-Regular",
+          "size": 5.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "61": {
+      "name": "Tirol Lodge Lieblingsplatzl",
+      "points": [
+        {
+          "x": 0.34338,
+          "y": 0.42669,
+          "color": "#ffffff",
+          "font": "MyriadPro-Regular",
+          "size": 5.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "62": {
+      "name": "jezz Alm Ellmau",
+      "points": [
+        {
+          "x": 0.3612,
+          "y": 0.31124,
+          "color": "#ffffff",
+          "font": "MyriadPro-Regular",
+          "size": 5.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "66": {
+      "name": "Sonnalm",
+      "points": [
+        {
+          "x": 0.83088,
+          "y": 0.52152,
+          "color": "#ffffff",
+          "font": "MyriadPro-Regular",
+          "size": 5.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "76": {
+      "name": "Berggasthaus Gassnerwirt",
+      "points": [
+        {
+          "x": 0.95606,
+          "y": 0.57278,
+          "color": "#ffffff",
+          "font": "MyriadPro-Regular",
+          "size": 5.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "79": {
+      "name": "Restaurant-Bar Bergtraum",
+      "points": [
+        {
+          "x": 0.78575,
+          "y": 0.58713,
+          "color": "#ffffff",
+          "font": "MyriadPro-Regular",
+          "size": 5.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "95": {
+      "name": "WinnaBerg-Alm",
+      "points": [
+        {
+          "x": 0.89827,
+          "y": 0.38934,
+          "color": "#ffffff",
+          "font": "MyriadPro-Regular",
+          "size": 5.9
+        }
+      ],
+      "status": "single-style-candidate"
+    },
+    "99": {
+      "name": "Rabennest Söll",
+      "points": [
+        {
+          "x": 0.49937,
+          "y": 0.69191,
+          "color": "#ffffff",
+          "font": "MyriadPro-Regular",
+          "size": 5.9
+        }
+      ],
+      "status": "single-style-candidate"
+    }
+  },
+  "ambiguous": {
+    "lift:80": {
+      "name": "10er Gondelbahn Hartkaiserbahn",
+      "points": [
+        {
+          "x": 0.38252,
+          "y": 0.40802,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        },
+        {
+          "x": 0.41206,
+          "y": 0.37299,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "ambiguous-multiple-positions"
+    },
+    "lift:112": {
+      "name": "8er Gondelbahn Choralmbahn",
+      "points": [
+        {
+          "x": 0.90432,
+          "y": 0.53294,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 7
+        },
+        {
+          "x": 0.86634,
+          "y": 0.48509,
+          "color": "#231f20",
+          "font": "MyriadPro-BlackCond",
+          "size": 6.3
+        }
+      ],
+      "status": "ambiguous-multiple-positions"
+    }
+  },
+  "notInCatalogue": [
+    {
+      "kind": "lift",
+      "number": "89",
+      "candidates": [
+        {
+          "number": "89",
+          "x": 0.46865,
+          "y": 0.37299,
+          "color": "#231f20",
+          "size": 6.3,
+          "font": "MyriadPro-BlackCond"
+        }
+      ]
+    }
+  ]
+}

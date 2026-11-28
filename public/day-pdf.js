@@ -108,7 +108,8 @@
  }
  function box(ctx,x,y,w,h,bg){ctx.fillStyle=bg;ctx.fillRect(x,y,w,h);}
  function schedule(ctx,plan){
-  label(ctx,'DAGOVERZICHT · ALLE TRAJECTEN OP VOLGENDE BLADEN',62,289,29,COL.navy,true);
+  // Reserve a separate column for the date in every language.
+  label(ctx,'DAGOVERZICHT · ALLE TRAJECTEN OP VOLGENDE BLADEN',62,289,29,COL.navy,true,700);
   const localDate=plan.date||new Date().toLocaleDateString(languages.get(ctx)||'nl');
   label(ctx,'DATUM '+localDate,798,289,22,COL.blue,true);
   lines(ctx,plan.startPoint+'  →  '+plan.endPoint,62,328,1115,25,2,COL.blue);

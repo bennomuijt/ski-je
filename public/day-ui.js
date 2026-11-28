@@ -252,7 +252,7 @@
     if(navigator.share&&navigator.canShare?.({files:[file]})){
      await navigator.share({files:[file],title:'SKI-je skidag'});return;
     }
-    window.SKIPdf.save(blob);
+    window.SKIPdf.save(blob,detail.fileName(plan));
     status.textContent=t('Dit toestel ondersteunt PDF-bestanden delen niet direct; PDF is gedownload.');
    }catch(err){if(err?.name!=='AbortError')status.textContent=t('Delen van PDF is niet gelukt. Probeer eerst downloaden.');}
   });
